@@ -42,11 +42,9 @@ public struct URLSessionTransport: HTTPTransport {
 #if canImport(Security)
   import Security
 
-  /// Valuta il certificato del server: prima con la fiducia di sistema, la
-  /// stessa di Safari; se iOS non si fida e il nome è di ron1n.home, di
-  /// nuovo con la root di Caddy come ancora (`CertificatoCaddy`). La policy
-  /// SSL del trust resta quella di URLSession, con il controllo del nome. Se
-  /// nessuna delle due basta, tiene il motivo dato da SecTrust e chiude.
+  /// Valuta il certificato del server con la fiducia di sistema, la stessa di
+  /// Safari: se iOS si fida lo accetta, se no tiene il motivo che dà
+  /// SecTrust ("non attendibile", "non conforme"…) e chiude la connessione.
   final class VerificaTLS: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
     private let lock = NSLock()
     private var _motivo: String?
@@ -56,22 +54,12 @@ public struct URLSessionTransport: HTTPTransport {
     func urlSession(
       _ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge
     ) async -> (URLSession.AuthChallengeDisposition, URLCredential?) {
-      let spazio = challenge.protectionSpace
-      guard spazio.authenticationMethod == NSURLAuthenticationMethodServerTrust,
-        let trust = spazio.serverTrust
+      guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+        let trust = challenge.protectionSpace.serverTrust
       else { return (.performDefaultHandling, nil) }
       var errore: CFError?
       if SecTrustEvaluateWithError(trust, &errore) {
         return (.useCredential, URLCredential(trust: trust))
-      }
-      if CertificatoCaddy.vale(per: spazio.host), let der = CertificatoCaddy.rootDER,
-        let root = SecCertificateCreateWithData(nil, der as CFData)
-      {
-        SecTrustSetAnchorCertificates(trust, [root] as CFArray)
-        SecTrustSetAnchorCertificatesOnly(trust, false)
-        if SecTrustEvaluateWithError(trust, &errore) {
-          return (.useCredential, URLCredential(trust: trust))
-        }
       }
       let motivo = errore.map { CFErrorCopyDescription($0) as String } ?? "certificato rifiutato"
       lock.withLock { _motivo = motivo }

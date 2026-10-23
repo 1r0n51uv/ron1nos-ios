@@ -12,8 +12,8 @@
     static let raggio: CGFloat = 20
   }
 
-  /// Pannello trasparente (IOS-003): nessun riempimento, solo il bordo di
-  /// luce del vetro, più chiaro in alto a sinistra. `tinta` colora il bordo:
+  /// Pannello quasi trasparente (IOS-003): un velo bianco al 6%, senza
+  /// sfocatura, e il bordo di luce del vetro, più chiaro in alto a sinistra. `tinta` colora il bordo:
   /// solo il rosso, come segnale.
   struct GlassPanel: ViewModifier {
     var tinta: Color?
@@ -25,6 +25,7 @@
         content
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white.opacity(0.06), in: forma)
         .overlay(
           forma.strokeBorder(
             LinearGradient(

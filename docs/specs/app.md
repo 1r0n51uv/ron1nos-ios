@@ -75,15 +75,16 @@ Accettazione:
 
 Stato: in corso (#5)
 
-Le due card della schermata iniziale (stato ed errore) diventano del tutto
-trasparenti: si vede lo sfondo, il vetro resta solo come bordo di luce.
+Le due card della schermata iniziale (stato ed errore) diventano quasi
+trasparenti: si vede lo sfondo, il vetro resta come velo e bordo di luce.
 Nella prima prova con Liquid Glass di iOS 26 (`glassEffect`, anche nella
 variante `.clear`) le card risultavano opache sul nero, quindi il
 materiale non si usa.
 
 Accettazione:
 
-- [ ] Le card non hanno riempimento né sfocatura, su ogni versione di iOS.
+- [ ] Le card hanno solo un velo bianco al 6%, senza sfocatura, su ogni
+      versione di iOS (del tutto trasparenti erano troppo).
       Hanno la forma arrotondata di oggi (raggio 20) e un bordo di 1 pt a
       gradiente, più chiaro in alto a sinistra, come un riflesso.
 - [ ] Il bordo della card d'errore è rosso (`#FF2A2A`), l'unico accento.

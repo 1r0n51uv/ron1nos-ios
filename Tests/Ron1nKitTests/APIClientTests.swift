@@ -102,7 +102,7 @@ final class TransportFinto: HTTPTransport, @unchecked Sendable {
   }
 
   @Test func certificatoRifiutatoDaiOS() async {
-    let motivo = "“ron1n.home” certificate is not trusted"
+    let motivo = "“home.ron1n.space” certificate is not trusted"
     let errore = URLError(.cancelled, userInfo: [APIError.chiaveMotivoTLS: motivo])
     let transport = TransportFinto(.errore(errore))
     await #expect(throws: APIError.certificato(codice: -999, motivo: motivo)) {

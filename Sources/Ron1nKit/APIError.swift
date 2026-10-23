@@ -8,10 +8,10 @@ import Foundation
 /// cosa controllare. Gli errori di rete portano il codice di URLError
 /// (IOS-002), da mostrare così com'è.
 public enum APIError: Error, Equatable, Sendable {
-  /// Nessuna risposta: server spento, Tailscale spento o nome non risolto.
+  /// Nessuna risposta: telefono offline, server o tunnel spenti, nome non
+  /// risolto.
   case nonRaggiungibile(codice: Int?)
-  /// Connessione rifiutata per il certificato: CA di Caddy mancante o non
-  /// attivata. `tls` è il codice di Secure Transport sotto (-98xx), se c'è;
+  /// Connessione rifiutata per il certificato, che iOS non accetta. `tls` è il codice di Secure Transport sotto (-98xx), se c'è;
   /// `motivo` quello che dice la valutazione del certificato di iOS.
   case certificato(codice: Int, tls: Int? = nil, motivo: String? = nil)
   /// Il server ha risposto con un codice HTTP di errore.
@@ -73,11 +73,11 @@ public enum APIError: Error, Equatable, Sendable {
   public var suggerimento: String {
     switch self {
     case .nonRaggiungibile:
-      "Controlla che Tailscale sia acceso sul telefono e che il server sia nella tailnet. "
-        + "iOS tiene accesa una sola VPN: con quella di SideStore attiva, Tailscale è spento."
+      "Controlla la connessione del telefono e che sul server siano accesi ron1nOS e il "
+        + "tunnel Cloudflare (stack tunnel)."
     case .certificato:
-      "Installa il certificato da ca.ron1n.home, poi attivalo in Impostazioni › Generali › Info › "
-        + "Impostazioni certificati attendibili. Safari entra anche senza, l'app no."
+      "iOS non accetta il certificato del server. Controlla data e ora del telefono: il "
+        + "certificato di Cloudflare è pubblico e non va installato niente."
     case .stato(401), .stato(403):
       "Il server chiede il login, che questa versione dell'app non ha ancora."
     case .stato:

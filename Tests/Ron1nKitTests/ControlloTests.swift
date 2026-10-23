@@ -64,7 +64,7 @@ import Testing
   }
 
   @Test func suggerimentiDiRete() {
-    #expect(APIError.certificato(codice: -1202).suggerimento.contains("Impostazioni certificati attendibili"))
-    #expect(APIError.nonRaggiungibile(codice: -1001).suggerimento.contains("SideStore"))
+    #expect(APIError.certificato(codice: -1202).suggerimento.contains("data e ora"))
+    #expect(APIError.nonRaggiungibile(codice: -1001).suggerimento.contains("tunnel Cloudflare"))
   }
 }

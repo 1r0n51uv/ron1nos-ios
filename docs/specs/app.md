@@ -45,10 +45,10 @@ Accettazione:
 
 Stato: in corso (#4)
 
-Sul telefono l'app può dire "non raggiungibile" mentre Safari apre
-`https://ron1n.home`: per esempio se il profilo della CA di Caddy è
-installato ma non attivato, Safari lascia entrare dopo l'avviso e l'app
-no. Il pannello d'errore deve bastare a capire cosa non va, senza log.
+Il pannello d'errore deve bastare a capire cosa non va, senza log. Nato
+quando l'app rifiutava la CA locale di Caddy (`-1200`/`-9802`) mentre
+Safari la accettava; con il passaggio a Cloudflare (SETUP-008 dell'hub) il
+certificato è pubblico e sul telefono non si installa più niente.
 
 Accettazione:
 
@@ -59,15 +59,14 @@ Accettazione:
       distingue una root non attendibile da un rifiuto di App Transport
       Security o da un handshake fallito.
 - [ ] L'app valuta il certificato con la fiducia di sistema di iOS, la
-      stessa di Safari (`SecTrustEvaluateWithError`): se iOS si fida lo
-      accetta, se no il pannello mostra il motivo che dà iOS. Nessuna
-      eccezione ad App Transport Security e nessuna CA dentro l'app.
-- [ ] Il suggerimento per il certificato indica il percorso giusto di
-      iOS: Impostazioni › Generali › Info › Impostazioni certificati
-      attendibili, con l'interruttore della CA di Caddy acceso.
-- [ ] Il suggerimento per il server non raggiungibile ricorda che iOS
-      tiene accesa una sola VPN: con la VPN di SideStore attiva,
-      Tailscale è spento.
+      stessa di Safari (`SecTrustEvaluateWithError`). Se iOS lo rifiuta, il
+      pannello mostra il motivo dato da iOS. Nessuna eccezione ad App
+      Transport Security e nessuna CA inclusa nell'app.
+- [ ] Il suggerimento per il certificato dice di controllare data e ora
+      del telefono: il certificato di Cloudflare è pubblico.
+- [ ] Il suggerimento per il server non raggiungibile dice di controllare
+      la connessione del telefono e che sul server siano accesi ron1nOS e
+      il tunnel Cloudflare. Niente più Tailscale.
 - [ ] Gli errori di certificato di URLSession (`-1200`, `-1201`…`-1206`)
       diventano tutti "certificato non attendibile". Test unitari su
       Linux per la mappatura e i testi.

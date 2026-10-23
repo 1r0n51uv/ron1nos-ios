@@ -167,17 +167,33 @@ Accettazione:
 
 ### IOS-007 · Card Torrent
 
-Stato: in corso
+Stato: fatto (#17)
 
 La card dei download da `GET /downloads`, come il widget Download della
 dashboard.
 
 Accettazione:
 
-- [ ] La card "Torrent" mostra la velocità totale di download
+- [x] La card "Torrent" mostra la velocità totale di download
       (`2,4 MB/s`) e i primi tre torrent che scaricano: nome su una riga,
       barra, percentuale, velocità e tempo rimanente.
-- [ ] Sotto, il riepilogo degli altri: `+2 attivi · 1 in coda · 4 in
+- [x] Sotto, il riepilogo degli altri: `+2 attivi · 1 in coda · 4 in
       seed`. Senza download attivi lo dice.
-- [ ] Con qBittorrent non raggiungibile (503) o il modulo spento vale
+- [x] Con qBittorrent non raggiungibile (503) o il modulo spento vale
       quanto detto per le card in IOS-006. Test su Linux.
+
+### IOS-008 · Card Server
+
+Stato: in corso
+
+La card delle risorse del server da `GET /server/stats` (Glances), come
+il widget Server della dashboard.
+
+Accettazione:
+
+- [ ] La card "Server" mostra CPU, RAM e disco in percentuale, ognuno con
+      una barra; dal 90% in su barra rossa.
+- [ ] Sotto, in una riga: temperatura (se c'è il sensore), da quanto è
+      acceso e la rete in ingresso e uscita (se Glances la dà).
+- [ ] Con Glances non raggiungibile (503) o il modulo spento vale quanto
+      detto per le card in IOS-006. Test su Linux.

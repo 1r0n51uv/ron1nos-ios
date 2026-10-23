@@ -12,14 +12,9 @@
       ScrollView {
         VStack(alignment: .leading, spacing: 20) {
           intestazione
-          // Le due card in un solo contenitore di vetro (IOS-003).
-          ContenitoreVetro(spacing: 20) {
-            VStack(alignment: .leading, spacing: 20) {
-              pannelloStato
-              if case .fallito(let errore, _) = controllo {
-                pannelloErrore(errore)
-              }
-            }
+          pannelloStato
+          if case .fallito(let errore, _) = controllo {
+            pannelloErrore(errore)
           }
         }
         .padding(.horizontal, 16)

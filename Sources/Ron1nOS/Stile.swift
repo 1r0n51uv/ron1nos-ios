@@ -12,39 +12,26 @@
     static let raggio: CGFloat = 20
   }
 
-  /// Pannello in vetro, come `glass-panel` della dashboard web. Da iOS 26 è
-  /// Liquid Glass nella variante trasparente `.clear` (IOS-003); prima resta
-  /// il materiale sfocato con bordo.
-  /// `tinta` colora appena il vetro: solo il rosso, come segnale.
+  /// Pannello trasparente (IOS-003): nessun riempimento, solo il bordo di
+  /// luce del vetro, più chiaro in alto a sinistra. `tinta` colora il bordo:
+  /// solo il rosso, come segnale.
   struct GlassPanel: ViewModifier {
     var tinta: Color?
 
-    @ViewBuilder
     func body(content: Content) -> some View {
       let forma = RoundedRectangle(cornerRadius: Stile.raggio, style: .continuous)
-      let card = content.padding(20).frame(maxWidth: .infinity, alignment: .leading)
-      if #available(iOS 26, macOS 26, *) {
-        card.glassEffect(tinta.map { Glass.clear.tint($0.opacity(0.12)) } ?? .clear, in: forma)
-      } else {
-        card
-          .background(.ultraThinMaterial, in: forma)
-          .overlay(forma.stroke(Stile.bordo, lineWidth: 1))
-      }
-    }
-  }
-
-  /// Raccoglie più pannelli di vetro, perché iOS 26 li disegni insieme e li
-  /// fonda quando si avvicinano. Prima di iOS 26 non fa niente.
-  struct ContenitoreVetro<Content: View>: View {
-    var spacing: CGFloat
-    @ViewBuilder var content: Content
-
-    var body: some View {
-      if #available(iOS 26, macOS 26, *) {
-        GlassEffectContainer(spacing: spacing) { content }
-      } else {
+      let luce = tinta ?? Color.white
+      return
         content
-      }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(
+          forma.strokeBorder(
+            LinearGradient(
+              colors: [luce.opacity(0.5), luce.opacity(0.12), luce.opacity(0.05)],
+              startPoint: .topLeading, endPoint: .bottomTrailing),
+            lineWidth: 1)
+        )
     }
   }
 

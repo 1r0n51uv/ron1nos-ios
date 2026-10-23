@@ -59,9 +59,16 @@ Accettazione:
       distingue una root non attendibile da un rifiuto di App Transport
       Security o da un handshake fallito.
 - [ ] L'app valuta il certificato con la fiducia di sistema di iOS, la
-      stessa di Safari (`SecTrustEvaluateWithError`): se iOS si fida lo
-      accetta, se no il pannello mostra il motivo che dà iOS. Nessuna
-      eccezione ad App Transport Security e nessuna CA dentro l'app.
+      stessa di Safari (`SecTrustEvaluateWithError`). Sul telefono di prova
+      iOS rifiuta nelle app la root di Caddy ("non è autorizzato"), anche
+      con il profilo installato e attivato, mentre Safari la accetta.
+      Quindi, se la fiducia di sistema non basta e il nome è `ron1n.home`
+      o un suo sottodominio, l'app rivaluta con la root di Caddy come
+      ancora. La root è inclusa nell'app: è pubblica, la stessa di
+      `ca.ron1n.home`, e l'impronta SHA-256 è nel codice. Catena e nome host
+      si verificano comunque per intero. Se neanche così passa, il pannello
+      mostra il motivo dato da iOS. Nessuna eccezione ad App Transport
+      Security. Se Caddy rigenera la CA, la root va aggiornata nell'app.
 - [ ] Il suggerimento per il certificato indica il percorso giusto di
       iOS: Impostazioni › Generali › Info › Impostazioni certificati
       attendibili, con l'interruttore della CA di Caddy acceso.

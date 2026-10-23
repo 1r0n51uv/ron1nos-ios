@@ -117,6 +117,24 @@ final class TransportFinto: HTTPTransport, @unchecked Sendable {
     }
   }
 
+  @Test func rootDiCaddyInDER() throws {
+    let der = try #require(CertificatoCaddy.rootDER)
+    #expect(der.count > 300)
+    #expect(der.first == 0x30)  // SEQUENCE: un certificato X.509 in DER
+  }
+
+  @Test(arguments: [
+    ("ron1n.home", true),
+    ("ios.ron1n.home", true),
+    ("RON1N.HOME", true),
+    ("evilron1n.home", false),
+    ("ron1n.home.example.com", false),
+    ("example.com", false),
+  ])
+  func rootSoloPerRon1nHome(host: String, atteso: Bool) {
+    #expect(CertificatoCaddy.vale(per: host) == atteso)
+  }
+
   @Test func erroreCheNonEDiRete() async {
     struct Altro: Error {}
     let transport = TransportFinto(.errore(Altro()))

@@ -4,3 +4,4 @@
 .swiftpm/configuration/registries.json
 .netrc
 /xtool
+/.bsp

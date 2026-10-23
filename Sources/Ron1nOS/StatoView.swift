@@ -12,15 +12,20 @@
       ScrollView {
         VStack(alignment: .leading, spacing: 20) {
           intestazione
-          pannelloStato
-          if case .fallito(let errore, _) = controllo {
-            pannelloErrore(errore)
+          // Le due card in un solo contenitore di vetro (IOS-003).
+          ContenitoreVetro(spacing: 20) {
+            VStack(alignment: .leading, spacing: 20) {
+              pannelloStato
+              if case .fallito(let errore, _) = controllo {
+                pannelloErrore(errore)
+              }
+            }
           }
         }
         .padding(.horizontal, 16)
         .padding(.top, 24)
       }
-      .background(Stile.sfondo.ignoresSafeArea())
+      .background(SfondoConAlone().ignoresSafeArea())
       .refreshable { await aggiorna() }
       .task { await aggiorna() }
     }
@@ -66,7 +71,7 @@
           .font(.footnote)
           .foregroundStyle(Stile.testoTenue)
       }
-      .glassPanel()
+      .glassPanel(tinta: Stile.brand)
     }
 
     private func riga(_ titolo: String, _ valore: String, segnale: Bool) -> some View {

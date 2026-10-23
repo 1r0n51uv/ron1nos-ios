@@ -73,7 +73,7 @@ Accettazione:
 
 ### IOS-003 · Card in Liquid Glass
 
-Stato: pianificato (#5)
+Stato: in corso (#5)
 
 Una prova del materiale Liquid Glass di iOS 26 sulle due card della
 schermata iniziale (stato ed errore), al posto del vetro sfocato.

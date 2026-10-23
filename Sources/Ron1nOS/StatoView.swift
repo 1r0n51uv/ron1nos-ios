@@ -57,6 +57,11 @@
         Text(errore.suggerimento)
           .font(.subheadline)
           .foregroundStyle(Stile.testo)
+        if let dettaglio = errore.dettaglio {
+          Text(dettaglio)
+            .font(.system(.footnote, design: .monospaced))
+            .foregroundStyle(Stile.testoTenue)
+        }
         Text("Trascina in basso per riprovare.")
           .font(.footnote)
           .foregroundStyle(Stile.testoTenue)

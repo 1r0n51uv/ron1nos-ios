@@ -55,12 +55,12 @@ public struct APIClient: Sendable {
     } catch {
       throw APIError(error)
     }
-    guard let http = response as? HTTPURLResponse else { throw .rispostaInattesa }
+    guard let http = response as? HTTPURLResponse else { throw .rispostaInattesa(codice: nil) }
     guard (200..<300).contains(http.statusCode) else { throw .stato(http.statusCode) }
     do {
       return try JSONDecoder().decode(T.self, from: data)
     } catch {
-      throw .rispostaInattesa
+      throw .rispostaInattesa(codice: nil)
     }
   }
 }

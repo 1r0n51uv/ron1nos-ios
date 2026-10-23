@@ -53,6 +53,7 @@ import Testing
 
   @Test func dettaglioDelCodice() {
     #expect(APIError.certificato(codice: -1202).dettaglio == "URLError -1202")
+    #expect(APIError.certificato(codice: -1200, tls: -9802).dettaglio == "URLError -1200 · TLS -9802")
     #expect(APIError.nonRaggiungibile(codice: -1004).dettaglio == "URLError -1004")
     #expect(APIError.stato(503).dettaglio == "HTTP 503")
     #expect(APIError.nonRaggiungibile(codice: nil).dettaglio == nil)

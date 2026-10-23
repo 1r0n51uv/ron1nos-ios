@@ -83,6 +83,24 @@ final class TransportFinto: HTTPTransport, @unchecked Sendable {
     await #expect(throws: atteso) { try await APIClient(transport: transport).health() }
   }
 
+  @Test func codiceTLSDallErroreSottostante() async {
+    let sotto = NSError(
+      domain: "kCFErrorDomainCFNetwork", code: -1200, userInfo: ["_kCFStreamErrorCodeKey": -9802])
+    let errore = URLError(.secureConnectionFailed, userInfo: [NSUnderlyingErrorKey: sotto])
+    let transport = TransportFinto(.errore(errore))
+    await #expect(throws: APIError.certificato(codice: -1200, tls: -9802)) {
+      try await APIClient(transport: transport).health()
+    }
+  }
+
+  @Test func codiceTLSDiretto() async {
+    let errore = URLError(.serverCertificateUntrusted, userInfo: ["_kCFStreamErrorCodeKey": -9813])
+    let transport = TransportFinto(.errore(errore))
+    await #expect(throws: APIError.certificato(codice: -1202, tls: -9813)) {
+      try await APIClient(transport: transport).health()
+    }
+  }
+
   @Test func erroreCheNonEDiRete() async {
     struct Altro: Error {}
     let transport = TransportFinto(.errore(Altro()))

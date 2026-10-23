@@ -54,7 +54,10 @@ Accettazione:
 
 - [ ] Il pannello d'errore mostra, in monospazio e in tono tenue, il
       codice preciso: `URLError <codice>` per gli errori di rete,
-      `HTTP <codice>` per quelli del server.
+      `HTTP <codice>` per quelli del server. Per gli errori TLS anche il
+      codice di Secure Transport sottostante (`TLS -98xx`), quando c'è:
+      distingue una root non attendibile da un rifiuto di App Transport
+      Security o da un handshake fallito.
 - [ ] Il suggerimento per il certificato indica il percorso giusto di
       iOS: Impostazioni › Generali › Info › Impostazioni certificati
       attendibili, con l'interruttore della CA di Caddy acceso.

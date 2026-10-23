@@ -11,8 +11,9 @@ public enum APIError: Error, Equatable, Sendable {
   /// Nessuna risposta: server spento, Tailscale spento o nome non risolto.
   case nonRaggiungibile(codice: Int?)
   /// Connessione rifiutata per il certificato: CA di Caddy mancante o non
-  /// attivata. `tls` è il codice di Secure Transport sotto (-98xx), se c'è.
-  case certificato(codice: Int, tls: Int? = nil)
+  /// attivata. `tls` è il codice di Secure Transport sotto (-98xx), se c'è;
+  /// `motivo` quello che dice la valutazione del certificato di iOS.
+  case certificato(codice: Int, tls: Int? = nil, motivo: String? = nil)
   /// Il server ha risposto con un codice HTTP di errore.
   case stato(Int)
   /// Ha risposto, ma non con quello che l'app si aspetta.
@@ -30,13 +31,22 @@ public enum APIError: Error, Equatable, Sendable {
     let codice = urlError.code.rawValue
     switch urlError.code {
     case _ where APIError.codiciCertificato.contains(codice):
-      self = .certificato(codice: codice, tls: APIError.codiceTLS(urlError))
+      self = .certificato(
+        codice: codice, tls: APIError.codiceTLS(urlError),
+        motivo: urlError.userInfo[APIError.chiaveMotivoTLS] as? String)
+    case .cancelled where urlError.userInfo[APIError.chiaveMotivoTLS] != nil:
+      // Connessione chiusa da VerificaTLS: il certificato è stato rifiutato.
+      self = .certificato(codice: codice, motivo: urlError.userInfo[APIError.chiaveMotivoTLS] as? String)
     case .badServerResponse, .cannotParseResponse, .cannotDecodeContentData:
       self = .rispostaInattesa(codice: codice)
     default:
       self = .nonRaggiungibile(codice: codice)
     }
   }
+
+  /// Dove il trasporto mette il motivo per cui iOS ha rifiutato il
+  /// certificato.
+  static let chiaveMotivoTLS = "Ron1nMotivoTLS"
 
   /// Il codice di Secure Transport che CFNetwork mette nello userInfo, o
   /// in quello dell'errore sottostante.
@@ -77,14 +87,16 @@ public enum APIError: Error, Equatable, Sendable {
     }
   }
 
-  /// Il codice preciso, per capire senza log: "URLError -1202", "HTTP 503".
+  /// Il codice preciso, per capire senza log: "URLError -1202", "HTTP 503",
+  /// e sotto il motivo dato da iOS per un certificato rifiutato.
   public var dettaglio: String? {
     switch self {
-    case .certificato(let codice, let tls?): "URLError \(codice) · TLS \(tls)"
-    case .nonRaggiungibile(let codice?), .rispostaInattesa(let codice?), .certificato(let codice, nil):
-      "URLError \(codice)"
-    case .stato(let codice): "HTTP \(codice)"
-    case .nonRaggiungibile(nil), .rispostaInattesa(nil): nil
+    case .certificato(let codice, let tls, let motivo):
+      let riga = tls.map { "URLError \(codice) · TLS \($0)" } ?? "URLError \(codice)"
+      return motivo.map { "\(riga)\n\($0)" } ?? riga
+    case .nonRaggiungibile(let codice?), .rispostaInattesa(let codice?): return "URLError \(codice)"
+    case .stato(let codice): return "HTTP \(codice)"
+    case .nonRaggiungibile(nil), .rispostaInattesa(nil): return nil
     }
   }
 }

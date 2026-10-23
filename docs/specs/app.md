@@ -58,6 +58,10 @@ Accettazione:
       codice di Secure Transport sottostante (`TLS -98xx`), quando c'è:
       distingue una root non attendibile da un rifiuto di App Transport
       Security o da un handshake fallito.
+- [ ] L'app valuta il certificato con la fiducia di sistema di iOS, la
+      stessa di Safari (`SecTrustEvaluateWithError`): se iOS si fida lo
+      accetta, se no il pannello mostra il motivo che dà iOS. Nessuna
+      eccezione ad App Transport Security e nessuna CA dentro l'app.
 - [ ] Il suggerimento per il certificato indica il percorso giusto di
       iOS: Impostazioni › Generali › Info › Impostazioni certificati
       attendibili, con l'interruttore della CA di Caddy acceso.

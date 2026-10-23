@@ -2,7 +2,7 @@
   import Ron1nKit
   import SwiftUI
 
-  /// La home (IOS-001, IOS-006, IOS-007): chiama /health e mostra
+  /// La home (IOS-001, IOS-006…008): chiama /health e mostra
   /// backend, database, login e ora dell'ultimo controllo. Il service token
   /// di Access (IOS-004) e il token di ron1nOS (IOS-005) vengono dal
   /// Portachiavi. Sotto, le card dei moduli.
@@ -11,6 +11,7 @@
     @State private var login: StatoLogin = .inCorso
     @State private var dieta: Carico<GiornoDieta> = .inCorso
     @State private var download: Carico<Download> = .inCorso
+    @State private var server: Carico<StatoServer> = .inCorso
     @State private var mostraAccesso = false
     private let archivio = Portachiavi()
     private let archivioToken = PortachiaviToken()
@@ -31,6 +32,7 @@
           }
           CardDieta(carico: dieta)
           CardTorrent(carico: download)
+          CardServer(carico: server)
         }
         .padding(.horizontal, 16)
         .padding(.top, 24)
@@ -131,7 +133,8 @@
       async let accesso = StatoLogin.verifica(con: client)
       async let giorno = Carico.da { try await client.dieta() }
       async let torrent = Carico.da { try await client.download() }
-      (controllo, login, dieta, download) = await (stato, accesso, giorno, torrent)
+      async let risorse = Carico.da { try await client.statoServer() }
+      (controllo, login, dieta, download, server) = await (stato, accesso, giorno, torrent, risorse)
     }
   }
 #endif

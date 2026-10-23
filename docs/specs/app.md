@@ -71,22 +71,24 @@ Accettazione:
       diventano tutti "certificato non attendibile". Test unitari su
       Linux per la mappatura e i testi.
 
-### IOS-003 · Card in Liquid Glass
+### IOS-003 · Card trasparenti
 
-Stato: pianificato (#5)
+Stato: in corso (#5)
 
-Una prova del materiale Liquid Glass di iOS 26 sulle due card della
-schermata iniziale (stato ed errore), al posto del vetro sfocato.
+Le due card della schermata iniziale (stato ed errore) diventano quasi
+trasparenti: si vede lo sfondo, il vetro resta come velo e bordo di luce.
+Nella prima prova con Liquid Glass di iOS 26 (`glassEffect`, anche nella
+variante `.clear`) le card risultavano opache sul nero, quindi il
+materiale non si usa.
 
 Accettazione:
 
-- [ ] Su iOS 26 o successivo le due card usano `glassEffect` con la stessa
-      forma arrotondata di oggi (raggio 20), raccolte in un
-      `GlassEffectContainer`. La card d'errore ha una tinta rossa leggera
-      (`#FF2A2A`), l'unico accento.
-- [ ] Su iOS 17–25 resta il pannello di oggi (`ultraThinMaterial` con
-      bordo): il requisito minimo non cambia.
-- [ ] Sotto le card c'è uno sfondo scuro con un alone appena visibile, così
-      la rifrazione del vetro si vede anche sul nero.
+- [ ] Le card hanno solo un velo bianco al 6%, senza sfocatura, su ogni
+      versione di iOS (del tutto trasparenti erano troppo).
+      Hanno la forma arrotondata di oggi (raggio 20) e un bordo di 1 pt a
+      gradiente, più chiaro in alto a sinistra, come un riflesso.
+- [ ] Il bordo della card d'errore è rosso (`#FF2A2A`), l'unico accento.
+- [ ] Sotto le card c'è uno sfondo nero con due aloni tenui, così le card
+      si distinguono.
 - [ ] Si compila con il builder dell'hub (SDK iOS 27). Prova a mano sul
-      telefono: il vetro si vede e i testi restano leggibili.
+      telefono: le card sono trasparenti e i testi restano leggibili.

@@ -1,8 +1,8 @@
 # ron1nOS iOS
 
 L'app iOS di [ron1nOS](https://github.com/1r0n51uv/ron1nOS), la dashboard
-dell'homelab ron1n. Usa la stessa API `/api/v1` della dashboard web, via
-Tailscale.
+dell'homelab ron1n. Usa la stessa API `/api/v1` della dashboard web, su
+`https://home.ron1n.space`, dietro Cloudflare Access.
 
 Si compila su Linux con [xtool](https://github.com/xtool-org/xtool), sul
 server di casa, e si installa con SideStore: niente Mac. Builder e pagina
@@ -29,5 +29,12 @@ cd /opt/ron1n
 docker compose -f infra/ios/compose.yaml run --rm ios-builder build
 ```
 
-Poi, dal telefono nella tailnet, `https://ios.ron1n.home/Ron1nOS.ipa` e
+Poi, da Safari sul telefono, `https://ios.ron1n.space/Ron1nOS.ipa` e
 **Condividi → SideStore**.
+
+## Accesso
+
+Il backend sta dietro Cloudflare Access, e l'app entra con il service
+token `ron1nos-ios`. Sul server è in `~/.cf-home/ron1nos-ios.json`:
+copia il contenuto, poi nell'app tocca **Accesso → Incolla → Salva**. Il
+token resta nel Portachiavi del telefono e scade dopo un anno.

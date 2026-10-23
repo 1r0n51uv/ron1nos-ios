@@ -14,6 +14,9 @@ public enum APIError: Error, Equatable, Sendable {
   /// Connessione rifiutata per il certificato, che iOS non accetta. `tls` è il codice di Secure Transport sotto (-98xx), se c'è;
   /// `motivo` quello che dice la valutazione del certificato di iOS.
   case certificato(codice: Int, tls: Int? = nil, motivo: String? = nil)
+  /// Cloudflare Access ha fermato la richiesta: manca il service token, o
+  /// quello salvato non vale più (IOS-004).
+  case accesso(conToken: Bool)
   /// Il server ha risposto con un codice HTTP di errore.
   case stato(Int)
   /// Ha risposto, ma non con quello che l'app si aspetta.
@@ -64,6 +67,8 @@ public enum APIError: Error, Equatable, Sendable {
     switch self {
     case .nonRaggiungibile: "Server non raggiungibile"
     case .certificato: "Certificato non attendibile"
+    case .accesso(conToken: false): "Manca l'accesso"
+    case .accesso(conToken: true): "Accesso rifiutato"
     case .stato(let codice): "Errore del server · \(codice)"
     case .rispostaInattesa: "Risposta inattesa"
     }
@@ -78,6 +83,12 @@ public enum APIError: Error, Equatable, Sendable {
     case .certificato:
       "iOS non accetta il certificato del server. Controlla data e ora del telefono: il "
         + "certificato di Cloudflare è pubblico e non va installato niente."
+    case .accesso(conToken: false):
+      "Cloudflare Access chiede il service token dell'app. Tocca Accesso e incolla Client ID e "
+        + "Client Secret."
+    case .accesso(conToken: true):
+      "Cloudflare Access non accetta il token salvato: forse è scaduto o è stato revocato. "
+        + "Tocca Accesso e incolla quello nuovo."
     case .stato(401), .stato(403):
       "Il server chiede il login, che questa versione dell'app non ha ancora."
     case .stato:
@@ -96,6 +107,7 @@ public enum APIError: Error, Equatable, Sendable {
       return motivo.map { "\(riga)\n\($0)" } ?? riga
     case .nonRaggiungibile(let codice?), .rispostaInattesa(let codice?): return "URLError \(codice)"
     case .stato(let codice): return "HTTP \(codice)"
+    case .accesso: return "HTTP 302 · Cloudflare Access"
     case .nonRaggiungibile(nil), .rispostaInattesa(nil): return nil
     }
   }

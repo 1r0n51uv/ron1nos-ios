@@ -42,7 +42,8 @@ import Testing
 
   @Test func messaggiSenzaPuntiEsclamativi() {
     let errori: [APIError] = [
-      .nonRaggiungibile(codice: nil), .certificato(codice: -1202), .stato(401), .stato(500),
+      .nonRaggiungibile(codice: nil), .certificato(codice: -1202), .accesso(conToken: false),
+      .accesso(conToken: true), .stato(401), .stato(500),
       .rispostaInattesa(codice: nil),
     ]
     for errore in errori {

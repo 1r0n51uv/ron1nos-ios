@@ -3,10 +3,14 @@
   import SwiftUI
 
   /// La schermata dell'app di prova (IOS-001): chiama /health e mostra
-  /// backend, database e ora dell'ultimo controllo.
+  /// backend, database e ora dell'ultimo controllo. Il service token di
+  /// Access viene dal Portachiavi (IOS-004).
   struct StatoView: View {
     @State private var controllo: Controllo = .inCorso
-    private let client = APIClient()
+    @State private var mostraAccesso = false
+    private let archivio = Portachiavi()
+
+    private var client: APIClient { APIClient(credenziali: archivio.carica()) }
 
     var body: some View {
       ScrollView {
@@ -23,16 +27,27 @@
       .background(SfondoConAlone().ignoresSafeArea())
       .refreshable { await aggiorna() }
       .task { await aggiorna() }
+      .sheet(isPresented: $mostraAccesso) {
+        AccessoView(archivio: archivio) {
+          Task { await aggiorna() }
+        }
+      }
     }
 
     private var intestazione: some View {
-      VStack(alignment: .leading, spacing: 4) {
-        Text("ron1nOS")
-          .font(.system(size: 34, weight: .semibold))
-          .foregroundStyle(Stile.testo)
-        Text(client.baseURL.host() ?? "")
-          .font(.system(.subheadline, design: .monospaced))
-          .foregroundStyle(Stile.testoTenue)
+      HStack(alignment: .top) {
+        VStack(alignment: .leading, spacing: 4) {
+          Text("ron1nOS")
+            .font(.system(size: 34, weight: .semibold))
+            .foregroundStyle(Stile.testo)
+          Text(APIClient.indirizzoPredefinito.host() ?? "")
+            .font(.system(.subheadline, design: .monospaced))
+            .foregroundStyle(Stile.testoTenue)
+        }
+        Spacer()
+        Button("Accesso") { mostraAccesso = true }
+          .glassChip()
+          .padding(.top, 8)
       }
     }
 

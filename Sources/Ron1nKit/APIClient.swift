@@ -87,14 +87,18 @@ public struct APIClient: Sendable {
   public let baseURL: URL
   /// Il service token di Access, se c'è. Senza, Access rimanda al login.
   public let credenziali: CredenzialiAccesso?
+  /// Il token di ron1nOS (IOS-005), se c'è. Senza, con il login acceso le
+  /// rotte rispondono 401.
+  public let token: TokenRon1n?
   let transport: HTTPTransport
 
   public init(
     baseURL: URL = APIClient.indirizzoPredefinito, credenziali: CredenzialiAccesso? = nil,
-    transport: HTTPTransport = URLSessionTransport()
+    token: TokenRon1n? = nil, transport: HTTPTransport = URLSessionTransport()
   ) {
     self.baseURL = baseURL
     self.credenziali = credenziali
+    self.token = token
     self.transport = transport
   }
 
@@ -103,10 +107,16 @@ public struct APIClient: Sendable {
     try await get("health")
   }
 
+  /// `GET /auth/me`: con il login acceso chiede il token.
+  public func me() async throws(APIError) -> Me {
+    try await get("auth/me")
+  }
+
   func get<T: Decodable>(_ path: String) async throws(APIError) -> T {
     var request = URLRequest(url: baseURL.appendingPathComponent(path))
     request.setValue("application/json", forHTTPHeaderField: "Accept")
-    for (nome, valore) in credenziali?.header ?? [:] {
+    let header = (credenziali?.header ?? [:]).merging(token?.header ?? [:]) { $1 }
+    for (nome, valore) in header {
       request.setValue(valore, forHTTPHeaderField: nome)
     }
 
@@ -119,6 +129,7 @@ public struct APIClient: Sendable {
     }
     guard let http = response as? HTTPURLResponse else { throw .rispostaInattesa(codice: nil) }
     if APIClient.versoAccess(http) { throw .accesso(conToken: credenziali != nil) }
+    if http.statusCode == 401 { throw .login(conToken: token != nil) }
     guard (200..<300).contains(http.statusCode) else { throw .stato(http.statusCode) }
     do {
       return try JSONDecoder().decode(T.self, from: data)

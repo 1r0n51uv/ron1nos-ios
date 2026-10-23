@@ -121,3 +121,25 @@ Accettazione:
       suggerimento di incollarne uno nuovo.
 - [x] Test unitari su Linux per la lettura del token, gli header e il
       redirect di Access.
+
+### IOS-005 · Token di ron1nOS
+
+Stato: in corso
+
+Con il login di ron1nOS acceso le rotte dei moduli rispondono 401 senza
+sessione. L'app entra con un token creato nella dashboard (AUTH-005 e
+SET-008 di ron1nOS), oltre al service token di Access.
+
+Accettazione:
+
+- [ ] In Accesso si incolla il token (`r1n_…`, anche con `Bearer `
+      davanti), si salva e si elimina. Sta nel Portachiavi, in una voce
+      separata da quella di Access; non si rilegge a schermo.
+- [ ] Ogni richiesta porta `Authorization: Bearer <token>` insieme agli
+      header di Access.
+- [ ] La schermata di stato ha una riga Login (`GET /auth/me`): token
+      valido, spento, manca il token, token rifiutato. Un 401 diventa
+      "Manca il token ron1nOS" o "Token ron1nOS rifiutato", con il
+      suggerimento di crearne uno in Impostazioni › App iOS.
+- [ ] Test unitari su Linux per la lettura del token, gli header, il 401 e
+      lo stato del login.

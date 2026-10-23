@@ -38,3 +38,8 @@ Il backend sta dietro Cloudflare Access, e l'app entra con il service
 token `ron1nos-ios`. Sul server è in `~/.cf-home/ron1nos-ios.json`:
 copia il contenuto, poi nell'app tocca **Accesso → Incolla → Salva**. Il
 token resta nel Portachiavi del telefono e scade dopo un anno.
+
+Con il login di ron1nOS acceso serve anche il token di ron1nOS: nella
+dashboard apri **Impostazioni › App iOS**, crea un token, copialo e
+nell'app tocca **Accesso**, poi **Incolla → Salva** sotto "Token ron1nOS".
+Vale finché non lo revochi dalla dashboard.

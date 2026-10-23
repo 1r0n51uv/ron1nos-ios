@@ -85,32 +85,25 @@ public final class ArchivioInMemoria: ArchivioCredenziali, @unchecked Sendable {
 #if canImport(Security)
   import Security
 
-  /// Il Portachiavi di iOS: una voce generic password per id e secret
-  /// insieme, leggibile solo su questo telefono dopo il primo sblocco.
-  public struct Portachiavi: ArchivioCredenziali {
+  /// Una voce generic password del Portachiavi di iOS, leggibile solo su
+  /// questo telefono dopo il primo sblocco.
+  struct VocePortachiavi: Sendable {
     let servizio: String
-
-    public init(servizio: String = "home.ron1n.ios.accesso-cloudflare") { self.servizio = servizio }
 
     private var query: [String: Any] {
       [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: servizio]
     }
 
-    public func carica() -> CredenzialiAccesso? {
+    func leggi() -> Data? {
       var q = query
       q[kSecReturnData as String] = true
       q[kSecMatchLimit as String] = kSecMatchLimitOne
       var risultato: AnyObject?
-      guard SecItemCopyMatching(q as CFDictionary, &risultato) == errSecSuccess,
-        let dati = risultato as? Data,
-        let voce = try? JSONDecoder().decode([String: String].self, from: dati),
-        let id = voce["id"], let secret = voce["secret"]
-      else { return nil }
-      return CredenzialiAccesso(clientId: id, clientSecret: secret)
+      guard SecItemCopyMatching(q as CFDictionary, &risultato) == errSecSuccess else { return nil }
+      return risultato as? Data
     }
 
-    public func salva(_ credenziali: CredenzialiAccesso) throws {
-      let dati = try JSONEncoder().encode(["id": credenziali.clientId, "secret": credenziali.clientSecret])
+    func scrivi(_ dati: Data) throws {
       try cancella()
       var q = query
       q[kSecValueData as String] = dati
@@ -119,12 +112,36 @@ public final class ArchivioInMemoria: ArchivioCredenziali, @unchecked Sendable {
       guard stato == errSecSuccess else { throw ErrorePortachiavi(stato: stato) }
     }
 
-    public func cancella() throws {
+    func cancella() throws {
       let stato = SecItemDelete(query as CFDictionary)
       guard stato == errSecSuccess || stato == errSecItemNotFound else {
         throw ErrorePortachiavi(stato: stato)
       }
     }
+  }
+
+  /// Il service token di Access nel Portachiavi: id e secret in una voce.
+  public struct Portachiavi: ArchivioCredenziali {
+    let voce: VocePortachiavi
+
+    public init(servizio: String = "home.ron1n.ios.accesso-cloudflare") {
+      voce = VocePortachiavi(servizio: servizio)
+    }
+
+    public func carica() -> CredenzialiAccesso? {
+      guard let dati = voce.leggi(),
+        let valori = try? JSONDecoder().decode([String: String].self, from: dati),
+        let id = valori["id"], let secret = valori["secret"]
+      else { return nil }
+      return CredenzialiAccesso(clientId: id, clientSecret: secret)
+    }
+
+    public func salva(_ credenziali: CredenzialiAccesso) throws {
+      try voce.scrivi(
+        JSONEncoder().encode(["id": credenziali.clientId, "secret": credenziali.clientSecret]))
+    }
+
+    public func cancella() throws { try voce.cancella() }
   }
 
   public struct ErrorePortachiavi: Error, Equatable {

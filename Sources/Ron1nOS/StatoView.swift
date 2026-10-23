@@ -3,14 +3,19 @@
   import SwiftUI
 
   /// La schermata dell'app di prova (IOS-001): chiama /health e mostra
-  /// backend, database e ora dell'ultimo controllo. Il service token di
-  /// Access viene dal Portachiavi (IOS-004).
+  /// backend, database, login e ora dell'ultimo controllo. Il service token
+  /// di Access (IOS-004) e il token di ron1nOS (IOS-005) vengono dal
+  /// Portachiavi.
   struct StatoView: View {
     @State private var controllo: Controllo = .inCorso
+    @State private var login: StatoLogin = .inCorso
     @State private var mostraAccesso = false
     private let archivio = Portachiavi()
+    private let archivioToken = PortachiaviToken()
 
-    private var client: APIClient { APIClient(credenziali: archivio.carica()) }
+    private var client: APIClient {
+      APIClient(credenziali: archivio.carica(), token: archivioToken.carica())
+    }
 
     var body: some View {
       ScrollView {
@@ -19,6 +24,8 @@
           pannelloStato
           if case .fallito(let errore, _) = controllo {
             pannelloErrore(errore)
+          } else if login.problema {
+            pannelloErrore(.login(conToken: login == .tokenRifiutato))
           }
         }
         .padding(.horizontal, 16)
@@ -28,7 +35,7 @@
       .refreshable { await aggiorna() }
       .task { await aggiorna() }
       .sheet(isPresented: $mostraAccesso) {
-        AccessoView(archivio: archivio) {
+        AccessoView(archivio: archivio, archivioToken: archivioToken) {
           Task { await aggiorna() }
         }
       }
@@ -55,6 +62,7 @@
       VStack(alignment: .leading, spacing: 14) {
         riga("Backend", controllo.backend, segnale: isFallito)
         riga("Database", testoDatabase, segnale: databaseProblema)
+        riga("Login", login.testo, segnale: login.problema)
         if let ora = controllo.testoOra() {
           Text(ora)
             .font(.system(.footnote, design: .monospaced))
@@ -114,7 +122,10 @@
     }
 
     private func aggiorna() async {
-      controllo = await Controllo.esegui(con: client)
+      let client = client
+      async let stato = Controllo.esegui(con: client)
+      async let accesso = StatoLogin.verifica(con: client)
+      (controllo, login) = await (stato, accesso)
     }
   }
 #endif

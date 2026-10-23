@@ -17,6 +17,9 @@ public enum APIError: Error, Equatable, Sendable {
   /// Cloudflare Access ha fermato la richiesta: manca il service token, o
   /// quello salvato non vale più (IOS-004).
   case accesso(conToken: Bool)
+  /// ron1nOS chiede il login (HTTP 401): manca il token dell'app, o quello
+  /// salvato è stato revocato (IOS-005).
+  case login(conToken: Bool)
   /// Il server ha risposto con un codice HTTP di errore.
   case stato(Int)
   /// Ha risposto, ma non con quello che l'app si aspetta.
@@ -69,6 +72,8 @@ public enum APIError: Error, Equatable, Sendable {
     case .certificato: "Certificato non attendibile"
     case .accesso(conToken: false): "Manca l'accesso"
     case .accesso(conToken: true): "Accesso rifiutato"
+    case .login(conToken: false): "Manca il token ron1nOS"
+    case .login(conToken: true): "Token ron1nOS rifiutato"
     case .stato(let codice): "Errore del server · \(codice)"
     case .rispostaInattesa: "Risposta inattesa"
     }
@@ -89,8 +94,12 @@ public enum APIError: Error, Equatable, Sendable {
     case .accesso(conToken: true):
       "Cloudflare Access non accetta il token salvato: forse è scaduto o è stato revocato. "
         + "Tocca Accesso e incolla quello nuovo."
-    case .stato(401), .stato(403):
-      "Il server chiede il login, che questa versione dell'app non ha ancora."
+    case .login(conToken: false):
+      "ron1nOS chiede il login. Nella dashboard apri Impostazioni › App iOS, crea un token e "
+        + "incollalo in Accesso."
+    case .login(conToken: true):
+      "ron1nOS non accetta il token salvato: forse è stato revocato. Creane uno nuovo in "
+        + "Impostazioni › App iOS della dashboard e incollalo in Accesso."
     case .stato:
       "Il backend ron1nOS ha un problema: guarda i suoi log sul server."
     case .rispostaInattesa:
@@ -108,6 +117,7 @@ public enum APIError: Error, Equatable, Sendable {
     case .nonRaggiungibile(let codice?), .rispostaInattesa(let codice?): return "URLError \(codice)"
     case .stato(let codice): return "HTTP \(codice)"
     case .accesso: return "HTTP 302 · Cloudflare Access"
+    case .login: return "HTTP 401 · ron1nOS"
     case .nonRaggiungibile(nil), .rispostaInattesa(nil): return nil
     }
   }

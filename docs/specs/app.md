@@ -80,10 +80,10 @@ schermata iniziale (stato ed errore), al posto del vetro sfocato.
 
 Accettazione:
 
-- [ ] Su iOS 26 o successivo le due card usano `glassEffect` con la stessa
-      forma arrotondata di oggi (raggio 20), raccolte in un
-      `GlassEffectContainer`. La card d'errore ha una tinta rossa leggera
-      (`#FF2A2A`), l'unico accento.
+- [ ] Su iOS 26 o successivo le due card usano `glassEffect` nella
+      variante trasparente `.clear`, con la stessa forma arrotondata di oggi
+      (raggio 20), raccolte in un `GlassEffectContainer`. La card d'errore
+      ha una tinta rossa leggera (`#FF2A2A`), l'unico accento.
 - [ ] Su iOS 17–25 resta il pannello di oggi (`ultraThinMaterial` con
       bordo): il requisito minimo non cambia.
 - [ ] Sotto le card c'è uno sfondo scuro con un alone appena visibile, così

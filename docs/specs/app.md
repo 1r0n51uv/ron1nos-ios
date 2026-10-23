@@ -10,7 +10,9 @@ la sua specifica.
 
 ### IOS-001 · App di prova
 
-Stato: in corso (#2)
+Stato: fatto (#3)
+
+Nata su Tailscale e `ron1n.home`; da IOS-004 l'app passa da Cloudflare.
 
 Una prima app, minima, che prova tutta la catena: build su Linux con
 xtool, installazione con SideStore, rete Tailscale, nomi `*.ron1n.home` e
@@ -18,7 +20,7 @@ certificato di Caddy sul telefono.
 
 Accettazione:
 
-- [ ] Pacchetto SwiftPM per xtool (`Package.swift`, `xtool.yml`), iOS 17
+- [x] Pacchetto SwiftPM per xtool (`Package.swift`, `xtool.yml`), iOS 17
       o successivo, bundle id `home.ron1n.ios`, nome sull'icona
       "ron1nOS", versione 0.1.0. Si compila con il builder dell'hub
       (`build` di IOSB-001) in un'IPA non firmata.
@@ -73,7 +75,7 @@ Accettazione:
 
 ### IOS-003 · Card trasparenti
 
-Stato: in corso (#5)
+Stato: fatto (#7)
 
 Le due card della schermata iniziale (stato ed errore) diventano quasi
 trasparenti: si vede lo sfondo, il vetro resta come velo e bordo di luce.
@@ -83,19 +85,19 @@ materiale non si usa.
 
 Accettazione:
 
-- [ ] Le card hanno solo un velo bianco al 6%, senza sfocatura, su ogni
+- [x] Le card hanno solo un velo bianco al 6%, senza sfocatura, su ogni
       versione di iOS (del tutto trasparenti erano troppo).
       Hanno la forma arrotondata di oggi (raggio 20) e un bordo di 1 pt a
       gradiente, più chiaro in alto a sinistra, come un riflesso.
-- [ ] Il bordo della card d'errore è rosso (`#FF2A2A`), l'unico accento.
-- [ ] Sotto le card c'è uno sfondo nero con due aloni tenui, così le card
+- [x] Il bordo della card d'errore è rosso (`#FF2A2A`), l'unico accento.
+- [x] Sotto le card c'è uno sfondo nero con due aloni tenui, così le card
       si distinguono.
-- [ ] Si compila con il builder dell'hub (SDK iOS 27). Prova a mano sul
+- [x] Si compila con il builder dell'hub (SDK iOS 27). Prova a mano sul
       telefono: le card sono trasparenti e i testi restano leggibili.
 
 ### IOS-004 · Accesso con Cloudflare Access
 
-Stato: in corso (#8)
+Stato: fatto (#9)
 
 Con SETUP-008 dell'hub il backend sta su `https://home.ron1n.space`,
 pubblicato da Cloudflare Tunnel e protetto da Cloudflare Access: il
@@ -104,18 +106,18 @@ più Tailscale né CA da installare.
 
 Accettazione:
 
-- [ ] L'indirizzo predefinito è `https://home.ron1n.space/api/v1`.
-- [ ] Ogni richiesta porta gli header `CF-Access-Client-Id` e
+- [x] L'indirizzo predefinito è `https://home.ron1n.space/api/v1`.
+- [x] Ogni richiesta porta gli header `CF-Access-Client-Id` e
       `CF-Access-Client-Secret` del service token `ron1nos-ios`, se l'app
       ne ha uno. Il token sta nel Portachiavi di iOS, leggibile solo su
       quel telefono dopo il primo sblocco, mai nel codice né nell'IPA.
-- [ ] Un pulsante "Accesso" apre una schermata dove si incolla il token:
+- [x] Un pulsante "Accesso" apre una schermata dove si incolla il token:
       vanno bene il JSON di Cloudflare (`client_id`, `client_secret`), le
       due righe di header o due righe con id e secret. Si salva e si
       elimina; il secret non si rilegge a schermo.
-- [ ] L'app non segue i redirect. Un redirect verso il login di Access
+- [x] L'app non segue i redirect. Un redirect verso il login di Access
       (`*.cloudflareaccess.com`) diventa "Manca l'accesso" senza token e
       "Accesso rifiutato" con un token salvato (scaduto o revocato), con il
       suggerimento di incollarne uno nuovo.
-- [ ] Test unitari su Linux per la lettura del token, gli header e il
+- [x] Test unitari su Linux per la lettura del token, gli header e il
       redirect di Access.

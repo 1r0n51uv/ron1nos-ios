@@ -146,21 +146,38 @@ Accettazione:
 
 ### IOS-006 · Card Dieta
 
-Stato: in corso
+Stato: fatto (#14)
 
 La prima card della home, sotto lo stato del server: la dieta di oggi da
 `GET /nutrition/day`, la stessa del widget della dashboard.
 
 Accettazione:
 
-- [ ] La card "Dieta · oggi" mostra le kcal mangiate sulla quota del
+- [x] La card "Dieta · oggi" mostra le kcal mangiate sulla quota del
       giorno (`1.450 / 2.200 kcal`, numeri in monospazio all'italiana),
       una barra sottile e quante kcal mancano. Oltre la quota barra e
       testo diventano rossi.
-- [ ] Sotto, proteine, carboidrati e grassi in grammi sull'obiettivo.
+- [x] Sotto, proteine, carboidrati e grassi in grammi sull'obiettivo.
       Senza obiettivo solo i valori mangiati.
-- [ ] Si aggiorna con lo stato, trascinando in basso. Con il modulo
+- [x] Si aggiorna con lo stato, trascinando in basso. Con il modulo
       spento nelle Impostazioni (404) la card non c'è; con un errore
       mostra il titolo e il codice.
-- [ ] Le parti comuni alle card (stato di caricamento, formato dei
+- [x] Le parti comuni alle card (stato di caricamento, formato dei
       numeri) stanno in Ron1nKit, con test su Linux.
+
+### IOS-007 · Card Torrent
+
+Stato: in corso
+
+La card dei download da `GET /downloads`, come il widget Download della
+dashboard.
+
+Accettazione:
+
+- [ ] La card "Torrent" mostra la velocità totale di download
+      (`2,4 MB/s`) e i primi tre torrent che scaricano: nome su una riga,
+      barra, percentuale, velocità e tempo rimanente.
+- [ ] Sotto, il riepilogo degli altri: `+2 attivi · 1 in coda · 4 in
+      seed`. Senza download attivi lo dice.
+- [ ] Con qBittorrent non raggiungibile (503) o il modulo spento vale
+      quanto detto per le card in IOS-006. Test su Linux.

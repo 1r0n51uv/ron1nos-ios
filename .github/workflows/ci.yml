@@ -1,0 +1,30 @@
+# Verifica di ogni PR (IOS-001): formato e lint, build e test della logica,
+# su Linux. L'IPA non si compila qui: l'SDK di Apple sta solo sul server
+# (builder dell'hub ron1n, spec IOSB). Il job ci è il check richiesto.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    # Stessa versione di Swift del builder (infra/ios/builder/Dockerfile).
+    container: swift:6.4.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - name: Formato e lint
+        run: swift format lint --strict -r Sources Tests Package.swift
+      - name: Build
+        run: swift build
+      - name: Test
+        run: swift test

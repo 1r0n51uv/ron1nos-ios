@@ -43,7 +43,7 @@ Accettazione:
 
 ### IOS-002 · Diagnosi degli errori di rete
 
-Stato: in corso (#4)
+Stato: fatto (#6)
 
 Il pannello d'errore deve bastare a capire cosa non va, senza log. Nato
 quando l'app rifiutava la CA locale di Caddy (`-1200`/`-9802`) mentre
@@ -52,22 +52,22 @@ certificato è pubblico e sul telefono non si installa più niente.
 
 Accettazione:
 
-- [ ] Il pannello d'errore mostra, in monospazio e in tono tenue, il
+- [x] Il pannello d'errore mostra, in monospazio e in tono tenue, il
       codice preciso: `URLError <codice>` per gli errori di rete,
       `HTTP <codice>` per quelli del server. Per gli errori TLS anche il
       codice di Secure Transport sottostante (`TLS -98xx`), quando c'è:
       distingue una root non attendibile da un rifiuto di App Transport
       Security o da un handshake fallito.
-- [ ] L'app valuta il certificato con la fiducia di sistema di iOS, la
+- [x] L'app valuta il certificato con la fiducia di sistema di iOS, la
       stessa di Safari (`SecTrustEvaluateWithError`). Se iOS lo rifiuta, il
       pannello mostra il motivo dato da iOS. Nessuna eccezione ad App
       Transport Security e nessuna CA inclusa nell'app.
-- [ ] Il suggerimento per il certificato dice di controllare data e ora
+- [x] Il suggerimento per il certificato dice di controllare data e ora
       del telefono: il certificato di Cloudflare è pubblico.
-- [ ] Il suggerimento per il server non raggiungibile dice di controllare
+- [x] Il suggerimento per il server non raggiungibile dice di controllare
       la connessione del telefono e che sul server siano accesi ron1nOS e
       il tunnel Cloudflare. Niente più Tailscale.
-- [ ] Gli errori di certificato di URLSession (`-1200`, `-1201`…`-1206`)
+- [x] Gli errori di certificato di URLSession (`-1200`, `-1201`…`-1206`)
       diventano tutti "certificato non attendibile". Test unitari su
       Linux per la mappatura e i testi.
 

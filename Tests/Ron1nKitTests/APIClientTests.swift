@@ -10,7 +10,7 @@ import Testing
 /// Risponde sempre la stessa cosa e ricorda l'ultima richiesta.
 final class TransportFinto: HTTPTransport, @unchecked Sendable {
   enum Esito {
-    case risposta(Int, String)
+    case risposta(Int, String, header: [String: String] = [:])
     case errore(Error)
   }
 
@@ -22,9 +22,9 @@ final class TransportFinto: HTTPTransport, @unchecked Sendable {
   func send(_ request: URLRequest) async throws -> (Data, URLResponse) {
     richiesta = request
     switch esito {
-    case .risposta(let codice, let corpo):
+    case .risposta(let codice, let corpo, let header):
       let response = HTTPURLResponse(
-        url: request.url!, statusCode: codice, httpVersion: nil, headerFields: nil)!
+        url: request.url!, statusCode: codice, httpVersion: nil, headerFields: header)!
       return (Data(corpo.utf8), response)
     case .errore(let errore):
       throw errore
@@ -37,7 +37,7 @@ final class TransportFinto: HTTPTransport, @unchecked Sendable {
     let transport = TransportFinto(.risposta(200, #"{"ok":true,"database":"ok"}"#))
     let health = try await APIClient(transport: transport).health()
     #expect(health == Health(ok: true, database: .ok))
-    #expect(transport.richiesta?.url?.absoluteString == "https://ron1n.home/api/v1/health")
+    #expect(transport.richiesta?.url?.absoluteString == "https://home.ron1n.space/api/v1/health")
     #expect(transport.richiesta?.value(forHTTPHeaderField: "Accept") == "application/json")
   }
 

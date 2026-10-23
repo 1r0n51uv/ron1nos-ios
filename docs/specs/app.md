@@ -92,3 +92,30 @@ Accettazione:
       si distinguono.
 - [ ] Si compila con il builder dell'hub (SDK iOS 27). Prova a mano sul
       telefono: le card sono trasparenti e i testi restano leggibili.
+
+### IOS-004 · Accesso con Cloudflare Access
+
+Stato: in corso (#8)
+
+Con SETUP-008 dell'hub il backend sta su `https://home.ron1n.space`,
+pubblicato da Cloudflare Tunnel e protetto da Cloudflare Access: il
+browser entra con un codice via email, l'app con un service token. Niente
+più Tailscale né CA da installare.
+
+Accettazione:
+
+- [ ] L'indirizzo predefinito è `https://home.ron1n.space/api/v1`.
+- [ ] Ogni richiesta porta gli header `CF-Access-Client-Id` e
+      `CF-Access-Client-Secret` del service token `ron1nos-ios`, se l'app
+      ne ha uno. Il token sta nel Portachiavi di iOS, leggibile solo su
+      quel telefono dopo il primo sblocco, mai nel codice né nell'IPA.
+- [ ] Un pulsante "Accesso" apre una schermata dove si incolla il token:
+      vanno bene il JSON di Cloudflare (`client_id`, `client_secret`), le
+      due righe di header o due righe con id e secret. Si salva e si
+      elimina; il secret non si rilegge a schermo.
+- [ ] L'app non segue i redirect. Un redirect verso il login di Access
+      (`*.cloudflareaccess.com`) diventa "Manca l'accesso" senza token e
+      "Accesso rifiutato" con un token salvato (scaduto o revocato), con il
+      suggerimento di incollarne uno nuovo.
+- [ ] Test unitari su Linux per la lettura del token, gli header e il
+      redirect di Access.

@@ -52,5 +52,15 @@
 
   extension View {
     func glassPanel(tinta: Color? = nil) -> some View { modifier(GlassPanel(tinta: tinta)) }
+
+    /// Pulsante a capsula con lo stesso velo delle card.
+    func glassChip() -> some View {
+      font(.subheadline.weight(.medium))
+        .foregroundStyle(Stile.testo)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(Color.white.opacity(0.06), in: Capsule())
+        .overlay(Capsule().strokeBorder(Stile.bordo))
+    }
   }
 #endif

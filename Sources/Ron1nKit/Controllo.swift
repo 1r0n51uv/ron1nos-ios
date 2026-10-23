@@ -24,6 +24,7 @@ public enum Controllo: Equatable, Sendable {
     case .inCorso: "controllo…"
     case .riuscito: "raggiungibile"
     case .fallito(.nonRaggiungibile, _), .fallito(.certificato, _): "non raggiungibile"
+    case .fallito(.accesso, _): "accesso negato"
     case .fallito: "risponde con errori"
     }
   }

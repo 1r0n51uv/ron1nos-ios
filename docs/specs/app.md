@@ -40,3 +40,53 @@ Accettazione:
       Apple sta solo sul server.
 - [x] Niente login: `/health` non lo chiede. I token per dispositivo
       (AUTH-005 di ron1nOS) arrivano con il primo modulo vero.
+
+### IOS-002 · Diagnosi degli errori di rete
+
+Stato: fatto (#6)
+
+Il pannello d'errore deve bastare a capire cosa non va, senza log. Nato
+quando l'app rifiutava la CA locale di Caddy (`-1200`/`-9802`) mentre
+Safari la accettava; con il passaggio a Cloudflare (SETUP-008 dell'hub) il
+certificato è pubblico e sul telefono non si installa più niente.
+
+Accettazione:
+
+- [x] Il pannello d'errore mostra, in monospazio e in tono tenue, il
+      codice preciso: `URLError <codice>` per gli errori di rete,
+      `HTTP <codice>` per quelli del server. Per gli errori TLS anche il
+      codice di Secure Transport sottostante (`TLS -98xx`), quando c'è:
+      distingue una root non attendibile da un rifiuto di App Transport
+      Security o da un handshake fallito.
+- [x] L'app valuta il certificato con la fiducia di sistema di iOS, la
+      stessa di Safari (`SecTrustEvaluateWithError`). Se iOS lo rifiuta, il
+      pannello mostra il motivo dato da iOS. Nessuna eccezione ad App
+      Transport Security e nessuna CA inclusa nell'app.
+- [x] Il suggerimento per il certificato dice di controllare data e ora
+      del telefono: il certificato di Cloudflare è pubblico.
+- [x] Il suggerimento per il server non raggiungibile dice di controllare
+      la connessione del telefono e che sul server siano accesi ron1nOS e
+      il tunnel Cloudflare. Niente più Tailscale.
+- [x] Gli errori di certificato di URLSession (`-1200`, `-1201`…`-1206`)
+      diventano tutti "certificato non attendibile". Test unitari su
+      Linux per la mappatura e i testi.
+
+### IOS-003 · Card in Liquid Glass
+
+Stato: pianificato (#5)
+
+Una prova del materiale Liquid Glass di iOS 26 sulle due card della
+schermata iniziale (stato ed errore), al posto del vetro sfocato.
+
+Accettazione:
+
+- [ ] Su iOS 26 o successivo le due card usano `glassEffect` con la stessa
+      forma arrotondata di oggi (raggio 20), raccolte in un
+      `GlassEffectContainer`. La card d'errore ha una tinta rossa leggera
+      (`#FF2A2A`), l'unico accento.
+- [ ] Su iOS 17–25 resta il pannello di oggi (`ultraThinMaterial` con
+      bordo): il requisito minimo non cambia.
+- [ ] Sotto le card c'è uno sfondo scuro con un alone appena visibile, così
+      la rifrazione del vetro si vede anche sul nero.
+- [ ] Si compila con il builder dell'hub (SDK iOS 27). Prova a mano sul
+      telefono: il vetro si vede e i testi restano leggibili.

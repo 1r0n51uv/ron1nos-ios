@@ -16,13 +16,13 @@ import Testing
   @Test func fallito() async {
     let transport = TransportFinto(.errore(URLError(.cannotConnectToHost)))
     let controllo = await Controllo.esegui(con: APIClient(transport: transport), adesso: { [ora] in ora })
-    #expect(controllo == .fallito(.nonRaggiungibile, quando: ora))
+    #expect(controllo == .fallito(.nonRaggiungibile(codice: -1004), quando: ora))
     #expect(controllo.backend == "non raggiungibile")
   }
 
   @Test func backendCheRispondeMale() {
     #expect(Controllo.fallito(.stato(500), quando: ora).backend == "risponde con errori")
-    #expect(Controllo.fallito(.certificato, quando: ora).backend == "non raggiungibile")
+    #expect(Controllo.fallito(.certificato(codice: -1202), quando: ora).backend == "non raggiungibile")
   }
 
   @Test func oraDelControllo() {
@@ -41,10 +41,30 @@ import Testing
   }
 
   @Test func messaggiSenzaPuntiEsclamativi() {
-    let errori: [APIError] = [.nonRaggiungibile, .certificato, .stato(401), .stato(500), .rispostaInattesa]
+    let errori: [APIError] = [
+      .nonRaggiungibile(codice: nil), .certificato(codice: -1202), .stato(401), .stato(500),
+      .rispostaInattesa(codice: nil),
+    ]
     for errore in errori {
       #expect(!errore.titolo.contains("!"))
       #expect(!errore.suggerimento.contains("!"))
     }
+  }
+
+  @Test func dettaglioDelCodice() {
+    #expect(APIError.certificato(codice: -1202).dettaglio == "URLError -1202")
+    #expect(APIError.certificato(codice: -1200, tls: -9802).dettaglio == "URLError -1200 · TLS -9802")
+    #expect(
+      APIError.certificato(codice: -1202, motivo: "non attendibile").dettaglio
+        == "URLError -1202\nnon attendibile")
+    #expect(APIError.nonRaggiungibile(codice: -1004).dettaglio == "URLError -1004")
+    #expect(APIError.stato(503).dettaglio == "HTTP 503")
+    #expect(APIError.nonRaggiungibile(codice: nil).dettaglio == nil)
+    #expect(APIError.rispostaInattesa(codice: nil).dettaglio == nil)
+  }
+
+  @Test func suggerimentiDiRete() {
+    #expect(APIError.certificato(codice: -1202).suggerimento.contains("data e ora"))
+    #expect(APIError.nonRaggiungibile(codice: -1001).suggerimento.contains("tunnel Cloudflare"))
   }
 }

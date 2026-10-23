@@ -124,7 +124,7 @@ Accettazione:
 
 ### IOS-005 · Token di ron1nOS
 
-Stato: in corso
+Stato: fatto (#12)
 
 Con il login di ron1nOS acceso le rotte dei moduli rispondono 401 senza
 sessione. L'app entra con un token creato nella dashboard (AUTH-005 e
@@ -132,14 +132,35 @@ SET-008 di ron1nOS), oltre al service token di Access.
 
 Accettazione:
 
-- [ ] In Accesso si incolla il token (`r1n_…`, anche con `Bearer `
+- [x] In Accesso si incolla il token (`r1n_…`, anche con `Bearer `
       davanti), si salva e si elimina. Sta nel Portachiavi, in una voce
       separata da quella di Access; non si rilegge a schermo.
-- [ ] Ogni richiesta porta `Authorization: Bearer <token>` insieme agli
+- [x] Ogni richiesta porta `Authorization: Bearer <token>` insieme agli
       header di Access.
-- [ ] La schermata di stato ha una riga Login (`GET /auth/me`): token
+- [x] La schermata di stato ha una riga Login (`GET /auth/me`): token
       valido, spento, manca il token, token rifiutato. Un 401 diventa
       "Manca il token ron1nOS" o "Token ron1nOS rifiutato", con il
       suggerimento di crearne uno in Impostazioni › App iOS.
-- [ ] Test unitari su Linux per la lettura del token, gli header, il 401 e
+- [x] Test unitari su Linux per la lettura del token, gli header, il 401 e
       lo stato del login.
+
+### IOS-006 · Card Dieta
+
+Stato: in corso
+
+La prima card della home, sotto lo stato del server: la dieta di oggi da
+`GET /nutrition/day`, la stessa del widget della dashboard.
+
+Accettazione:
+
+- [ ] La card "Dieta · oggi" mostra le kcal mangiate sulla quota del
+      giorno (`1.450 / 2.200 kcal`, numeri in monospazio all'italiana),
+      una barra sottile e quante kcal mancano. Oltre la quota barra e
+      testo diventano rossi.
+- [ ] Sotto, proteine, carboidrati e grassi in grammi sull'obiettivo.
+      Senza obiettivo solo i valori mangiati.
+- [ ] Si aggiorna con lo stato, trascinando in basso. Con il modulo
+      spento nelle Impostazioni (404) la card non c'è; con un errore
+      mostra il titolo e il codice.
+- [ ] Le parti comuni alle card (stato di caricamento, formato dei
+      numeri) stanno in Ron1nKit, con test su Linux.

@@ -29,8 +29,20 @@ cd /opt/ron1n
 docker compose -f infra/ios/compose.yaml run --rm ios-builder build
 ```
 
-Poi, da Safari sul telefono, `https://ios.ron1n.space/Ron1nOS.ipa` e
-**Condividi → SideStore**.
+## Aggiornamenti
+
+Ogni merge su `main` arriva da solo: il server controlla `main` ogni 5
+minuti, compila e pubblica la nuova versione nella source di SideStore.
+In SideStore, una volta: **Sources → +** e
+`https://ios.ron1n.space/sidestore/source.json`, poi installa ron1nOS da
+lì. Le versioni nuove compaiono in **Updates**.
+
+La versione la scrive il builder: `0.1.N`, con N il numero di commit di
+`main`, anche come `CFBundleVersion`. Nell'`Info.plist` contano solo major
+e minor (`0.1`); il resto si sovrascrive a ogni build.
+
+Una build di prova di un altro branch, a mano, si scarica dalla pagina
+`https://ios.ron1n.space` e si apre con **Condividi → SideStore**.
 
 ## Accesso
 

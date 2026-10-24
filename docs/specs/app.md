@@ -184,16 +184,16 @@ Accettazione:
 
 ### IOS-008 · Card Server
 
-Stato: in corso
+Stato: fatto (#18)
 
 La card delle risorse del server da `GET /server/stats` (Glances), come
 il widget Server della dashboard.
 
 Accettazione:
 
-- [ ] La card "Server" mostra CPU, RAM e disco in percentuale, ognuno con
+- [x] La card "Server" mostra CPU, RAM e disco in percentuale, ognuno con
       una barra; dal 90% in su barra rossa.
-- [ ] Sotto, in una riga: temperatura (se c'è il sensore), da quanto è
+- [x] Sotto, in una riga: temperatura (se c'è il sensore), da quanto è
       acceso e la rete in ingresso e uscita (se Glances la dà).
-- [ ] Con Glances non raggiungibile (503) o il modulo spento vale quanto
+- [x] Con Glances non raggiungibile (503) o il modulo spento vale quanto
       detto per le card in IOS-006. Test su Linux.

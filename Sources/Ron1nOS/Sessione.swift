@@ -31,6 +31,8 @@
     @Published var versione = 0
     /// Un CSV di Liftin' arrivato dal foglio di condivisione (IOS-051).
     @Published var csvInArrivo: FileCSV?
+    /// Il wizard `Aggiungi` dei Torrent da aprire (IOS-071).
+    @Published var torrentInArrivo: TorrentInArrivo?
     /// Cresce dopo un import o un'eliminazione: la Palestra ricarica.
     @Published var palestraCambiata = 0
     /// Cresce a ogni modifica dei Documenti: l'elenco si ricarica.
@@ -95,11 +97,26 @@
 
     private var versioneSfondo: String?
 
-    /// Un file aperto con ron1nOS: un CSV va all'import della Palestra.
+    /// Un file o un link aperto con ron1nOS: un CSV va all'import della
+    /// Palestra, un `.torrent` o un `magnet:` al wizard dei Torrent.
     func apri(file url: URL) {
-      guard url.pathExtension.lowercased() == "csv", let file = FileCSV.leggi(url) else { return }
-      daAprire = .palestra
-      csvInArrivo = file
+      if url.scheme?.lowercased() == "magnet" {
+        daAprire = .torrent
+        torrentInArrivo = .link(url.absoluteString)
+        return
+      }
+      switch url.pathExtension.lowercased() {
+      case "csv":
+        guard let file = FileCSV.leggi(url) else { return }
+        daAprire = .palestra
+        csvInArrivo = file
+      case "torrent":
+        guard let torrent = TorrentInArrivo.leggi(url) else { return }
+        daAprire = .torrent
+        torrentInArrivo = torrent
+      default:
+        return
+      }
     }
 
     func apri(_ scheda: Scheda) {

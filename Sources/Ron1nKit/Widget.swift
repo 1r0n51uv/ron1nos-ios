@@ -121,11 +121,13 @@ public struct DocumentoBreve: Decodable, Equatable, Sendable {
   public let expiresOn: String?
   public let tags: [String]?
   public let thumbFileId: String?
+  /// I preavvisi attivi, per gli avvisi locali (IOS-065).
+  public let warnings: [Int]?
 
   public init(
     id: String, typeName: String? = nil, title: String, holder: String = "Io", expiry: Scadenza? = nil,
     pinnedAt: String? = nil, typeId: String? = nil, typeIcon: String? = nil, expiresOn: String? = nil,
-    tags: [String]? = nil, thumbFileId: String? = nil
+    tags: [String]? = nil, thumbFileId: String? = nil, warnings: [Int]? = nil
   ) {
     self.id = id
     self.typeName = typeName
@@ -138,6 +140,7 @@ public struct DocumentoBreve: Decodable, Equatable, Sendable {
     self.expiresOn = expiresOn
     self.tags = tags
     self.thumbFileId = thumbFileId
+    self.warnings = warnings
   }
 
   public struct Scadenza: Decodable, Equatable, Sendable {

@@ -54,6 +54,13 @@
         return await PromemoriaApp.notifiche(
           client: client, promemoria: self.preferenze.reminders, fuso: self.preferenze.formats.fuso)
       }
+      // Gli avvisi di scadenza dei Documenti (IOS-065).
+      notifiche.aggiungi { [weak self] client in
+        guard let self, let documenti = try? await client.elencoDocumenti(FiltroDocumenti()) else {
+          return []
+        }
+        return AvvisiScadenze.notifiche(documenti, adesso: Date(), fuso: self.preferenze.formats.fuso)
+      }
     }
 
     /// Salva gli orari dei promemoria e riprogramma le notifiche.
@@ -97,6 +104,14 @@
 
     func apri(_ scheda: Scheda) {
       daAprire = scheda
+    }
+
+    /// Il documento di un avviso di scadenza (IOS-065): si apre nella sua
+    /// scheda, dietro Face ID.
+    @Published var documentoDaAprire: String?
+
+    func apri(documento id: String) {
+      documentoDaAprire = id
     }
 
     /// Mostra il toast; ne resta uno solo, l'ultimo.

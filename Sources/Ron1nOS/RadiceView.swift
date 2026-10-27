@@ -86,6 +86,11 @@
         sessione.daAprire = nil
         apri(scheda)
       }
+      .onChange(of: sessione.documentoDaAprire) { _, id in
+        guard let id else { return }
+        sessione.documentoDaAprire = nil
+        apriDocumento(id)
+      }
       .onChange(of: navigazione) { _, nuova in
         // Un modulo spento sparisce: se era aperto si torna alla Home.
         if !nuova.schede.contains(selezione) { selezione = .home }
@@ -122,6 +127,19 @@
         selezione = scheda
       } else if navigazione.altro.contains(scheda) {
         percorsi[.altro] = [.modulo(scheda)]
+        selezione = .altro
+      }
+    }
+
+    /// Un documento da un avviso: nella scheda Documenti se sta nella
+    /// TabBar, se no dentro `Altro`.
+    private func apriDocumento(_ id: String) {
+      let navigazione = sessione.navigazione
+      if navigazione.schede.contains(.documenti) {
+        percorsi[.documenti] = [.documento(id: id)]
+        selezione = .documenti
+      } else if navigazione.altro.contains(.documenti) {
+        percorsi[.altro] = [.modulo(.documenti), .documento(id: id)]
         selezione = .altro
       }
     }

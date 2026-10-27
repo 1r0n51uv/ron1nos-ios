@@ -121,13 +121,41 @@ public struct APIClient: Sendable {
     }
   }
 
+  /// Una richiesta che cambia dati (`PUT`, `POST`, `PATCH`, `DELETE`), con
+  /// il corpo in JSON se c'è.
+  func invia<T: Decodable>(
+    _ metodo: String, _ path: String, corpo: (any Encodable & Sendable)? = nil
+  ) async throws(APIError) -> T {
+    var json: Data?
+    if let corpo {
+      do {
+        json = try JSONEncoder().encode(corpo)
+      } catch {
+        throw .rispostaInattesa(codice: nil)
+      }
+    }
+    let data = try await dati(path, metodo: metodo, corpo: json)
+    do {
+      return try JSONDecoder().decode(T.self, from: data)
+    } catch {
+      throw .rispostaInattesa(codice: nil)
+    }
+  }
+
   /// Il corpo della risposta così com'è, dopo i controlli di Access, login e
   /// codice HTTP.
-  func dati(_ path: String, query: [URLQueryItem] = []) async throws(APIError) -> Data {
+  func dati(
+    _ path: String, query: [URLQueryItem] = [], metodo: String = "GET", corpo: Data? = nil
+  ) async throws(APIError) -> Data {
     var url = baseURL.appendingPathComponent(path)
     if !query.isEmpty { url.append(queryItems: query) }
     var request = URLRequest(url: url)
+    request.httpMethod = metodo
     request.setValue("application/json", forHTTPHeaderField: "Accept")
+    if let corpo {
+      request.httpBody = corpo
+      request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    }
     let header = (credenziali?.header ?? [:]).merging(token?.header ?? [:]) { $1 }
     for (nome, valore) in header {
       request.setValue(valore, forHTTPHeaderField: nome)

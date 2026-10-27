@@ -12,5 +12,13 @@
 	<string>it</string>
 	<key>UIUserInterfaceStyle</key>
 	<string>Dark</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>home.ron1n.ios.notifiche</string>
+	</array>
 </dict>
 </plist>

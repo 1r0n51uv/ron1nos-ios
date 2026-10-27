@@ -11,6 +11,9 @@
     case dieta(PaginaDieta)
     /// Il dettaglio di un pasto mangiato (IOS-031).
     case dettaglioPasto(giorno: String, slot: String)
+    /// Gli alimenti personali (IOS-033), con un codice a barre da
+    /// precompilare se si arriva dalla fotocamera.
+    case alimenti(codice: String?)
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -130,6 +133,8 @@
         PaginaDietaInArrivo(titolo: pagina.titolo)
       case .dettaglioPasto(let giorno, let slot):
         DettaglioPastoView(giorno: giorno, slot: slot)
+      case .alimenti(let codice):
+        AlimentiPersonaliView(codice: codice)
       }
     }
   }

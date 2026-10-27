@@ -106,15 +106,15 @@ Accettazione:
 
 ### IOS-036 · Lista della spesa
 
-Stato: pianificato (#37) · Parità: NUT-011 · Mockup: tavola 11
+Stato: fatto (#80) · Parità: NUT-011 · Mockup: tavola 11
 
 Accettazione:
 
-- [ ] Voci con i grammi in mono, da spuntare con un tocco; si eliminano
+- [x] Voci con i grammi in mono, da spuntare con un tocco; si eliminano
       scorrendo.
-- [ ] `Genera` dai pasti pianificati di un intervallo di giorni; `+` per
+- [x] `Genera` dai pasti pianificati di un intervallo di giorni; `+` per
       una voce libera; `Togli le spuntate`.
-- [ ] Pensata per il supermercato: righe alte, testo grande, la
+- [x] Pensata per il supermercato: righe alte, testo grande, la
       schermata non si spegne mentre è aperta.
 
 ### IOS-037 · Acqua, caffeina, integratori

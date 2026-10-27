@@ -56,7 +56,7 @@
         await sessione.aggiornaPreferenze()
         await aggiorna()
       }
-      .task(id: sessione.versione) { await aggiorna() }
+      .task(id: "\(sessione.versione)-\(sessione.layoutCambiato)") { await aggiorna() }
       .onAppear { salvataggio.esito = esitoSalvataggio }
       .onDisappear { modifica = false }
       .sheet(item: $opzioni) { elemento in

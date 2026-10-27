@@ -140,11 +140,7 @@ public struct StatoImpostazioni: Equatable, Sendable {
   }
 
   public static func vetro(_ vetro: Aspetto.Vetro) -> String {
-    switch vetro {
-    case .light: "leggero"
-    case .medium: "medio"
-    case .strong: "forte"
-    }
+    vetro.titolo.lowercased()
   }
 }
 

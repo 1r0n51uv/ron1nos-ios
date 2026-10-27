@@ -33,6 +33,14 @@
       }
       .tint(Stile.brand)
       .riduciTabBarScorrendo()
+      .overlay(alignment: .bottom) {
+        if let avviso = sessione.avviso {
+          VistaAvviso(avviso: avviso) { sessione.eseguiAvviso() }
+            .padding(.bottom, 96)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
+      }
+      .animation(.easeOut(duration: 0.2), value: sessione.avviso)
       .environmentObject(sessione)
       .environment(\.aspetto, sessione.preferenze.appearance)
       .environment(\.formati, sessione.preferenze.formats)

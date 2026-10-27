@@ -1,6 +1,9 @@
 # Verifica di ogni PR (IOS-001): formato e lint, build e test della logica,
 # su Linux. L'IPA non si compila qui: l'SDK di Apple sta solo sul server
 # (builder dell'hub ron1n, spec IOSB). Il job ci è il check richiesto.
+# Il job interfaccia (IOS-013) compila anche SwiftUI per iOS su un runner
+# macOS di GitHub, gratuito per i repository pubblici: solo un controllo,
+# niente firma né IPA.
 name: ci
 
 on:
@@ -28,3 +31,14 @@ jobs:
         run: swift build
       - name: Test
         run: swift test
+
+  interfaccia:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Versione di Xcode
+        run: xcodebuild -version
+      - name: Build dell'interfaccia per iOS
+        run: >-
+          xcodebuild build -scheme Ron1nOS -destination 'generic/platform=iOS'
+          -skipPackagePluginValidation CODE_SIGNING_ALLOWED=NO

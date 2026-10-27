@@ -16,6 +16,9 @@
     /// L'immagine di sfondo caricata sul sito, se in uso.
     @Published var immagineSfondo: UIImage?
     private let memoria = MemoriaPreferenze()
+    /// Il toast in basso (IOS-012) e cosa fa il suo pulsante.
+    @Published private(set) var avviso: Avviso?
+    private var azioneAvviso: (@MainActor () -> Void)?
     /// Cresce a ogni cambio delle credenziali: le pagine ricaricano.
     @Published var versione = 0
 
@@ -51,6 +54,24 @@
     }
 
     private var versioneSfondo: String?
+
+    /// Mostra il toast; ne resta uno solo, l'ultimo.
+    func mostra(_ nuovo: Avviso, azione: (@MainActor () -> Void)? = nil) {
+      avviso = nuovo
+      azioneAvviso = azione
+      Task {
+        try? await Task.sleep(nanoseconds: UInt64(nuovo.durata * 1_000_000_000))
+        if avviso?.id == nuovo.id { avviso = nil }
+      }
+    }
+
+    /// Il pulsante del toast: esegue l'azione e lo chiude.
+    func eseguiAvviso() {
+      let azione = azioneAvviso
+      avviso = nil
+      azioneAvviso = nil
+      azione?()
+    }
 
     /// Le credenziali sono cambiate in Accesso.
     func credenzialiCambiate() {

@@ -3,8 +3,8 @@
   import SwiftUI
 
   /// Una card della home: titolo, poi il contenuto quando i dati ci sono.
-  /// In caricamento mostra un trattino, in errore il titolo dell'errore in
-  /// rosso. Un modulo spento non si mostra.
+  /// In caricamento mostra lo scheletro (IOS-012), in errore il titolo
+  /// dell'errore in rosso e il codice. Un modulo spento non si mostra.
   struct Card<Valore: Equatable & Sendable, Contenuto: View>: View {
     let titolo: String
     let carico: Carico<Valore>
@@ -18,22 +18,11 @@
             .foregroundStyle(Stile.testoTenue)
           switch carico {
           case .inCorso, .spento:
-            Text("·")
-              .font(.system(.body, design: .monospaced))
-              .foregroundStyle(Stile.testoTenue)
+            Scheletro()
           case .pronto(let valore):
             contenuto(valore)
           case .fallito(let errore):
-            VStack(alignment: .leading, spacing: 4) {
-              Text(errore.titolo)
-                .font(.subheadline)
-                .foregroundStyle(Stile.brand)
-              if let dettaglio = errore.dettaglio {
-                Text(dettaglio)
-                  .font(.system(.footnote, design: .monospaced))
-                  .foregroundStyle(Stile.testoTenue)
-              }
-            }
+            SezioneErrore(errore: errore)
           }
         }
         .glassPanel()

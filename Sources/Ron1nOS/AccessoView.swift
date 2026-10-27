@@ -21,6 +21,9 @@
     @State private var token = ""
     @State private var avvisoToken: String?
     @State private var tokenSalvato = false
+    /// Lo stato del login con il token salvato (IOS-090).
+    @State private var login = StatoLogin.inCorso
+    @EnvironmentObject private var sessione: Sessione
 
     var body: some View {
       ScrollView {
@@ -66,6 +69,15 @@
             Text(tokenSalvato ? "Token ron1nOS salvato in questo telefono" : "Nessun token ron1nOS salvato")
               .font(.system(.footnote, design: .monospaced))
               .foregroundStyle(Stile.testoTenue)
+            HStack {
+              Text("Login")
+                .font(.footnote)
+                .foregroundStyle(Stile.testoTenue)
+              Spacer()
+              Text(login.testo)
+                .font(.system(.footnote, design: .monospaced))
+                .foregroundStyle(login.problema ? Stile.brand : Stile.testo)
+            }
             campo("Token ron1nOS", testo: $token, segreto: true)
             if let avvisoToken {
               Text(avvisoToken)
@@ -92,6 +104,7 @@
         salvato = archivio.carica() != nil
         tokenSalvato = archivioToken.carica() != nil
       }
+      .task(id: sessione.versione) { login = await StatoLogin.verifica(con: sessione.client) }
     }
 
     private func campo(_ titolo: String, testo: Binding<String>, segreto: Bool) -> some View {

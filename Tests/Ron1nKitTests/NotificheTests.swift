@@ -25,8 +25,9 @@ import Testing
 
   @Test func alMassimo64SenzaDoppioni() {
     let candidate = (0..<100).map { notifica("n\($0)", .acqua, tra: Double(100 - $0) * 60) }
-    let scelte = PianoNotifiche.scegli(
-      candidate + [notifica("n99", .acqua, tra: 1)], scelte: ScelteNotifiche(accesi: [.acqua]), adesso: adesso)
+    let acqua = ScelteNotifiche(accesi: [.acqua])
+    let doppione = notifica("n99", .acqua, tra: 1)
+    let scelte = PianoNotifiche.scegli(candidate + [doppione], scelte: acqua, adesso: adesso)
     #expect(scelte.count == PianoNotifiche.massimo)
     #expect(scelte.first?.id == "n99")
     #expect(scelte.first?.quando == adesso.addingTimeInterval(60))

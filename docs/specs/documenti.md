@@ -64,11 +64,11 @@ Accettazione:
 
 ### IOS-063 · Tipi personalizzati
 
-Stato: pianificato (#52) · Parità: DOC-016
+Stato: fatto (#95) · Parità: DOC-016
 
 Accettazione:
 
-- [ ] In Impostazioni › Moduli › Documenti: elenco dei tipi, creare,
+- [x] In Impostazioni › Moduli › Documenti: elenco dei tipi, creare,
       modificare (campi da aggiungere, rinominare, riordinare, togliere),
       eliminare solo se nessun documento lo usa.
 

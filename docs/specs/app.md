@@ -2,9 +2,12 @@
 
 Prefisso ID: `IOS` · Label: `mod:app`
 
-L'involucro dell'app: progetto, build, installazione e collegamento al
-server. I moduli (Download, Server, Nutrizione…) arrivano dopo, ognuno con
-la sua specifica.
+L'involucro dell'app: progetto, build, installazione, collegamento al
+server, navigazione e parti comuni a tutti i moduli. I moduli hanno
+ognuno la sua specifica (vedi [README](README.md)).
+
+Le card della home di IOS-006…008 sono la prima versione: con la Home
+personalizzabile (IOS-020…024) diventano widget del catalogo.
 
 ## Requisiti
 
@@ -178,7 +181,7 @@ Accettazione:
       (`2,4 MB/s`) e i primi tre torrent che scaricano: nome su una riga,
       barra, percentuale, velocità e tempo rimanente.
 - [x] Sotto, il riepilogo degli altri: `+2 attivi · 1 in coda · 4 in
-      seed`. Senza download attivi lo dice.
+  seed`. Senza download attivi lo dice.
 - [x] Con qBittorrent non raggiungibile (503) o il modulo spento vale
       quanto detto per le card in IOS-006. Test su Linux.
 
@@ -197,3 +200,96 @@ Accettazione:
       acceso e la rete in ingresso e uscita (se Glances la dà).
 - [x] Con Glances non raggiungibile (503) o il modulo spento vale quanto
       detto per le card in IOS-006. Test su Linux.
+
+### IOS-009 · Navigazione a schede
+
+Stato: pianificato (#22) · Scelta del proprietario il 2026-10-26 · Mockup: tavole 01, 25, 29
+
+Accettazione:
+
+- [ ] In basso la TabBar nativa di iOS 26 (`TabView`), in Liquid Glass
+      di sistema: flottante, staccata dai bordi, rifrange il contenuto
+      che le scorre sotto. Richiesta del proprietario il 2026-10-26.
+- [ ] 5 voci: `Home`, `Dieta`, `Palestra`, `Documenti`, `Altro`, con
+      icona e nome. La voce attiva è tinta di rosso (`#FF2A2A`), l'unico
+      accento della barra.
+- [ ] Scorrendo in basso la barra si riduce
+      (`tabBarMinimizeBehavior(.onScrollDown)`) e torna intera scorrendo
+      in su: lascia spazio ai contenuti.
+- [ ] Barre di navigazione, fogli e menu usano lo stesso Liquid Glass di
+      sistema. Le card restano col velo di IOS-003: il vetro vero sta solo
+      sui controlli che galleggiano sopra i contenuti.
+- [ ] Su iOS prima della 26 la TabBar standard, senza adattamenti.
+- [ ] `Altro` apre un elenco con `Torrent`, `Server`, `Impostazioni` e i
+      moduli che non stanno nelle prime quattro voci.
+- [ ] L'ordine dei moduli segue Impostazioni › Navigazione del sito
+      (SET-006): i primi tre moduli dopo Dashboard prendono le voci 2…4,
+      gli altri finiscono in `Altro`. Home resta prima, `Altro` ultima.
+- [ ] Un modulo spento (SET-005) sparisce dalla TabBar e da `Altro`.
+- [ ] Ogni scheda tiene la sua pila di navigazione; toccare la voce già
+      attiva torna alla radice.
+- [ ] La schermata di Accesso (IOS-004, IOS-005) passa in Impostazioni ›
+      Accesso (IOS-090); al primo avvio, senza token, l'app apre
+      direttamente quella.
+
+### IOS-010 · Aspetto e formati condivisi
+
+Stato: pianificato (#23) · Parità: SET-002, SET-003, SET-010 · Mockup: tavola 01
+
+Le preferenze sono una per tutti i dispositivi (decisione di
+settings.md): l'app le legge da `GET /preferences` all'avvio e le applica.
+
+Accettazione:
+
+- [ ] Sfondo: la sfumatura scelta o l'immagine caricata
+      (`/preferences/background`), scurita come sul sito.
+- [ ] Vetro `leggero`, `medio`, `intenso`: cambia il velo delle card
+      (4%, 6%, 10%) e l'intensità del bordo di luce. Niente sfocatura,
+      come in IOS-003.
+- [ ] Densità `comoda` o `compatta`: padding delle card 20 o 14 pt,
+      spazio fra le card 14 o 10 pt.
+- [ ] Unità di peso ed energia e fuso orario come sul sito; i dati
+      restano in kg e kcal.
+- [ ] Finché le preferenze non arrivano valgono le ultime salvate sul
+      telefono, poi i predefiniti: niente sfarfallio all'avvio.
+
+### IOS-011 · Notifiche locali
+
+Stato: pianificato (#24) · Solo iOS · Mockup: tavole 27, 28
+
+Con SideStore e un Apple ID gratuito le notifiche push non ci sono: le
+notifiche le programma l'app sul telefono (`UNUserNotificationCenter`),
+a partire dai dati letti dall'API. Servono a IOS-041 e IOS-065.
+
+Accettazione:
+
+- [ ] Il permesso si chiede la prima volta che si accende una notifica in
+      Impostazioni › Notifiche, mai all'avvio.
+- [ ] Impostazioni › Notifiche ha un interruttore per gruppo: `Pasti`,
+      `Acqua`, `Scadenze documenti`. Spento il permesso di iOS, lo dice
+      con il link alle impostazioni di sistema.
+- [ ] Le notifiche si ricalcolano a ogni apertura dell'app e con
+      l'aggiornamento in background di iOS (`BGAppRefreshTask`), quando
+      iOS lo concede: se l'app non si apre per giorni restano quelle già
+      programmate.
+- [ ] I testi seguono lo stile: brevi, senza punti esclamativi, con `·`.
+- [ ] La logica che sceglie quali notifiche programmare sta in Ron1nKit,
+      con test su Linux.
+
+### IOS-012 · Stati comuni delle schermate
+
+Stato: pianificato (#25) · Parità: skeleton ed errori dei widget del sito
+
+Accettazione:
+
+- [ ] Primo caricamento: skeleton delle card, senza spinner a schermo
+      intero.
+- [ ] Trascinando in basso si ricarica la schermata.
+- [ ] Errore: la card o la sezione mostra il titolo e il codice in
+      monospazio (IOS-002), senza bloccare le altre sezioni.
+- [ ] Modulo spento (404 `module_disabled`): la pagina dice `Modulo
+  spento` con il link a Impostazioni › Moduli.
+- [ ] Torrent e Server si aggiornano ogni 5 secondi solo con l'app in
+      primo piano e la schermata visibile.
+- [ ] Le azioni che cambiano dati mostrano l'esito con un toast in basso,
+      sopra la TabBar (`Salvato`, `Copiato`, `Non salvato · Riprova`).

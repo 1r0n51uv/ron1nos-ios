@@ -41,9 +41,10 @@ import Testing
 
   @Test func soloIWidgetDellIPhoneConModuloAcceso() throws {
     let catalogo = try CatalogoTests.catalogo()
-    #expect(catalogo.perIPhone().map(\.id) == [
-      "nutrition.summary", "server.metric", "downloads.summary", "downloads.speed",
-    ])
+    #expect(
+      catalogo.perIPhone().map(\.id) == [
+        "nutrition.summary", "server.metric", "downloads.summary", "downloads.speed",
+      ])
     #expect(catalogo.perIPhone(spenti: ["downloads"]).map(\.id) == ["nutrition.summary", "server.metric"])
   }
 
@@ -73,9 +74,10 @@ import Testing
   @Test func spostaRimettendoInGriglia() {
     var layout = CatalogoTests.layout()
     layout.sposta(da: 3, a: 0)
-    #expect(layout.ordinati.map(\.id) == [
-      "downloads.summary", "nutrition.summary", "server.metric", "downloads.speed",
-    ])
+    #expect(
+      layout.ordinati.map(\.id) == [
+        "downloads.summary", "nutrition.summary", "server.metric", "downloads.speed",
+      ])
     #expect(layout.ordinati.map { [$0.x, $0.y] } == [[0, 0], [0, 2], [0, 6], [2, 6]])
     layout.sposta("server.metric", di: 1)
     #expect(layout.ordinati.map(\.id).suffix(2) == ["downloads.speed", "server.metric"])

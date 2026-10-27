@@ -163,6 +163,7 @@
       case .palestra: PalestraView()
       case .documenti: DocumentiView()
       case .torrent: TorrentView()
+      case .server: ServerView()
       case .altro: AltroView()
       case .impostazioni: ImpostazioniView()
       default: PaginaInArrivo(scheda: scheda)

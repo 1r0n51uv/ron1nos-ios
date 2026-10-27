@@ -46,6 +46,12 @@ public enum Formato {
     return "\(numero(valore, decimali: indice >= 2 && valore < 10 ? 1 : 0)) \(unita[indice])"
   }
 
+  /// Memoria come sul sito: MB interi sotto 1 GB, poi GB con un decimale.
+  public static func memoria(_ byte: Double) -> String {
+    let b = max(0, byte)
+    return b < 1_000_000_000 ? "\(numero(b / 1_000_000)) MB" : "\(numero(b / 1_000_000_000, decimali: 1)) GB"
+  }
+
   /// Da quanto è acceso il server: ore sotto il giorno, poi giorni.
   public static func acceso(_ secondi: Int) -> String {
     let ore = max(0, secondi) / 3_600

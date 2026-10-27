@@ -1,9 +1,15 @@
 #if canImport(SwiftUI)
+  import Ron1nKit
   import SwiftUI
 
   @main
   struct Ron1nOSApp: App {
     @Environment(\.scenePhase) private var fase
+
+    init() {
+      // Allegati e PDF rimasti da un'apertura chiusa male (IOS-061).
+      FileTemporanei().svuota()
+    }
 
     var body: some Scene {
       WindowGroup {

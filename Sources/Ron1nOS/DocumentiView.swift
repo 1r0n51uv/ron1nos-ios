@@ -75,7 +75,7 @@
         }
       }
       .refreshable { await carica() }
-      .task(id: filtro) {
+      .task(id: Ricarica(filtro: filtro, versione: sessione.documentiCambiati)) {
         if !filtro.cerca.isEmpty { try? await Task.sleep(for: .milliseconds(300)) }
         guard !Task.isCancelled else { return }
         await carica()
@@ -89,12 +89,18 @@
       }
     }
 
-    /// Un documento che si apre nel dettaglio quando c'è (IOS-061).
-    @ViewBuilder
+    /// Un documento che si apre nel dettaglio (IOS-061).
     private func collegamento<Contenuto: View>(
       _ documento: DocumentoBreve, @ViewBuilder contenuto: () -> Contenuto
     ) -> some View {
-      contenuto()
+      NavigationLink(value: Pagina.documento(id: documento.id)) { contenuto() }
+        .buttonStyle(.plain)
+    }
+
+    /// Quando ricaricare: filtri cambiati o un documento modificato.
+    private struct Ricarica: Equatable {
+      let filtro: FiltroDocumenti
+      let versione: Int
     }
 
     private var menuFiltri: some View {

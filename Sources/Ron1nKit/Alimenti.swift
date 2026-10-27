@@ -348,6 +348,25 @@ public struct AlimentoPersonale: Equatable, Sendable {
     let carbs: Double
     let fat: Double
     let caffeineMg: Double?
+
+    // I campi vuoti vanno scritti come null: in una correzione tolgono il
+    // valore di prima.
+    func encode(to encoder: Encoder) throws {
+      var contenitore = encoder.container(keyedBy: CodingKeys.self)
+      try contenitore.encode(name, forKey: .name)
+      try contenitore.encode(brand, forKey: .brand)
+      try contenitore.encode(barcode, forKey: .barcode)
+      try contenitore.encode(servingSizeG, forKey: .servingSizeG)
+      try contenitore.encode(kcal, forKey: .kcal)
+      try contenitore.encode(protein, forKey: .protein)
+      try contenitore.encode(carbs, forKey: .carbs)
+      try contenitore.encode(fat, forKey: .fat)
+      try contenitore.encode(caffeineMg, forKey: .caffeineMg)
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case name, brand, barcode, servingSizeG, kcal, protein, carbs, fat, caffeineMg
+    }
   }
 }
 

@@ -47,19 +47,19 @@ Accettazione:
 
 ### IOS-062 · Nuovo documento
 
-Stato: pianificato (#51) · Parità: DOC-005, DOC-006, DOC-007, DOC-011 · Mockup: tavola 20
+Stato: fatto (#94) · Parità: DOC-005, DOC-006, DOC-007, DOC-011 · Mockup: tavola 20
 
 Accettazione:
 
-- [ ] Si parte dal file, con quattro sorgenti: `Scansiona` (scanner di
+- [x] Si parte dal file, con quattro sorgenti: `Scansiona` (scanner di
       VisionKit, ritaglio e raddrizzamento automatici, più pagine),
       `Foto`, `File`, `Senza file`.
-- [ ] Poi si sceglie cosa è: `Documento` (con il tipo), `File con info`,
+- [x] Poi si sceglie cosa è: `Documento` (con il tipo), `File con info`,
       `File libero`; il form è quello del sito, a una colonna, con i
       campi del tipo da `GET /documents/types`.
-- [ ] Titolare scelto tra quelli usati o scritto; campi liberi da
+- [x] Titolare scelto tra quelli usati o scritto; campi liberi da
       aggiungere, riordinare, eliminare.
-- [ ] Caricamento con barra di avanzamento per file; un errore su un file
+- [x] Caricamento con barra di avanzamento per file; un errore su un file
       non blocca gli altri. Gli errori di validazione sul campo.
 
 ### IOS-063 · Tipi personalizzati

@@ -15,6 +15,7 @@
     @State private var daCondividere: FileDaCondividere?
     @State private var avvisoPdf = false
     @State private var conferma = false
+    @State private var modifica = false
     private let temporanei = FileTemporanei()
 
     var body: some View {
@@ -51,6 +52,12 @@
         }
       }
       .quickLookPreview($anteprima)
+      .sheet(isPresented: $modifica) {
+        if let documento = stato.valore {
+          ModificaDocumentoView(documento: documento) { stato = .pronto($0) }
+            .environmentObject(sessione)
+        }
+      }
       .sheet(item: $daCondividere) { file in
         CondividiFile(url: file.url).presentationDetents([.medium, .large])
       }
@@ -178,6 +185,7 @@
 
     private func menu(_ documento: Documento) -> some View {
       Menu {
+        Button("Modifica", systemImage: "pencil") { modifica = true }
         Button(
           documento.fissato ? "Togli dall'evidenza" : "Fissa",
           systemImage: documento.fissato ? "pin.slash" : "pin"

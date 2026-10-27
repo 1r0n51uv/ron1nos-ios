@@ -169,12 +169,29 @@ public struct TokenApp: Decodable, Equatable, Identifiable, Sendable {
   public let name: String
   public let createdAt: String
   public let lastUsedAt: String?
+  /// Il token di questo telefono (AUTH-006). Un backend più vecchio non lo
+  /// manda: vale false.
+  public let current: Bool
 
-  public init(id: String, name: String, createdAt: String, lastUsedAt: String? = nil) {
+  public init(
+    id: String, name: String, createdAt: String, lastUsedAt: String? = nil, current: Bool = false
+  ) {
     self.id = id
     self.name = name
     self.createdAt = createdAt
     self.lastUsedAt = lastUsedAt
+    self.current = current
+  }
+
+  enum CodingKeys: String, CodingKey { case id, name, createdAt, lastUsedAt, current }
+
+  public init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    id = try c.decode(String.self, forKey: .id)
+    name = try c.decode(String.self, forKey: .name)
+    createdAt = try c.decode(String.self, forKey: .createdAt)
+    lastUsedAt = try c.decodeIfPresent(String.self, forKey: .lastUsedAt)
+    current = try c.decodeIfPresent(Bool.self, forKey: .current) ?? false
   }
 }
 

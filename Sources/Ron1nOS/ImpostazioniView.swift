@@ -93,6 +93,8 @@
       case .moduli: ModuliView()
       case .navigazione: NavigazioneView()
       case .formati: FormatiView()
+      case .account: AccountView()
+      case .appIOS: AppIOSView()
       default: inArrivo
       }
     }

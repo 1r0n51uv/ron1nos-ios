@@ -19,22 +19,22 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-020 · Home con i widget
 
-Stato: pianificato (#26) · Parità: DASH-003, DASH-006 · Mockup: tavola 01
+Stato: fatto (#68) · Parità: DASH-003, DASH-006 · Mockup: tavola 01
 
 Accettazione:
 
-- [ ] La Home legge `GET /dashboard/layouts/iphone` e mostra i widget
+- [x] La Home legge `GET /dashboard/layouts/iphone` e mostra i widget
       nell'ordine salvato, su una griglia di 4 colonne: `piccolo` occupa
       mezza riga (2×2), `medio` una riga (4×2), `grande` una riga alta
       (4×4). Due piccoli vicini stanno affiancati.
-- [ ] In cima la testata del sito (DASH-006) nella forma salvata:
+- [x] In cima la testata del sito (DASH-006) nella forma salvata:
       `completa` (data in mono, saluto, frase di stato), `una riga` o
       `nascosta`.
-- [ ] Toccare un widget apre la pagina del suo modulo nella sua scheda
+- [x] Toccare un widget apre la pagina del suo modulo nella sua scheda
       (per esempio il widget Dieta apre la scheda Dieta).
-- [ ] Senza layout salvato vale il predefinito dell'iPhone: Dieta
+- [x] Senza layout salvato vale il predefinito dell'iPhone: Dieta
       grande, Palestra medio, Server e Torrent piccoli, Documenti medio.
-- [ ] I widget di un modulo spento non compaiono e restano nel layout
+- [x] I widget di un modulo spento non compaiono e restano nel layout
       (DASH-007).
 
 ### IOS-021 · Catalogo dei widget

@@ -62,13 +62,13 @@ Accettazione:
 
 ### IOS-053 · Esercizi e record
 
-Stato: pianificato (#46) · Parità: GYM-008, GYM-009, GYM-010 · Mockup: tavola 15
+Stato: fatto (#89) · Parità: GYM-008, GYM-009, GYM-010 · Mockup: tavola 15
 
 Accettazione:
 
-- [ ] Elenco degli esercizi in griglia a due colonne con foto, nome,
+- [x] Elenco degli esercizi in griglia a due colonne con foto, nome,
       gruppo; ricerca e filtro `Da completare`.
-- [ ] Pagina dell'esercizio: foto grande, nome e gruppo; tre numeri (1RM
+- [x] Pagina dell'esercizio: foto grande, nome e gruppo; tre numeri (1RM
       stimato, peso più alto, sessioni); un grafico per volta con il
       selettore `1RM stimato` / `Volume` (o durate) e il periodo; le
       ultime 3 volte; i record.

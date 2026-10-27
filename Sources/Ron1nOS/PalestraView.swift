@@ -34,7 +34,14 @@
             invito
           case .pronto(let dati):
             if let ultimo = dati.riepilogo.last {
-              UltimoAllenamento(ultimo: ultimo, oggi: dati.riepilogo.today)
+              if let id = ultimo.id {
+                NavigationLink(value: Pagina.sessione(id: id)) {
+                  UltimoAllenamento(ultimo: ultimo, oggi: dati.riepilogo.today)
+                }
+                .buttonStyle(.plain)
+              } else {
+                UltimoAllenamento(ultimo: ultimo, oggi: dati.riepilogo.today)
+              }
             }
             settimana(dati.riepilogo)
             if !dati.esercizi.isEmpty {
@@ -43,6 +50,7 @@
             if !dati.record.isEmpty {
               record(dati.record)
             }
+            collegamento("Storico delle sessioni", icona: "clock.arrow.circlepath", pagina: .storicoPalestra)
           }
         }
         .padding(16)
@@ -71,6 +79,21 @@
         return DatiPalestra(
           riepilogo: try await riepilogo, esercizi: try await esercizi, record: try await record)
       }
+    }
+
+    private func collegamento(_ titolo: String, icona: String, pagina: Pagina) -> some View {
+      NavigationLink(value: pagina) {
+        HStack {
+          Label(titolo, systemImage: icona)
+            .foregroundStyle(Stile.testo)
+          Spacer()
+          Image(systemName: "chevron.right")
+            .font(.footnote)
+            .foregroundStyle(Stile.testoTenue)
+        }
+        .glassPanel()
+      }
+      .buttonStyle(.plain)
     }
 
     private func etichetta(_ testo: String) -> some View {

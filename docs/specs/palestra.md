@@ -47,18 +47,18 @@ Accettazione:
 
 ### IOS-052 · Storico e dettaglio di una sessione
 
-Stato: pianificato (#45) · Parità: GYM-004, GYM-005, GYM-006 · Mockup: tavola 14
+Stato: fatto (#87) · Parità: GYM-004, GYM-005, GYM-006 · Mockup: tavola 14
 
 Accettazione:
 
-- [ ] Storico dalla più recente: miniature dei primi tre esercizi,
+- [x] Storico dalla più recente: miniature dei primi tre esercizi,
       routine, giorno, durata. Filtro per routine; si carica a pagine da
       20 scorrendo.
-- [ ] Dettaglio: in testata routine, giorno, durata e volume; le barre
+- [x] Dettaglio: in testata routine, giorno, durata e volume; le barre
       del volume per esercizio (il più pesante in rosso); una card per
       esercizio con foto e serie `peso × reps`, riscaldamento tratteggiato,
       record segnati.
-- [ ] `Elimina sessione` nel menu `⋯`, con conferma.
+- [x] `Elimina sessione` nel menu `⋯`, con conferma.
 
 ### IOS-053 · Esercizi e record
 

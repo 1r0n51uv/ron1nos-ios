@@ -72,11 +72,13 @@ Accettazione:
 
 ### IOS-094 · Notifiche e Salute
 
-Stato: pianificato (#62) · Solo iOS · Mockup: tavola 27
+Stato: fatto (#88) · Solo iOS · Mockup: tavola 27
 
 Accettazione:
 
-- [ ] Interruttori `Pasti`, `Acqua`, `Scadenze documenti` (IOS-011) con
+- [x] Interruttori `Pasti`, `Acqua`, `Scadenze documenti` (IOS-011) con
       gli orari dei pasti e dell'acqua (IOS-041).
 - [ ] Interruttore `Apple Salute` (IOS-040) con i dati letti e scritti.
-- [ ] Stato del permesso di iOS e link alle impostazioni di sistema.
+      Per ora è disattivato: aspetta IOS-040, cioè la verifica che
+      HealthKit funzioni con SideStore.
+- [x] Stato del permesso di iOS e link alle impostazioni di sistema.

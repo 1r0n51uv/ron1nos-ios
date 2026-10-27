@@ -97,3 +97,29 @@ public struct MemoriaNotifiche: @unchecked Sendable {
     }
   }
 }
+
+/// Il permesso di iOS per le notifiche, come appare in Impostazioni ›
+/// Notifiche e Salute (IOS-094).
+public enum PermessoNotifiche: Equatable, Sendable {
+  case nonChiesto, concesso, negato
+
+  public var testo: String {
+    switch self {
+    case .nonChiesto: "da chiedere"
+    case .concesso: "concesso"
+    case .negato: "negato in iOS"
+    }
+  }
+
+  /// Da segnalare in rosso: con il permesso negato nessun gruppo suona.
+  public var segnale: Bool { self == .negato }
+
+  /// Cosa dire sotto lo stato.
+  public var spiegazione: String {
+    switch self {
+    case .nonChiesto: "iOS lo chiede la prima volta che accendi un gruppo."
+    case .concesso: "Le notifiche accese arrivano su questo iPhone."
+    case .negato: "Le notifiche di ron1nOS sono spente nelle impostazioni di iOS."
+    }
+  }
+}

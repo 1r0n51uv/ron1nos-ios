@@ -46,3 +46,14 @@ import Testing
     #expect(GruppoNotifiche.allCases.map(\.titolo) == ["Pasti", "Acqua", "Scadenze documenti"])
   }
 }
+
+@Suite struct PermessoNotificheTests {
+  @Test func loStatoDelPermesso() {
+    #expect(PermessoNotifiche.nonChiesto.testo == "da chiedere")
+    #expect(PermessoNotifiche.concesso.testo == "concesso")
+    #expect(PermessoNotifiche.negato.testo == "negato in iOS")
+    #expect(PermessoNotifiche.negato.segnale)
+    #expect(!PermessoNotifiche.concesso.segnale)
+    #expect(PermessoNotifiche.nonChiesto.spiegazione.contains("prima volta"))
+  }
+}

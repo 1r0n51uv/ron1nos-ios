@@ -95,6 +95,9 @@
       case .formati: FormatiView()
       case .account: AccountView()
       case .appIOS: AppIOSView()
+      case .integrazioni: IntegrazioniView()
+      case .backup: BackupView()
+      case .informazioni: InformazioniView()
       default: inArrivo
       }
     }

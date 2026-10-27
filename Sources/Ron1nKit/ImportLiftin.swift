@@ -94,13 +94,20 @@ extension APIClient {
     }
   }
 
-  /// Un corpo `multipart/form-data` con il solo campo `file`.
-  static func multipart(_ file: Data, nome: String, confine: String) -> Data {
+  /// Un corpo `multipart/form-data` con il campo `file` e, se ci sono,
+  /// campi di testo.
+  static func multipart(
+    _ file: Data, nome: String, confine: String, tipo: String = "text/csv", campi: [(String, String)] = []
+  ) -> Data {
     let pulito = nome.replacingOccurrences(of: "\"", with: "")
     var corpo = Data()
+    for (chiave, valore) in campi {
+      corpo.append(Data("--\(confine)\r\n".utf8))
+      corpo.append(Data("Content-Disposition: form-data; name=\"\(chiave)\"\r\n\r\n\(valore)\r\n".utf8))
+    }
     corpo.append(Data("--\(confine)\r\n".utf8))
     corpo.append(Data("Content-Disposition: form-data; name=\"file\"; filename=\"\(pulito)\"\r\n".utf8))
-    corpo.append(Data("Content-Type: text/csv\r\n\r\n".utf8))
+    corpo.append(Data("Content-Type: \(tipo)\r\n\r\n".utf8))
     corpo.append(file)
     corpo.append(Data("\r\n--\(confine)--\r\n".utf8))
     return corpo

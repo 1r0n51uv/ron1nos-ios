@@ -11,6 +11,7 @@
     @State private var filtro = FiltroDocumenti()
     @State private var tipi: [TipoDocumento] = []
     @State private var titolari: [String] = []
+    @State private var nuovo = false
 
     var body: some View {
       List {
@@ -73,6 +74,17 @@
         ToolbarItem(placement: .topBarTrailing) {
           menuFiltri
         }
+        ToolbarItem(placement: .topBarTrailing) {
+          Button {
+            nuovo = true
+          } label: {
+            Image(systemName: "plus")
+          }
+          .accessibilityLabel("Nuovo documento")
+        }
+      }
+      .sheet(isPresented: $nuovo) {
+        NuovoDocumentoView().environmentObject(sessione)
       }
       .refreshable { await carica() }
       .task(id: Ricarica(filtro: filtro, versione: sessione.documentiCambiati)) {

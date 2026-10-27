@@ -8,6 +8,9 @@
   /// (`@Observable`): la build sul server usa la toolchain di Linux.
   @MainActor
   final class Sessione: ObservableObject {
+    /// Una sola per l'app: la usa anche l'aggiornamento in background.
+    static let condivisa = Sessione()
+
     let archivio = Portachiavi()
     let archivioToken = PortachiaviToken()
     /// Finché il backend non risponde valgono le ultime salvate sul
@@ -16,6 +19,8 @@
     /// L'immagine di sfondo caricata sul sito, se in uso.
     @Published var immagineSfondo: UIImage?
     private let memoria = MemoriaPreferenze()
+    /// Le notifiche locali di questo telefono (IOS-011).
+    let notifiche = CentroNotifiche()
     /// Il toast in basso (IOS-012) e cosa fa il suo pulsante.
     @Published private(set) var avviso: Avviso?
     private var azioneAvviso: (@MainActor () -> Void)?
@@ -71,6 +76,11 @@
       avviso = nil
       azioneAvviso = nil
       azione?()
+    }
+
+    /// Ricalcola le notifiche locali: all'apertura e in background.
+    func ricalcolaNotifiche() async {
+      await notifiche.ricalcola(client: client)
     }
 
     /// Le credenziali sono cambiate in Accesso.

@@ -6,6 +6,7 @@
   enum Pagina: Hashable {
     case modulo(Scheda)
     case accesso
+    case notifiche
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -13,7 +14,7 @@
   /// scorrendo in basso. Ogni scheda ha la sua pila; toccare la voce già
   /// attiva torna alla radice.
   struct RadiceView: View {
-    @StateObject private var sessione = Sessione()
+    @StateObject private var sessione = Sessione.condivisa
     @State private var selezione: Scheda = .home
     @State private var percorsi: [Scheda: [Pagina]] = [:]
 
@@ -100,6 +101,8 @@
         AccessoView(archivio: sessione.archivio, archivioToken: sessione.archivioToken) {
           sessione.credenzialiCambiate()
         }
+      case .notifiche:
+        NotificheView(centro: sessione.notifiche)
       }
     }
   }
@@ -130,6 +133,11 @@
         Section("Questo iPhone") {
           NavigationLink(value: Pagina.accesso) {
             Label("Accesso", systemImage: "key")
+              .foregroundStyle(Stile.testo)
+          }
+          .listRowBackground(Color.white.opacity(0.06))
+          NavigationLink(value: Pagina.notifiche) {
+            Label("Notifiche", systemImage: "bell")
               .foregroundStyle(Stile.testo)
           }
           .listRowBackground(Color.white.opacity(0.06))

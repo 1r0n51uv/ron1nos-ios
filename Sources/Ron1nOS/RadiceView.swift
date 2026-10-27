@@ -32,6 +32,8 @@
     case volumeGruppi
     /// Il dettaglio di un documento (IOS-061).
     case documento(id: String)
+    /// Impostazioni › Moduli › Documenti (IOS-063, IOS-064).
+    case impostazioniDocumenti
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -191,6 +193,8 @@
         VolumeGruppiView()
       case .documento(let id):
         DettaglioDocumentoView(id: id)
+      case .impostazioniDocumenti:
+        ImpostazioniDocumentiView()
       }
     }
   }
@@ -226,6 +230,11 @@
           .listRowBackground(Color.white.opacity(0.06))
           NavigationLink(value: Pagina.alimenti(codice: nil)) {
             Label("Dieta · Alimenti", systemImage: "carrot")
+              .foregroundStyle(Stile.testo)
+          }
+          .listRowBackground(Color.white.opacity(0.06))
+          NavigationLink(value: Pagina.impostazioniDocumenti) {
+            Label("Documenti · Tipi", systemImage: "doc.text")
               .foregroundStyle(Stile.testo)
           }
           .listRowBackground(Color.white.opacity(0.06))

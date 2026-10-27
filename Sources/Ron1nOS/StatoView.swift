@@ -13,7 +13,7 @@
     @State private var dieta: Carico<GiornoDieta> = .inCorso
     @State private var download: Carico<Download> = .inCorso
     @State private var server: Carico<StatoServer> = .inCorso
-    @Environment(Sessione.self) private var sessione
+    @EnvironmentObject private var sessione: Sessione
 
     var body: some View {
       ScrollView {

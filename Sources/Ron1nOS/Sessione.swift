@@ -1,16 +1,17 @@
 #if canImport(SwiftUI)
-  import Observation
+  import Combine
   import Ron1nKit
 
   /// Lo stato condiviso dell'app: le credenziali nel Portachiavi e le
-  /// preferenze del sito, che decidono la TabBar (IOS-009).
-  @MainActor @Observable
-  final class Sessione {
+  /// preferenze del sito, che decidono la TabBar (IOS-009). Niente macro
+  /// (`@Observable`): la build sul server usa la toolchain di Linux.
+  @MainActor
+  final class Sessione: ObservableObject {
     let archivio = Portachiavi()
     let archivioToken = PortachiaviToken()
-    var preferenze = Preferenze.predefinite
+    @Published var preferenze = Preferenze.predefinite
     /// Cresce a ogni cambio delle credenziali: le pagine ricaricano.
-    var versione = 0
+    @Published var versione = 0
 
     var client: APIClient {
       APIClient(credenziali: archivio.carica(), token: archivioToken.carica())

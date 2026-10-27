@@ -13,7 +13,7 @@
   /// scorrendo in basso. Ogni scheda ha la sua pila; toccare la voce già
   /// attiva torna alla radice.
   struct RadiceView: View {
-    @State private var sessione = Sessione()
+    @StateObject private var sessione = Sessione()
     @State private var selezione: Scheda = .home
     @State private var percorsi: [Scheda: [Pagina]] = [:]
 
@@ -33,7 +33,7 @@
       }
       .tint(Stile.brand)
       .riduciTabBarScorrendo()
-      .environment(sessione)
+      .environmentObject(sessione)
       .task {
         primoAvvio()
         await sessione.aggiornaPreferenze()
@@ -96,7 +96,7 @@
 
   /// `Altro` (IOS-009): i moduli che non stanno nella TabBar e Impostazioni.
   struct AltroView: View {
-    @Environment(Sessione.self) private var sessione
+    @EnvironmentObject private var sessione: Sessione
 
     var body: some View {
       List(sessione.navigazione.altro, id: \.self) { scheda in

@@ -234,23 +234,23 @@ Accettazione:
 
 ### IOS-010 · Aspetto e formati condivisi
 
-Stato: pianificato (#23) · Parità: SET-002, SET-003, SET-010 · Mockup: tavola 01
+Stato: fatto (#65) · Parità: SET-002, SET-003, SET-010 · Mockup: tavola 01
 
 Le preferenze sono una per tutti i dispositivi (decisione di
 settings.md): l'app le legge da `GET /preferences` all'avvio e le applica.
 
 Accettazione:
 
-- [ ] Sfondo: la sfumatura scelta o l'immagine caricata
+- [x] Sfondo: la sfumatura scelta o l'immagine caricata
       (`/preferences/background`), scurita come sul sito.
-- [ ] Vetro `leggero`, `medio`, `intenso`: cambia il velo delle card
+- [x] Vetro `leggero`, `medio`, `intenso`: cambia il velo delle card
       (4%, 6%, 10%) e l'intensità del bordo di luce. Niente sfocatura,
       come in IOS-003.
-- [ ] Densità `comoda` o `compatta`: padding delle card 20 o 14 pt,
+- [x] Densità `comoda` o `compatta`: padding delle card 20 o 14 pt,
       spazio fra le card 14 o 10 pt.
-- [ ] Unità di peso ed energia e fuso orario come sul sito; i dati
+- [x] Unità di peso ed energia e fuso orario come sul sito; i dati
       restano in kg e kcal.
-- [ ] Finché le preferenze non arrivano valgono le ultime salvate sul
+- [x] Finché le preferenze non arrivano valgono le ultime salvate sul
       telefono, poi i predefiniti: niente sfarfallio all'avvio.
 
 ### IOS-011 · Notifiche locali

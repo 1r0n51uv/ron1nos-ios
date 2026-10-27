@@ -133,15 +133,15 @@ Accettazione:
 
 ### IOS-038 · Andamento
 
-Stato: pianificato (#39) · Parità: NUT-017 · Mockup: tavola 12
+Stato: fatto (#81) · Parità: NUT-017 · Mockup: tavola 12
 
 Accettazione:
 
-- [ ] Selettore `30 g` / `90 g`; grafico delle kcal al giorno (Swift
+- [x] Selettore `30 g` / `90 g`; grafico delle kcal al giorno (Swift
       Charts) con la linea dell'obiettivo, media e tendenza.
-- [ ] Aderenza in percentuale, macro medi e il peso sullo stesso asse
+- [x] Aderenza in percentuale, macro medi e il peso sullo stesso asse
       temporale.
-- [ ] Dati da `GET /nutrition/report`, calcolati nel backend.
+- [x] Dati da `GET /nutrition/report`, calcolati nel backend.
 
 ### IOS-039 · Obiettivi e YAZIO
 

@@ -119,17 +119,17 @@ Accettazione:
 
 ### IOS-037 · Acqua, caffeina, integratori
 
-Stato: pianificato (#38) · Parità: NUT-012, NUT-013, NUT-014 · Mockup: tavola 05
+Stato: fatto (#78) · Parità: NUT-012, NUT-013, NUT-014 · Mockup: tavola 05
 
 Accettazione:
 
-- [ ] Acqua: ml del giorno sulla quota, barra, `−` e `+` (250 ml); `−`
+- [x] Acqua: ml del giorno sulla quota, barra, `−` e `+` (250 ml); `−`
       annulla l'ultima voce.
-- [ ] Caffeina: mg del giorno, `−` e `+` (espresso, 80 mg).
-- [ ] Integratori: checklist del giorno, un tocco per spuntare. La
+- [x] Caffeina: mg del giorno, `−` e `+` (espresso, 80 mg).
+- [x] Integratori: checklist del giorno, un tocco per spuntare. La
       gestione (aggiungere, disattivare) sta in Impostazioni › Moduli ›
       Dieta.
-- [ ] Ogni tocco dà un leggero feedback aptico.
+- [x] Ogni tocco dà un leggero feedback aptico.
 
 ### IOS-038 · Andamento
 

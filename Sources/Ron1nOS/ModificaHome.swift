@@ -123,7 +123,8 @@
               WidgetHome(elemento: ElementoLayout(id: voce.id, misura: scelta), dati: dati)
                 .frame(
                   width: scelta == .small ? lato : spazio.size.width,
-                  height: scelta == .large ? lato * 2 + aspetto.spazio : lato)
+                  height: scelta == .large ? lato * 2 + aspetto.spazio : lato
+                )
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)

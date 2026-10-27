@@ -215,7 +215,8 @@
             of: [.text],
             delegate: SpostaWidget(
               bersaglio: elemento.id, trascinato: $trascinato,
-              sposta: { da, a in sposta(da, sopra: a) }))
+              sposta: { da, a in sposta(da, sopra: a) })
+          )
           .accessibilityAction(named: "Sposta su") { cambia { $0.sposta(elemento.id, di: -1) } }
           .accessibilityAction(named: "Sposta giù") { cambia { $0.sposta(elemento.id, di: 1) } }
           .accessibilityAction(named: "Rimuovi") { rimuovi(elemento.id) }

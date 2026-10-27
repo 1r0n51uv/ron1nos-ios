@@ -14,6 +14,23 @@
 	<string>Dark</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Per leggere il codice a barre di un alimento.</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>CSV di Liftin'</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.comma-separated-values-text</string>
+			</array>
+		</dict>
+	</array>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

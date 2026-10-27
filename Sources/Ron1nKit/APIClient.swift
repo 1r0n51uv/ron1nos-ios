@@ -147,6 +147,17 @@ public struct APIClient: Sendable {
   func dati(
     _ path: String, query: [URLQueryItem] = [], metodo: String = "GET", corpo: Data? = nil
   ) async throws(APIError) -> Data {
+    let (data, http) = try await risposta(path, query: query, metodo: metodo, corpo: corpo)
+    guard (200..<300).contains(http.statusCode) else { throw .stato(http.statusCode) }
+    return data
+  }
+
+  /// La risposta dopo i controlli di Access e login, con qualunque codice
+  /// HTTP: serve a chi deve leggere il messaggio di un errore.
+  func risposta(
+    _ path: String, query: [URLQueryItem] = [], metodo: String = "GET", corpo: Data? = nil,
+    tipo: String = "application/json"
+  ) async throws(APIError) -> (Data, HTTPURLResponse) {
     var url = baseURL.appendingPathComponent(path)
     if !query.isEmpty { url.append(queryItems: query) }
     var request = URLRequest(url: url)
@@ -154,7 +165,7 @@ public struct APIClient: Sendable {
     request.setValue("application/json", forHTTPHeaderField: "Accept")
     if let corpo {
       request.httpBody = corpo
-      request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+      request.setValue(tipo, forHTTPHeaderField: "Content-Type")
     }
     let header = (credenziali?.header ?? [:]).merging(token?.header ?? [:]) { $1 }
     for (nome, valore) in header {
@@ -171,8 +182,7 @@ public struct APIClient: Sendable {
     guard let http = response as? HTTPURLResponse else { throw .rispostaInattesa(codice: nil) }
     if APIClient.versoAccess(http) { throw .accesso(conToken: credenziali != nil) }
     if http.statusCode == 401 { throw .login(conToken: token != nil) }
-    guard (200..<300).contains(http.statusCode) else { throw .stato(http.statusCode) }
-    return data
+    return (data, http)
   }
 
   /// Un redirect verso il login di Cloudflare Access

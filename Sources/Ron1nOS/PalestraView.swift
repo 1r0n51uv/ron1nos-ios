@@ -2,6 +2,7 @@
   import Charts
   import Ron1nKit
   import SwiftUI
+  import UniformTypeIdentifiers
 
   /// Quello che la pagina Palestra legge insieme.
   struct DatiPalestra: Equatable, Sendable {
@@ -17,6 +18,7 @@
     @EnvironmentObject private var sessione: Sessione
     @Environment(\.formati) private var formati
     @State private var stato: Carico<DatiPalestra> = .inCorso
+    @State private var sceltaFile = false
 
     var body: some View {
       ScrollView {
@@ -47,8 +49,17 @@
       }
       .background(SfondoConAlone().ignoresSafeArea())
       .navigationTitle("Palestra")
+      .toolbar {
+        ToolbarItem(placement: .topBarTrailing) {
+          Button("Importa CSV", systemImage: "square.and.arrow.down") { sceltaFile = true }
+        }
+      }
+      .fileImporter(isPresented: $sceltaFile, allowedContentTypes: [.commaSeparatedText]) { esito in
+        // Il foglio di import si apre dalla radice, come per un file condiviso.
+        if case .success(let url) = esito { sessione.csvInArrivo = FileCSV.leggi(url) }
+      }
       .refreshable { await carica() }
-      .task(id: sessione.versione) { await carica() }
+      .task(id: "\(sessione.versione)-\(sessione.palestraCambiata)") { await carica() }
     }
 
     private func carica() async {
@@ -77,6 +88,9 @@
         Text("Esporta il CSV da Liftin' e condividilo con ron1nOS: lo storico arriva qui.")
           .font(.subheadline)
           .foregroundStyle(Stile.testoTenue)
+        Button("Importa CSV", systemImage: "square.and.arrow.down") { sceltaFile = true }
+          .buttonStyle(.borderedProminent)
+          .tint(Stile.brand)
       }
       .frame(maxWidth: .infinity, alignment: .leading)
       .glassPanel()

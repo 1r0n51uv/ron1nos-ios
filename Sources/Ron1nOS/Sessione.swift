@@ -29,6 +29,10 @@
     private var azioneAvviso: (@MainActor () -> Void)?
     /// Cresce a ogni cambio delle credenziali: le pagine ricaricano.
     @Published var versione = 0
+    /// Un CSV di Liftin' arrivato dal foglio di condivisione (IOS-051).
+    @Published var csvInArrivo: FileCSV?
+    /// Cresce dopo un import o un'eliminazione: la Palestra ricarica.
+    @Published var palestraCambiata = 0
 
     var client: APIClient {
       APIClient(credenziali: archivio.carica(), token: archivioToken.carica())
@@ -79,6 +83,13 @@
     }
 
     private var versioneSfondo: String?
+
+    /// Un file aperto con ron1nOS: un CSV va all'import della Palestra.
+    func apri(file url: URL) {
+      guard url.pathExtension.lowercased() == "csv", let file = FileCSV.leggi(url) else { return }
+      daAprire = .palestra
+      csvInArrivo = file
+    }
 
     func apri(_ scheda: Scheda) {
       daAprire = scheda

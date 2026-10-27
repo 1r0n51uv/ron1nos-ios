@@ -17,20 +17,20 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-030 · Giorno
 
-Stato: pianificato (#31) · Parità: NUT-002, NUT-016 · Mockup: tavola 05
+Stato: fatto (#73) · Parità: NUT-002, NUT-016 · Mockup: tavola 05
 
 Accettazione:
 
-- [ ] In alto la striscia dei giorni, scorrevole (10 indietro, 13 avanti,
+- [x] In alto la striscia dei giorni, scorrevole (10 indietro, 13 avanti,
       oggi selezionato); `Oggi` torna a oggi.
-- [ ] Sotto, l'anello delle kcal sulla quota del giorno e tre barre per
+- [x] Sotto, l'anello delle kcal sulla quota del giorno e tre barre per
       proteine, carboidrati e grassi, del giorno scelto.
-- [ ] I 5 slot (`Colazione`, `Spuntino`, `Pranzo`, `Merenda`, `Cena`) in
+- [x] I 5 slot (`Colazione`, `Spuntino`, `Pranzo`, `Merenda`, `Cena`) in
       card: vuoto con `+`, pianificato con l'interruttore `Mangiato`,
       mangiato con gli alimenti e le kcal.
-- [ ] Sotto gli slot i tracker (IOS-037) e i link a Ricette, Template,
+- [x] Sotto gli slot i tracker (IOS-037) e i link a Ricette, Template,
       Spesa e Andamento.
-- [ ] Dati da `GET /nutrition/day?date=`.
+- [x] Dati da `GET /nutrition/day?date=`.
 
 ### IOS-031 · Registrare e correggere un pasto
 

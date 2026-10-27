@@ -80,3 +80,82 @@ import Testing
     #expect(Formato.percento(41.6) == "42%")
   }
 }
+
+@Suite struct GiornoCompletoTests {
+  static let corpo = """
+    {"date":"2026-10-27","goal":{"kcal":2200,"protein":140,"carbs":240,"fat":70,"waterMl":2500},
+     "quota":{"kcal":2350,"baseKcal":2200,"activityKcal":150},
+     "totals":{"kcal":1450,"protein":82,"carbs":150,"fat":45},
+     "plannedKcal":620,"suggestedSlot":"afternoon_snack","nextSlot":"dinner","waterMl":1500,
+     "caffeine":{"totalMg":180,"mealsMg":60},
+     "supplements":[{"id":"a","name":"Vitamina D","dose":"1","schedule":"daily","taken":true}],
+     "slots":[
+       {"slot":"breakfast","state":"eaten","planned":null,
+        "meal":{"id":"m1","kcal":430,"protein":20,"carbs":50,"fat":12,
+          "items":[{"id":"r1","foodId":"f1","name":"Pane","grams":80,"kcal":210,"protein":7,
+            "carbs":40,"fat":1,"origin":"ron1nos","sync":"synced"},
+            {"id":"r2","foodId":null,"name":"Uova","grams":120,"kcal":220,"protein":13,"carbs":1,
+             "fat":11,"origin":"ron1nos","sync":"unmatched"}]}},
+       {"slot":"morning_snack","state":"skipped","planned":null,"meal":null},
+       {"slot":"lunch","state":"empty","planned":null,"meal":null},
+       {"slot":"dinner","state":"planned","meal":null,
+        "planned":{"id":"p1","status":"planned","kcal":620,"protein":40,"carbs":60,"fat":20,
+          "recipeId":null,"recipeName":"Pasta al pomodoro","templateName":null,"items":[]}}
+     ]}
+    """
+
+  @Test func leggeIlGiornoDiUnaData() async throws {
+    let transport = TransportFinto(.risposta(200, GiornoCompletoTests.corpo))
+    let giorno = try await APIClient(transport: transport).dieta("2026-10-27")
+    #expect(transport.richiesta?.url?.path == "/api/v1/nutrition/day")
+    #expect(transport.richiesta?.url?.query == "date=2026-10-27")
+    #expect(giorno.plannedKcal == 620)
+    #expect(giorno.suggestedSlot == "afternoon_snack")
+    #expect(giorno.waterMl == 1500)
+    #expect(giorno.caffeine?.totalMg == 180)
+    #expect(giorno.kcalObiettivo == 2350)
+  }
+
+  @Test func cinqueSlotSempreNellOrdineDelSito() throws {
+    let giorno = try JSONDecoder().decode(GiornoDieta.self, from: Data(GiornoCompletoTests.corpo.utf8))
+    let slot = giorno.slotInOrdine
+    #expect(slot.map(\.slot) == GiornoDieta.ordineSlot)
+    #expect(slot.map(\.titolo) == ["Colazione", "Spuntino", "Pranzo", "Merenda", "Cena"])
+    // La merenda non c'è nella risposta: vale vuota.
+    #expect(slot[3].vuoto)
+    #expect(slot[1].saltato)
+    #expect(slot[0].mangiato)
+    #expect(slot[0].kcal == 430)
+    #expect(slot[0].elenco == "Pane 80 g · Uova 120 g")
+    #expect(slot[4].kcal == 620)
+    #expect(slot[4].elenco == "Pasta al pomodoro")
+    #expect(slot[4].planned?.id == "p1")
+    #expect(slot[2].elenco == nil)
+  }
+
+  @Test func statoVersoYazioDiOgniRiga() throws {
+    let giorno = try JSONDecoder().decode(GiornoDieta.self, from: Data(GiornoCompletoTests.corpo.utf8))
+    let righe = try #require(giorno.slotInOrdine.first?.meal?.items)
+    #expect(righe.map(\.sync) == ["synced", "unmatched"])
+    #expect(righe[0].statoYazio == "Inviata a YAZIO")
+    #expect(righe[1].statoYazio == "Senza equivalente su YAZIO")
+    #expect(RigaPasto(id: "x", name: "Mela", grams: 100, kcal: 52).statoYazio == nil)
+  }
+
+  @Test func segnaUnPianoMangiato() async throws {
+    let transport = TransportFinto(.risposta(200, "{}"))
+    try await APIClient(transport: transport).statoPiano("p1", "eaten")
+    let richiesta = try #require(transport.richiesta)
+    #expect(richiesta.httpMethod == "PUT")
+    #expect(richiesta.url?.path == "/api/v1/nutrition/plans/p1/status")
+    let corpo = try #require(richiesta.httpBody)
+    #expect(String(decoding: corpo, as: UTF8.self) == #"{"status":"eaten"}"#)
+  }
+
+  @Test func unErroreArrivaAChiChiama() async {
+    let transport = TransportFinto(.risposta(503, #"{"error":"database_unavailable"}"#))
+    await #expect(throws: APIError.self) {
+      try await APIClient(transport: transport).statoPiano("p1", "eaten")
+    }
+  }
+}

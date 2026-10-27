@@ -7,6 +7,10 @@
     case modulo(Scheda)
     case accesso
     case notifiche
+    /// Le pagine della Dieta sotto il giorno (IOS-030).
+    case dieta(PaginaDieta)
+    /// Il foglio per registrare un pasto, con lo slot proposto (IOS-031).
+    case registraPasto(giorno: String, slot: String)
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -105,6 +109,7 @@
     private func radice(_ scheda: Scheda) -> some View {
       switch scheda {
       case .home: HomeView()
+      case .dieta: DietaView()
       case .altro: AltroView()
       case .impostazioni: ImpostazioniView()
       default: PaginaInArrivo(scheda: scheda)
@@ -121,6 +126,10 @@
         }
       case .notifiche:
         NotificheView(centro: sessione.notifiche)
+      case .dieta(let pagina):
+        PaginaDietaInArrivo(titolo: pagina.titolo)
+      case .registraPasto(let giorno, let slot):
+        PaginaDietaInArrivo(titolo: "Registra pasto", nota: "Registrare un pasto di \(giorno) (\(slot))")
       }
     }
   }
@@ -164,6 +173,24 @@
       .scrollContentBackground(.hidden)
       .background(SfondoConAlone().ignoresSafeArea())
       .navigationTitle("Impostazioni")
+    }
+  }
+
+  /// Una pagina della Dieta che arriva con le issue successive.
+  struct PaginaDietaInArrivo: View {
+    let titolo: String
+    var nota: String?
+
+    var body: some View {
+      ScrollView {
+        Text("\(nota ?? titolo) arriva con i prossimi aggiornamenti dell'app.")
+          .font(.subheadline)
+          .foregroundStyle(Stile.testoTenue)
+          .glassPanel()
+          .padding(.horizontal, 16)
+      }
+      .background(SfondoConAlone().ignoresSafeArea())
+      .navigationTitle(titolo)
     }
   }
 

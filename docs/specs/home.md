@@ -91,16 +91,16 @@ Accettazione:
 
 ### IOS-024 · Salvataggio del layout
 
-Stato: pianificato (#30) · Parità: DASH-007, DASH-008
+Stato: fatto (#70) · Parità: DASH-007, DASH-008
 
 Accettazione:
 
-- [ ] L'app salva da sola con `PUT /dashboard/layouts/iphone` un secondo
+- [x] L'app salva da sola con `PUT /dashboard/layouts/iphone` un secondo
       dopo l'ultima modifica. Se il backend rifiuta o non risponde
       compare `Layout non salvato · Riprova` e il layout resta quello
       sullo schermo.
-- [ ] `Ripristina layout predefinito` sta in Impostazioni › Dashboard
+- [x] `Ripristina layout predefinito` sta in Impostazioni › Dashboard
       (IOS-091), con conferma.
-- [ ] La logica del layout (ordine, misure, posto nella griglia di 4
+- [x] La logica del layout (ordine, misure, posto nella griglia di 4
       colonne, validazione prima dell'invio) sta in Ron1nKit, con test su
       Linux.

@@ -2,6 +2,7 @@
   import Combine
   import Ron1nKit
   import UIKit
+  import UserNotifications
 
   /// Lo stato condiviso dell'app: le credenziali nel Portachiavi e le
   /// preferenze del sito, che decidono la TabBar (IOS-009). Niente macro
@@ -37,6 +38,23 @@
 
     init() {
       preferenze = memoria.carica() ?? .predefinite
+      // I promemoria dei pasti e dell'acqua (IOS-041).
+      PromemoriaApp.registraCategorie()
+      UNUserNotificationCenter.current().delegate = RispostaNotifiche.condivisa
+      notifiche.aggiungi { [weak self] client in
+        guard let self else { return [] }
+        return await PromemoriaApp.notifiche(
+          client: client, promemoria: self.preferenze.reminders, fuso: self.preferenze.formats.fuso)
+      }
+    }
+
+    /// Salva gli orari dei promemoria e riprogramma le notifiche.
+    func salvaPromemoria(_ promemoria: Promemoria) async -> Bool {
+      guard let salvate = try? await client.salvaPromemoria(promemoria) else { return false }
+      preferenze = salvate
+      memoria.salva(salvate)
+      await ricalcolaNotifiche()
+      return true
     }
 
     /// Se la lettura non riesce restano le preferenze di prima.

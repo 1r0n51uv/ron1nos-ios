@@ -53,17 +53,17 @@ Accettazione:
 
 ### IOS-032 · Codice a barre con la fotocamera
 
-Stato: pianificato (#33) · Parità: NUT-005 · Mockup: tavola 07
+Stato: fatto (#76) · Parità: NUT-005 · Mockup: tavola 07
 
 Accettazione:
 
-- [ ] Nel foglio di ricerca il pulsante con l'icona del codice a barre
+- [x] Nel foglio di ricerca il pulsante con l'icona del codice a barre
       apre la fotocamera (`DataScannerViewController` di VisionKit) con
       un riquadro guida; il primo EAN letto chiude la fotocamera.
-- [ ] Il codice va a `GET /nutrition/foods/barcode/{code}`: trovato, si
+- [x] Il codice va a `GET /nutrition/foods/barcode/{code}`: trovato, si
       passa ai grammi; sconosciuto, si apre `Nuovo alimento` (IOS-033)
       con il codice già scritto.
-- [ ] Senza permesso della fotocamera, il campo per scrivere il codice a
+- [x] Senza permesso della fotocamera, il campo per scrivere il codice a
       mano e il link alle impostazioni di sistema.
 
 ### IOS-033 · Alimenti personali

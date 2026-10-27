@@ -26,6 +26,8 @@
     /// l'altra.
     @State private var modifica = false
     @State private var aggiunta = false
+    /// Il widget di cui sono aperte le opzioni (IOS-023).
+    @State private var opzioni: ElementoLayout?
     /// Il widget che si sta trascinando.
     @State private var trascinato: String?
 
@@ -57,6 +59,13 @@
       .task(id: sessione.versione) { await aggiorna() }
       .onAppear { salvataggio.esito = esitoSalvataggio }
       .onDisappear { modifica = false }
+      .sheet(item: $opzioni) { elemento in
+        if let voce = catalogo?.voce(elemento.id) {
+          OpzioniWidgetView(voce: voce, dati: dati, elemento: elemento) { nuovo in
+            cambia { layout in layout.modifica(elemento.id) { $0 = nuovo } }
+          }
+        }
+      }
       .sheet(isPresented: $aggiunta) {
         AggiungiWidgetView(
           voci: disponibili, dati: dati,
@@ -191,6 +200,7 @@
         .accessibilityAddTraits(.isButton)
       if modifica {
         widget
+          .onTapGesture { opzioni = elemento }
           .modifier(Tremolio())
           .overlay(alignment: .topLeading) {
             Button {
@@ -220,6 +230,7 @@
           .accessibilityAction(named: "Sposta su") { cambia { $0.sposta(elemento.id, di: -1) } }
           .accessibilityAction(named: "Sposta giù") { cambia { $0.sposta(elemento.id, di: 1) } }
           .accessibilityAction(named: "Rimuovi") { rimuovi(elemento.id) }
+          .accessibilityAction(named: "Opzioni") { opzioni = elemento }
       } else {
         widget
           .onTapGesture {

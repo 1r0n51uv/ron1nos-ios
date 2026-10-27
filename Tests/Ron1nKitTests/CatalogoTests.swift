@@ -191,3 +191,48 @@ import Testing
     }
   }
 }
+
+@Suite struct OpzioniWidgetTests {
+  @Test func valorePredefinitoDalCatalogo() throws {
+    let catalogo = try CatalogoTests.catalogo()
+    let voce = try #require(catalogo.voce("server.metric"))
+    let elemento = ElementoLayout(id: "server.metric", misura: .small)
+    #expect(elemento.valore("metric", in: voce) == .testo("cpu"))
+    #expect(elemento.valore("ignota", in: voce) == nil)
+
+    var scelto = elemento
+    scelto.options = ["metric": .testo("ram")]
+    #expect(scelto.valore("metric", in: voce) == .testo("ram"))
+    // Un valore fuori regola vale come non scelto.
+    scelto.options = ["metric": .testo("gpu")]
+    #expect(scelto.valore("metric", in: voce) == .testo("cpu"))
+  }
+
+  @Test func impostaSoloValoriAmmessi() throws {
+    let catalogo = try CatalogoTests.catalogo()
+    let voce = try #require(catalogo.voce("downloads.summary"))
+    var elemento = ElementoLayout(id: "downloads.summary", misura: .medium)
+    elemento.imposta("limit", .numero(5), in: voce)
+    #expect(elemento.options?["limit"] == .numero(5))
+    elemento.imposta("limit", .numero(9), in: voce)
+    #expect(elemento.options?["limit"] == .numero(5))
+    elemento.imposta("altra", .numero(1), in: voce)
+    #expect(elemento.options?["altra"] == nil)
+  }
+
+  @Test func varianti() throws {
+    let catalogo = try CatalogoTests.catalogo()
+    let voce = try #require(catalogo.voce("server.metric"))
+    let elemento = ElementoLayout(id: "server.metric", misura: .small)
+    #expect(elemento.variante(in: voce) == "detailed")
+    var compatto = elemento
+    compatto.variant = "compact"
+    #expect(compatto.variante(in: voce) == "compact")
+    compatto.variant = "huge"
+    #expect(compatto.variante(in: voce) == "detailed")
+    #expect(voce.titoloVariante("compact") == "Compatta")
+    #expect(voce.titoloVariante("detailed") == "Dettagliata")
+    let senzaVarianti = try #require(catalogo.voce("downloads.speed"))
+    #expect(ElementoLayout(id: "downloads.speed", misura: .small).variante(in: senzaVarianti) == nil)
+  }
+}

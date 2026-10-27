@@ -197,3 +197,40 @@ extension APIClient {
     try await invia("DELETE", "dashboard/layouts/iphone")
   }
 }
+
+extension VoceCatalogo {
+  /// Il nome di una variante nel foglio delle opzioni (IOS-023).
+  public func titoloVariante(_ variante: String) -> String {
+    switch variante {
+    case "compact": "Compatta"
+    case "detailed": "Dettagliata"
+    default: variante.capitalized
+    }
+  }
+
+  public func opzione(_ chiave: String) -> OpzioneCatalogo? {
+    options?.first { $0.key == chiave }
+  }
+}
+
+extension ElementoLayout {
+  /// Il valore di un'opzione, o il predefinito del catalogo.
+  public func valore(_ chiave: String, in voce: VoceCatalogo) -> ValoreOpzione? {
+    if let scelto = options?[chiave], let opzione = voce.opzione(chiave), opzione.ammette(scelto) {
+      return scelto
+    }
+    return voce.opzione(chiave)?.default
+  }
+
+  /// Cambia un'opzione; un valore fuori regola non entra.
+  public mutating func imposta(_ chiave: String, _ valore: ValoreOpzione, in voce: VoceCatalogo) {
+    guard let opzione = voce.opzione(chiave), opzione.ammette(valore) else { return }
+    options = (options ?? [:]).merging([chiave: valore]) { _, nuovo in nuovo }
+  }
+
+  /// La variante scelta, o la prima del catalogo.
+  public func variante(in voce: VoceCatalogo) -> String? {
+    if let variant, voce.variants.contains(variant) { return variant }
+    return voce.variants.first
+  }
+}

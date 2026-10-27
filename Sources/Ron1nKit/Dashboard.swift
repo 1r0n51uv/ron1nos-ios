@@ -52,7 +52,7 @@ public enum ValoreOpzione: Codable, Equatable, Hashable, Sendable {
 
 /// Un widget nel layout: id del catalogo, posto e dimensione in celle,
 /// variante e opzioni.
-public struct ElementoLayout: Codable, Equatable, Hashable, Sendable {
+public struct ElementoLayout: Codable, Equatable, Hashable, Identifiable, Sendable {
   public var id: String
   public var x: Int
   public var y: Int

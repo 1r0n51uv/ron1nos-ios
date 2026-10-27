@@ -14,23 +14,26 @@ public struct Preferenze: Codable, Equatable, Sendable {
   public var formats: Formati
   /// Quando è stata caricata l'immagine di sfondo, se c'è (SET-003).
   public var backgroundImage: String?
+  /// Gli orari dei promemoria dei pasti e dell'acqua (NUT-027).
+  public var reminders: Promemoria
 
   public static let predefinite = Preferenze(
     disabledModules: [], navOrder: ["pasti", "allenamenti", "documenti", "note", "casa", "server"])
 
   public init(
     appearance: Aspetto = Aspetto(), disabledModules: [String], navOrder: [String],
-    formats: Formati = Formati(), backgroundImage: String? = nil
+    formats: Formati = Formati(), backgroundImage: String? = nil, reminders: Promemoria = .predefiniti
   ) {
     self.appearance = appearance
     self.disabledModules = disabledModules
     self.navOrder = navOrder
     self.formats = formats
     self.backgroundImage = backgroundImage
+    self.reminders = reminders
   }
 
   enum CodingKeys: String, CodingKey {
-    case appearance, disabledModules, navOrder, formats, backgroundImage
+    case appearance, disabledModules, navOrder, formats, backgroundImage, reminders
   }
 
   public init(from decoder: Decoder) throws {
@@ -41,6 +44,7 @@ public struct Preferenze: Codable, Equatable, Sendable {
     navOrder = c.leggi([String].self, .navOrder) ?? base.navOrder
     formats = c.leggi(Formati.self, .formats) ?? base.formats
     backgroundImage = c.leggi(String.self, .backgroundImage)
+    reminders = c.leggi(Promemoria.self, .reminders) ?? base.reminders
   }
 
   /// Lo sfondo da mostrare: `image` senza immagine caricata torna `brace`,

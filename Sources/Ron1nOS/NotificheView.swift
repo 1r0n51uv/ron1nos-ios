@@ -24,6 +24,8 @@
             .foregroundStyle(Stile.testoTenue)
         }
 
+        OrariPromemoriaView(pasti: centro.scelte.acceso(.pasti), acqua: centro.scelte.acceso(.acqua))
+
         if centro.permesso == .denied {
           Section {
             VStack(alignment: .leading, spacing: 8) {

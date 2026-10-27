@@ -178,17 +178,17 @@ Accettazione:
 
 ### IOS-041 · Promemoria pasti e acqua
 
-Stato: pianificato (#42) · Parità: NUT-019 · Solo iOS · Mockup: tavole 27, 28
+Stato: fatto (#84) · Parità: NUT-019 · Solo iOS · Mockup: tavole 27, 28
 
 Accettazione:
 
-- [ ] Notifica locale `Colazione?` vicino all'orario dello slot, se per
+- [x] Notifica locale `Colazione?` vicino all'orario dello slot, se per
       quello slot non c'è un pasto mangiato; dalla notifica `Sì` segna il
       pasto pianificato come mangiato, `Rimanda` la ripropone fra 30
       minuti.
-- [ ] Notifica dell'acqua a orari fissi se si è sotto la quota
+- [x] Notifica dell'acqua a orari fissi se si è sotto la quota
       proporzionata all'ora.
-- [ ] Gli orari degli slot e dell'acqua si cambiano in Impostazioni ›
+- [x] Gli orari degli slot e dell'acqua si cambiano in Impostazioni ›
       Notifiche e Salute e si salvano sul server (preferenze, vedi
       README).
-- [ ] Si basa sulle notifiche locali di IOS-011.
+- [x] Si basa sulle notifiche locali di IOS-011.

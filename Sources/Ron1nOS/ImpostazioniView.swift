@@ -26,7 +26,7 @@
       .background(SfondoConAlone().ignoresSafeArea())
       .navigationTitle("Impostazioni")
       .refreshable { await carica() }
-      .task(id: sessione.versione) { await carica() }
+      .task(id: "\(sessione.versione)-\(sessione.layoutCambiato)") { await carica() }
       .onChange(of: sessione.preferenze) { _, nuove in stato?.preferenze = nuove }
     }
 
@@ -88,31 +88,13 @@
 
     var body: some View {
       switch voce {
-      case .moduli: impostazioniModuli
+      case .aspetto: AspettoView()
+      case .dashboard: DashboardImpostazioniView()
+      case .moduli: ModuliView()
+      case .navigazione: NavigazioneView()
+      case .formati: FormatiView()
       default: inArrivo
       }
-    }
-
-    /// Le impostazioni della Dieta e dei Documenti.
-    private var impostazioniModuli: some View {
-      List {
-        Section("Impostazioni dei moduli") {
-          collegamento("Dieta · Obiettivo e YAZIO", icona: "fork.knife", pagina: .impostazioniDieta)
-          collegamento("Dieta · Alimenti", icona: "carrot", pagina: .alimenti(codice: nil))
-          collegamento("Documenti · Tipi e Face ID", icona: "doc.text", pagina: .impostazioniDocumenti)
-        }
-      }
-      .scrollContentBackground(.hidden)
-      .background(SfondoConAlone().ignoresSafeArea())
-      .navigationTitle(voce.titolo)
-    }
-
-    private func collegamento(_ titolo: String, icona: String, pagina: Pagina) -> some View {
-      NavigationLink(value: pagina) {
-        Label(titolo, systemImage: icona)
-          .foregroundStyle(Stile.testo)
-      }
-      .listRowBackground(Color.white.opacity(0.06))
     }
 
     private var inArrivo: some View {

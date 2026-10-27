@@ -29,18 +29,18 @@ Accettazione:
 
 ### IOS-091 · Aspetto, Dashboard, Moduli, Navigazione, Formati
 
-Stato: pianificato (#59) · Parità: SET-003…SET-006, SET-010
+Stato: fatto (#101) · Parità: SET-003…SET-006, SET-010
 
 Accettazione:
 
-- [ ] Aspetto: sfondo (sfumature o immagine dalla libreria Foto), vetro,
+- [x] Aspetto: sfondo (sfumature o immagine dalla libreria Foto), vetro,
       densità, con l'anteprima di una card.
-- [ ] Dashboard: forma della testata, widget presenti con `Rimuovi` e
+- [x] Dashboard: forma della testata, widget presenti con `Rimuovi` e
       `Opzioni`, `Ripristina layout predefinito` (layout `iphone`).
-- [ ] Moduli: interruttori e link alle impostazioni di Dieta e Documenti.
-- [ ] Navigazione: elenco riordinabile con le maniglie di iOS; mostra
+- [x] Moduli: interruttori e link alle impostazioni di Dieta e Documenti.
+- [x] Navigazione: elenco riordinabile con le maniglie di iOS; mostra
       quali moduli finiscono nella TabBar e quali in `Altro` (IOS-009).
-- [ ] Formati: fuso, peso, energia; lingua mostrata e non modificabile.
+- [x] Formati: fuso, peso, energia; lingua mostrata e non modificabile.
 
 ### IOS-092 · Account e App iOS
 

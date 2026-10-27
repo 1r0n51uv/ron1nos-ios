@@ -37,6 +37,9 @@
     @Published var palestraCambiata = 0
     /// Cresce a ogni modifica dei Documenti: l'elenco si ricarica.
     @Published var documentiCambiati = 0
+    /// Cresce quando il layout della Home cambia fuori dalla Home
+    /// (Impostazioni › Dashboard): la Home lo rilegge.
+    @Published var layoutCambiato = 0
     /// Face ID per i Documenti (IOS-064).
     @Published var blocco = BloccoDocumenti(defaults: .standard)
 
@@ -72,6 +75,28 @@
       memoria.salva(salvate)
       await ricalcolaNotifiche()
       return true
+    }
+
+    /// Una modifica dalle Impostazioni (IOS-091): si vede subito e si
+    /// salva da sola. Se il backend non la prende torna com'era.
+    func salva(_ modifica: ModificaPreferenze) async -> Bool {
+      let prima = preferenze
+      preferenze = modifica.applicata(a: prima)
+      guard let salvate = try? await client.modificaPreferenze(modifica) else {
+        preferenze = prima
+        return false
+      }
+      preferenze = salvate
+      memoria.salva(salvate)
+      await caricaSfondo()
+      return true
+    }
+
+    /// Le preferenze arrivate dal backend dopo lo sfondo cambiato.
+    func usa(_ nuove: Preferenze) async {
+      preferenze = nuove
+      memoria.salva(nuove)
+      await caricaSfondo()
     }
 
     /// Se la lettura non riesce restano le preferenze di prima.

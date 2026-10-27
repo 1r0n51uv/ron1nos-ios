@@ -68,13 +68,13 @@ Accettazione:
 
 ### IOS-033 · Alimenti personali
 
-Stato: pianificato (#34) · Parità: NUT-006
+Stato: fatto (#75) · Parità: NUT-006
 
 Accettazione:
 
-- [ ] Creare, modificare ed eliminare un alimento: nome, kcal e macro per
+- [x] Creare, modificare ed eliminare un alimento: nome, kcal e macro per
       100 g, marca, porzione e codice a barre facoltativi.
-- [ ] L'elenco sta in Impostazioni › Moduli › Dieta, come sul sito.
+- [x] L'elenco sta in Impostazioni › Moduli › Dieta, come sul sito.
 
 ### IOS-034 · Ricette e pianificazione
 

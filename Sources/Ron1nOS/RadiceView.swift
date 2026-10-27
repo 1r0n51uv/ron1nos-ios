@@ -157,6 +157,13 @@
   struct ImpostazioniView: View {
     var body: some View {
       List {
+        Section("Moduli") {
+          NavigationLink(value: Pagina.alimenti(codice: nil)) {
+            Label("Dieta · Alimenti", systemImage: "carrot")
+              .foregroundStyle(Stile.testo)
+          }
+          .listRowBackground(Color.white.opacity(0.06))
+        }
         Section("Questo iPhone") {
           NavigationLink(value: Pagina.accesso) {
             Label("Accesso", systemImage: "key")

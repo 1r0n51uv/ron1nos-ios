@@ -45,18 +45,10 @@ public struct CollegamentoYazio: Decodable, Equatable, Sendable {
   public func testoUltimaSincronizzazione(
     adesso: Date = Date(), fuso: TimeZone = TimeZone(identifier: "Europe/Rome") ?? .gmt
   ) -> String {
-    guard let lastSyncAt, let data = CollegamentoYazio.istante(lastSyncAt) else { return "Mai" }
-    let minuti = Int(adesso.timeIntervalSince(data) / 60)
-    if minuti < 1 { return "ora" }
-    if minuti < 60 { return "\(minuti) min fa" }
-    var calendario = Calendar(identifier: .gregorian)
-    calendario.timeZone = fuso
-    let parti = calendario.dateComponents([.day, .month, .hour, .minute], from: data)
-    let ora = "\(parti.hour ?? 0):\((parti.minute ?? 0) < 10 ? "0" : "")\(parti.minute ?? 0)"
-    if calendario.isDate(data, inSameDayAs: adesso) { return "oggi alle \(ora)" }
-    let giorno = "\((parti.day ?? 1) < 10 ? "0" : "")\(parti.day ?? 1)"
-    let mese = "\((parti.month ?? 1) < 10 ? "0" : "")\(parti.month ?? 1)"
-    return "\(giorno)/\(mese) alle \(ora)"
+    guard let lastSyncAt, let testo = Formato.momento(lastSyncAt, adesso: adesso, fuso: fuso) else {
+      return "Mai"
+    }
+    return testo
   }
 
   /// Un istante ISO 8601, con o senza millisecondi.

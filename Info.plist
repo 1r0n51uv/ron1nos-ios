@@ -14,6 +14,8 @@
 	<string>Dark</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Per leggere il codice a barre di un alimento e scansionare i documenti.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Per aprire i Documenti.</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>

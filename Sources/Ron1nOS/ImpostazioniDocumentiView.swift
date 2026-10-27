@@ -18,6 +18,12 @@
     var body: some View {
       List {
         Section {
+          Toggle("Chiedi Face ID", isOn: faceID).tint(Stile.brand)
+        } footer: {
+          Text("Entrando nei Documenti. Lo sblocco vale fino a 1 minuto in background.")
+        }
+        .listRowBackground(Color.white.opacity(0.06))
+        Section {
           switch stato {
           case .inCorso:
             Scheletro(righe: 3)
@@ -66,6 +72,15 @@
       }
       .refreshable { await carica() }
       .task { await carica() }
+    }
+
+    private var faceID: Binding<Bool> {
+      Binding(
+        get: { sessione.blocco.attivo },
+        set: { attivo in
+          sessione.blocco.attivo = attivo
+          UserDefaults.standard.set(attivo, forKey: BloccoDocumenti.chiave)
+        })
     }
 
     /// "Già pronto · 6 campi · 2 documenti".

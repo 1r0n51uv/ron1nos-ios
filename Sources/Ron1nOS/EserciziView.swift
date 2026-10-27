@@ -93,6 +93,7 @@
     @State private var stato: Carico<DettaglioEsercizio> = .inCorso
     @State private var grafico = DettaglioEsercizio.Grafico.migliore
     @State private var periodo = PeriodoEsercizio.sei
+    @State private var sceltaImmagine = false
 
     var body: some View {
       ScrollView {
@@ -106,6 +107,7 @@
             SezioneErrore(errore: errore).glassPanel(tinta: Stile.brand)
           case .pronto(let esercizio):
             testata(esercizio)
+            completa(esercizio)
             numeri(esercizio)
             andamento(esercizio)
             if !esercizio.recent.isEmpty {
@@ -121,6 +123,9 @@
       .background(SfondoConAlone().ignoresSafeArea())
       .navigationTitle(nome)
       .navigationBarTitleDisplayMode(.inline)
+      .sheet(isPresented: $sceltaImmagine) {
+        SceltaImmagineView(nome: nome).environmentObject(sessione)
+      }
       .refreshable { await carica() }
       .task(id: "\(periodo.rawValue)-\(sessione.palestraCambiata)") { await carica() }
     }
@@ -159,6 +164,44 @@
       }
       .clipShape(RoundedRectangle(cornerRadius: Stile.raggio, style: .continuous))
       .accessibilityElement(children: .combine)
+    }
+
+    /// Gruppo muscolare e immagine (IOS-054): valgono per tutto lo storico.
+    private func completa(_ esercizio: DettaglioEsercizio) -> some View {
+      HStack(spacing: 12) {
+        Menu {
+          Picker("Gruppo", selection: gruppo(esercizio)) {
+            ForEach(Palestra.gruppi, id: \.self) { voce in
+              Text(Palestra.nomeGruppo(voce)).tag(String?.some(voce))
+            }
+            Text("Da assegnare").tag(String?.none)
+          }
+        } label: {
+          Label(esercizio.nomeGruppo, systemImage: "figure.strengthtraining.traditional")
+            .frame(maxWidth: .infinity)
+        }
+        .accessibilityLabel("Gruppo · \(esercizio.nomeGruppo)")
+        Button("Scegli immagine", systemImage: "photo") { sceltaImmagine = true }
+          .frame(maxWidth: .infinity)
+      }
+      .font(.subheadline)
+      .tint(Stile.testo)
+      .buttonStyle(.bordered)
+    }
+
+    private func gruppo(_ esercizio: DettaglioEsercizio) -> Binding<String?> {
+      Binding(
+        get: { esercizio.group },
+        set: { nuovo in Task { await salvaGruppo(nuovo) } })
+    }
+
+    private func salvaGruppo(_ gruppo: String?) async {
+      do {
+        _ = try await sessione.client.gruppoEsercizio(nome, gruppo: gruppo)
+        sessione.palestraCambiata += 1
+      } catch {
+        sessione.mostra(.nonSalvato) { Task { await salvaGruppo(gruppo) } }
+      }
     }
 
     private func numeri(_ esercizio: DettaglioEsercizio) -> some View {
@@ -262,6 +305,95 @@
         }
       }
       .glassPanel()
+    }
+  }
+
+  /// `Scegli immagine` (IOS-054, GYM-014): ricerca nel catalogo e griglia
+  /// di foto. La scelta vale per tutto lo storico.
+  struct SceltaImmagineView: View {
+    let nome: String
+    @EnvironmentObject private var sessione: Sessione
+    @Environment(\.dismiss) private var chiudi
+    @State private var cerca = ""
+    @State private var stato: Carico<[EsercizioCatalogo]> = .inCorso
+    @State private var inCorso = false
+
+    private let colonne = [GridItem(.adaptive(minimum: 100), spacing: 10)]
+
+    var body: some View {
+      NavigationStack {
+        ScrollView {
+          VStack(alignment: .leading, spacing: 16) {
+            switch stato {
+            case .inCorso:
+              Scheletro(righe: 4).glassPanel()
+            case .spento:
+              ModuloSpento()
+            case .fallito(let errore):
+              SezioneErrore(errore: errore).glassPanel(tinta: Stile.brand)
+            case .pronto(let catalogo) where catalogo.isEmpty:
+              Text("Nessuna foto per questa ricerca.")
+                .font(.subheadline)
+                .foregroundStyle(Stile.testoTenue)
+            case .pronto(let catalogo):
+              LazyVGrid(columns: colonne, spacing: 10) {
+                ForEach(catalogo) { voce in
+                  Button {
+                    Task { await scegli(voce.id) }
+                  } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                      FotoEsercizio(immagine: voce.immagine, scurita: 0.2)
+                        .aspectRatio(1, contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                      Text(voce.name)
+                        .font(.caption)
+                        .foregroundStyle(Stile.testo)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    }
+                  }
+                  .buttonStyle(.plain)
+                  .disabled(inCorso)
+                }
+              }
+            }
+          }
+          .padding(16)
+        }
+        .background(SfondoConAlone().ignoresSafeArea())
+        .navigationTitle("Scegli immagine")
+        .navigationBarTitleDisplayMode(.inline)
+        .searchable(text: $cerca, prompt: "Cerca in inglese, es. bench press")
+        .toolbar {
+          ToolbarItem(placement: .cancellationAction) {
+            Button("Annulla") { chiudi() }
+          }
+          ToolbarItem(placement: .primaryAction) {
+            Button("Automatica") { Task { await scegli(nil) } }
+              .disabled(inCorso)
+          }
+        }
+        .task(id: cerca) {
+          if !cerca.isEmpty { try? await Task.sleep(for: .milliseconds(300)) }
+          guard !Task.isCancelled else { return }
+          let client = sessione.client
+          let testo = cerca
+          stato = await Carico.da { try await client.catalogoEsercizi(cerca: testo) }
+        }
+      }
+    }
+
+    /// nil torna all'abbinamento automatico.
+    private func scegli(_ id: String?) async {
+      inCorso = true
+      defer { inCorso = false }
+      do {
+        _ = try await sessione.client.immagineEsercizio(nome, catalogId: id)
+        sessione.palestraCambiata += 1
+        chiudi()
+      } catch {
+        sessione.mostra(.nonSalvato) { Task { await scegli(id) } }
+      }
     }
   }
 #endif

@@ -138,12 +138,7 @@ public struct DettaglioSessione: Decodable, Equatable, Identifiable, Sendable {
 
     /// "80 kg × 8", "1:30", "20 kg · 1:30" o "× 12" a corpo libero.
     public func testo(_ formati: Formati = Formati()) -> String {
-      let peso = weightKg > 0 ? formati.peso(weightKg) : nil
-      if let durata = durationSeconds, reps == nil {
-        return [peso, Palestra.tempo(durata)].compactMap { $0 }.joined(separator: " · ")
-      }
-      let ripetizioni = reps.map { "× \($0)" }
-      return [peso, ripetizioni].compactMap { $0 }.joined(separator: " ")
+      Palestra.serie(peso: weightKg, reps: reps, durata: durationSeconds, formati: formati)
     }
   }
 
@@ -167,6 +162,15 @@ public struct DettaglioSessione: Decodable, Equatable, Identifiable, Sendable {
 }
 
 extension Palestra {
+  /// Una serie: "80 kg × 8", "1:30", "20 kg · 1:30" o "× 12".
+  static func serie(peso kg: Double, reps: Int?, durata: Int?, formati: Formati) -> String {
+    let peso = kg > 0 ? formati.peso(kg) : nil
+    if let durata, reps == nil {
+      return [peso, tempo(durata)].compactMap { $0 }.joined(separator: " · ")
+    }
+    return [peso, reps.map { "× \($0)" }].compactMap { $0 }.joined(separator: " ")
+  }
+
   static func titolo(_ routine: String) -> String {
     routine.isEmpty ? "Allenamento" : routine
   }

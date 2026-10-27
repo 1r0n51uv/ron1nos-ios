@@ -25,6 +25,9 @@
     /// Lo storico delle sessioni e il dettaglio di una (IOS-052).
     case storicoPalestra
     case sessione(id: String)
+    /// Gli esercizi e la pagina di uno (IOS-053).
+    case esercizi
+    case esercizio(nome: String)
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -175,6 +178,10 @@
         StoricoView()
       case .sessione(let id):
         DettaglioSessioneView(id: id)
+      case .esercizi:
+        EserciziView()
+      case .esercizio(let nome):
+        DettaglioEsercizioView(nome: nome)
       }
     }
   }

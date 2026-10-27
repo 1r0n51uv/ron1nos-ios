@@ -62,12 +62,12 @@ import Testing
   }
 
   @Test func codiceSconosciutoNonEUnErrore() async throws {
-    let trovato = TransportFinto(
-      .risposta(
-        200,
-        #"{"id":"f1","source":"custom","externalId":null,"name":"Pane","brand":null,"barcode":"123",
-          "servingSizeG":null,"kcal":265,"protein":9,"carbs":49,"fat":3,"caffeineMg":null,
-          "yazioProductId":null}"#))
+    let corpo = """
+      {"id":"f1","source":"custom","externalId":null,"name":"Pane","brand":null,"barcode":"123",
+       "servingSizeG":null,"kcal":265,"protein":9,"carbs":49,"fat":3,"caffeineMg":null,
+       "yazioProductId":null}
+      """
+    let trovato = TransportFinto(.risposta(200, corpo))
     #expect(try await APIClient(transport: trovato).alimentoDaCodice("123")?.name == "Pane")
     let ignoto = TransportFinto(.risposta(404, #"{"error":"not_found"}"#))
     #expect(try await APIClient(transport: ignoto).alimentoDaCodice("999") == nil)

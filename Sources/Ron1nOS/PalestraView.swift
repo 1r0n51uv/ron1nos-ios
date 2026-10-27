@@ -51,6 +51,7 @@
               record(dati.record)
             }
             collegamento("Storico delle sessioni", icona: "clock.arrow.circlepath", pagina: .storicoPalestra)
+            collegamento("Esercizi", icona: "dumbbell", pagina: .esercizi)
           }
         }
         .padding(16)
@@ -159,26 +160,33 @@
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 12) {
             ForEach(esercizi) { esercizio in
-              VStack(alignment: .leading, spacing: 6) {
-                FotoEsercizio(immagine: esercizio.image)
-                  .frame(width: 140, height: 140)
-                  .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                Text(esercizio.name)
-                  .font(.subheadline)
-                  .foregroundStyle(Stile.testo)
-                  .lineLimit(1)
-                if let migliore = esercizio.migliore(formati) {
-                  Text(migliore)
-                    .font(.system(.footnote, design: .monospaced))
-                    .foregroundStyle(Stile.testoTenue)
-                }
+              NavigationLink(value: Pagina.esercizio(nome: esercizio.name)) {
+                tessera(esercizio)
               }
-              .frame(width: 140, alignment: .leading)
-              .accessibilityElement(children: .combine)
+              .buttonStyle(.plain)
             }
           }
         }
       }
+    }
+
+    private func tessera(_ esercizio: EsercizioPalestra) -> some View {
+      VStack(alignment: .leading, spacing: 6) {
+        FotoEsercizio(immagine: esercizio.image)
+          .frame(width: 140, height: 140)
+          .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        Text(esercizio.name)
+          .font(.subheadline)
+          .foregroundStyle(Stile.testo)
+          .lineLimit(1)
+        if let migliore = esercizio.migliore(formati) {
+          Text(migliore)
+            .font(.system(.footnote, design: .monospaced))
+            .foregroundStyle(Stile.testoTenue)
+        }
+      }
+      .frame(width: 140, alignment: .leading)
+      .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder

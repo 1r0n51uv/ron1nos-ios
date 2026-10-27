@@ -158,7 +158,11 @@ public struct APIClient: Sendable {
     _ path: String, query: [URLQueryItem] = [], metodo: String = "GET", corpo: Data? = nil,
     tipo: String = "application/json"
   ) async throws(APIError) -> (Data, HTTPURLResponse) {
-    var url = baseURL.appendingPathComponent(path)
+    var url = baseURL
+    // Un segmento con `%2F` (un nome con la barra) resta un segmento solo.
+    for parte in path.split(separator: "/") {
+      url = url.appending(component: String(parte).removingPercentEncoding ?? String(parte))
+    }
     if !query.isEmpty { url.append(queryItems: query) }
     var request = URLRequest(url: url)
     request.httpMethod = metodo
@@ -183,6 +187,12 @@ public struct APIClient: Sendable {
     if APIClient.versoAccess(http) { throw .accesso(conToken: credenziali != nil) }
     if http.statusCode == 401 { throw .login(conToken: token != nil) }
     return (data, http)
+  }
+
+  /// Un nome dentro un percorso, come `workout/exercises/{name}`: la barra
+  /// non lo spezza in due segmenti.
+  public static func segmento(_ testo: String) -> String {
+    testo.replacingOccurrences(of: "%", with: "%25").replacingOccurrences(of: "/", with: "%2F")
   }
 
   /// Un redirect verso il login di Cloudflare Access

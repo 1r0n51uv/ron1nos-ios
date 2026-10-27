@@ -20,6 +20,9 @@
     @State private var errore: APIError?
     @State private var righe: [Bozza] = []
     @State private var salvando = false
+    /// La fotocamera aperta (IOS-032) e l'esito della ricerca del codice.
+    @State private var fotocamera = false
+    @State private var codiceIgnoto: Codice?
 
     private var titolo: String { GiornoDieta.nomiSlot[slot] ?? slot }
 
@@ -56,6 +59,17 @@
         }
       }
       .tint(Stile.brand)
+      .sheet(isPresented: $fotocamera) {
+        CodiceABarreView { codice in
+          Task { await cercaCodice(codice) }
+        }
+      }
+      .sheet(item: $codiceIgnoto) { ignoto in
+        // Codice sconosciuto: si crea l'alimento col codice già scritto.
+        NavigationStack {
+          AlimentiPersonaliView(codice: ignoto.id)
+        }
+      }
       .task { await caricaRecenti() }
     }
 
@@ -72,6 +86,14 @@
             .foregroundStyle(Stile.testo)
             .submitLabel(.search)
           if cercando { ProgressView().controlSize(.small) }
+          Button {
+            fotocamera = true
+          } label: {
+            Image(systemName: "barcode.viewfinder")
+              .foregroundStyle(Stile.testo)
+          }
+          .buttonStyle(.plain)
+          .accessibilityLabel("Leggi un codice a barre")
         }
         .glassChip()
         Toggle("Solo Italia", isOn: $soloItalia)
@@ -145,6 +167,11 @@
       withAnimation(.snappy) { righe.append(Bozza(alimento)) }
     }
 
+    /// Un codice a barre sconosciuto, da passare al foglio.
+    struct Codice: Identifiable, Equatable {
+      let id: String
+    }
+
     /// Cosa fa ripartire la ricerca: il testo e il filtro.
     private struct Chiave: Equatable {
       let testo: String
@@ -165,6 +192,20 @@
       do {
         risultati = try await sessione.client.cercaAlimenti(q, soloItalia: soloItalia)
         errore = nil
+      } catch {
+        errore = error
+      }
+    }
+
+    /// Il codice letto va al backend: trovato si passa ai grammi,
+    /// sconosciuto si apre Nuovo alimento (IOS-033).
+    private func cercaCodice(_ codice: String) async {
+      do {
+        if let alimento = try await sessione.client.alimentoDaCodice(codice) {
+          aggiungi(alimento)
+        } else {
+          codiceIgnoto = Codice(id: codice)
+        }
       } catch {
         errore = error
       }

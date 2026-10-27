@@ -14,6 +14,12 @@
     @State private var controllo: Controllo = .inCorso
     @State private var login: StatoLogin = .inCorso
     @State private var dati = DatiWidget()
+    /// Il salvataggio da solo del layout (IOS-024). Le modifiche arrivano
+    /// dalla modalità Modifica (IOS-022) con `cambia(_:)`.
+    @State private var salvataggio = SalvataggioLayout {
+      (layout: LayoutHome) throws(APIError) -> LayoutHome in
+      try await Sessione.condivisa.client.salvaLayoutHome(layout)
+    }
 
     var body: some View {
       GeometryReader { spazio in
@@ -40,6 +46,7 @@
         await aggiorna()
       }
       .task(id: sessione.versione) { await aggiorna() }
+      .onAppear { salvataggio.esito = esitoSalvataggio }
       .toolbar(.hidden, for: .navigationBar)
     }
 
@@ -119,8 +126,31 @@
       let (s, a, l, d) = await (stato, accesso, letto, nuovi)
       controllo = s
       login = a
-      if let l { layout = l }
+      // Un layout cambiato e non ancora salvato resta sullo schermo.
+      if let l, salvataggio.inSospeso == nil { layout = l }
       dati = d
+      if salvataggio.catalogo == nil { salvataggio.catalogo = try? await client.catalogo() }
+    }
+
+    /// Applica una modifica al layout sullo schermo e la salva un secondo
+    /// dopo l'ultima.
+    func cambia(_ modifica: (inout LayoutHome) -> Void) {
+      var nuovo = layout ?? LayoutHome.predefinito
+      modifica(&nuovo)
+      guard nuovo != layout else { return }
+      layout = nuovo
+      salvataggio.programma(nuovo)
+    }
+
+    private func esitoSalvataggio(_ esito: SalvataggioLayout.Esito) {
+      switch esito {
+      case .salvato(let salvato):
+        // Il server rimette in ordine: vale la sua versione se non è
+        // cambiato altro nel frattempo.
+        if salvataggio.inSospeso == nil { layout = salvato }
+      case .fallito:
+        sessione.mostra(.layoutNonSalvato) { [salvataggio] in salvataggio.riprova() }
+      }
     }
   }
 

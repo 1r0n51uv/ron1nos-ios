@@ -145,16 +145,16 @@ Accettazione:
 
 ### IOS-039 · Obiettivi e YAZIO
 
-Stato: pianificato (#40) · Parità: NUT-015, NUT-020, NUT-023
+Stato: fatto (#83) · Parità: NUT-015, NUT-020, NUT-023
 
 Accettazione:
 
-- [ ] In Impostazioni › Moduli › Dieta: stato del collegamento YAZIO,
+- [x] In Impostazioni › Moduli › Dieta: stato del collegamento YAZIO,
       ultima sincronizzazione, `Sincronizza ora`, interruttore della
       sincronizzazione, alimenti senza equivalente da abbinare.
-- [ ] Obiettivo in kcal, macro e acqua: in sola lettura con YAZIO
+- [x] Obiettivo in kcal, macro e acqua: in sola lettura con YAZIO
       collegato, modificabile senza.
-- [ ] Le credenziali YAZIO non passano mai dall'app.
+- [x] Le credenziali YAZIO non passano mai dall'app.
 
 ### IOS-040 · Apple Salute
 

@@ -287,10 +287,10 @@ public struct AlimentoPersonale: Equatable, Sendable {
   public init(_ alimento: Alimento) {
     self.init(
       nome: alimento.name, marca: alimento.brand ?? "", codice: alimento.barcode ?? "",
-      porzione: alimento.servingSizeG.map(Formato.numero) ?? "",
+      porzione: alimento.servingSizeG.map { Formato.numero($0) } ?? "",
       kcal: Formato.numero(alimento.kcal), proteine: Formato.numero(alimento.protein),
       carboidrati: Formato.numero(alimento.carbs), grassi: Formato.numero(alimento.fat),
-      caffeina: alimento.caffeineMg.map(Formato.numero) ?? "")
+      caffeina: alimento.caffeineMg.map { Formato.numero($0) } ?? "")
   }
 
   static func numero(_ testo: String) -> Double? {

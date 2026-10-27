@@ -33,6 +33,8 @@
     @Published var csvInArrivo: FileCSV?
     /// Cresce dopo un import o un'eliminazione: la Palestra ricarica.
     @Published var palestraCambiata = 0
+    /// Cresce a ogni modifica dei Documenti: l'elenco si ricarica.
+    @Published var documentiCambiati = 0
 
     var client: APIClient {
       APIClient(credenziali: archivio.carica(), token: archivioToken.carica())

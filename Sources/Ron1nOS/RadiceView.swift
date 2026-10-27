@@ -30,6 +30,8 @@
     case esercizio(nome: String)
     /// Volume per gruppo muscolare (IOS-055).
     case volumeGruppi
+    /// Il dettaglio di un documento (IOS-061).
+    case documento(id: String)
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -187,6 +189,8 @@
         DettaglioEsercizioView(nome: nome)
       case .volumeGruppi:
         VolumeGruppiView()
+      case .documento(let id):
+        DettaglioDocumentoView(id: id)
       }
     }
   }

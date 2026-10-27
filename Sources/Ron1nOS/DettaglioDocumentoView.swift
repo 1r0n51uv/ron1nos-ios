@@ -76,6 +76,7 @@
       .refreshable { await carica() }
       .task { await carica() }
       .onDisappear { temporanei.svuota() }
+      .protezioneDocumenti()
     }
 
     private func carica() async {

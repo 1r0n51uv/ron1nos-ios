@@ -234,7 +234,7 @@
           }
           .listRowBackground(Color.white.opacity(0.06))
           NavigationLink(value: Pagina.impostazioniDocumenti) {
-            Label("Documenti · Tipi", systemImage: "doc.text")
+            Label("Documenti · Tipi e Face ID", systemImage: "doc.text")
               .foregroundStyle(Stile.testo)
           }
           .listRowBackground(Color.white.opacity(0.06))

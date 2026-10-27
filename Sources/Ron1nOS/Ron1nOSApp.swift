@@ -21,8 +21,10 @@
       .onChange(of: fase) { _, nuova in
         // A ogni apertura le notifiche locali si ricalcolano (IOS-011).
         if nuova == .active {
+          Sessione.condivisa.blocco.torna()
           Task { await Sessione.condivisa.ricalcolaNotifiche() }
         }
+        if nuova == .background { Sessione.condivisa.blocco.entraInBackground() }
       }
       .backgroundTask(.appRefresh(CentroNotifiche.compito)) {
         await Sessione.condivisa.ricalcolaNotifiche()

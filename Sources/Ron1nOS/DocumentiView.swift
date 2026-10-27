@@ -99,6 +99,7 @@
         self.tipi = (try? await tipi) ?? []
         self.titolari = (try? await titolari) ?? []
       }
+      .protezioneDocumenti()
     }
 
     /// Un documento che si apre nel dettaglio (IOS-061).

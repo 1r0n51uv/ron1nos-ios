@@ -35,6 +35,8 @@
     @Published var palestraCambiata = 0
     /// Cresce a ogni modifica dei Documenti: l'elenco si ricarica.
     @Published var documentiCambiati = 0
+    /// Face ID per i Documenti (IOS-064).
+    @Published var blocco = BloccoDocumenti(defaults: .standard)
 
     var client: APIClient {
       APIClient(credenziali: archivio.carica(), token: archivioToken.carica())

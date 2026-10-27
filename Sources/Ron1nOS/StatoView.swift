@@ -5,20 +5,15 @@
   /// La home (IOS-001, IOS-006…008): chiama /health e mostra
   /// backend, database, login e ora dell'ultimo controllo. Il service token
   /// di Access (IOS-004) e il token di ron1nOS (IOS-005) vengono dal
-  /// Portachiavi. Sotto, le card dei moduli.
+  /// Portachiavi, e si cambiano in Impostazioni › Accesso (IOS-009). Sotto,
+  /// le card dei moduli.
   struct StatoView: View {
     @State private var controllo: Controllo = .inCorso
     @State private var login: StatoLogin = .inCorso
     @State private var dieta: Carico<GiornoDieta> = .inCorso
     @State private var download: Carico<Download> = .inCorso
     @State private var server: Carico<StatoServer> = .inCorso
-    @State private var mostraAccesso = false
-    private let archivio = Portachiavi()
-    private let archivioToken = PortachiaviToken()
-
-    private var client: APIClient {
-      APIClient(credenziali: archivio.carica(), token: archivioToken.carica())
-    }
+    @Environment(Sessione.self) private var sessione
 
     var body: some View {
       ScrollView {
@@ -38,29 +33,22 @@
         .padding(.top, 24)
       }
       .background(SfondoConAlone().ignoresSafeArea())
-      .refreshable { await aggiorna() }
-      .task { await aggiorna() }
-      .sheet(isPresented: $mostraAccesso) {
-        AccessoView(archivio: archivio, archivioToken: archivioToken) {
-          Task { await aggiorna() }
-        }
+      .refreshable {
+        await sessione.aggiornaPreferenze()
+        await aggiorna()
       }
+      .task(id: sessione.versione) { await aggiorna() }
+      .toolbar(.hidden, for: .navigationBar)
     }
 
     private var intestazione: some View {
-      HStack(alignment: .top) {
-        VStack(alignment: .leading, spacing: 4) {
-          Text("ron1nOS")
-            .font(.system(size: 34, weight: .semibold))
-            .foregroundStyle(Stile.testo)
-          Text(APIClient.indirizzoPredefinito.host() ?? "")
-            .font(.system(.subheadline, design: .monospaced))
-            .foregroundStyle(Stile.testoTenue)
-        }
-        Spacer()
-        Button("Accesso") { mostraAccesso = true }
-          .glassChip()
-          .padding(.top, 8)
+      VStack(alignment: .leading, spacing: 4) {
+        Text("ron1nOS")
+          .font(.system(size: 34, weight: .semibold))
+          .foregroundStyle(Stile.testo)
+        Text(APIClient.indirizzoPredefinito.host() ?? "")
+          .font(.system(.subheadline, design: .monospaced))
+          .foregroundStyle(Stile.testoTenue)
       }
     }
 
@@ -128,7 +116,7 @@
     }
 
     private func aggiorna() async {
-      let client = client
+      let client = sessione.client
       async let stato = Controllo.esegui(con: client)
       async let accesso = StatoLogin.verifica(con: client)
       async let giorno = Carico.da { try await client.dieta() }

@@ -5,7 +5,7 @@
   struct Ron1nOSApp: App {
     var body: some Scene {
       WindowGroup {
-        StatoView()
+        RadiceView()
           .preferredColorScheme(.dark)
       }
     }

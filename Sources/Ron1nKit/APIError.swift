@@ -89,17 +89,17 @@ public enum APIError: Error, Equatable, Sendable {
       "iOS non accetta il certificato del server. Controlla data e ora del telefono: il "
         + "certificato di Cloudflare è pubblico e non va installato niente."
     case .accesso(conToken: false):
-      "Cloudflare Access chiede il service token dell'app. Tocca Accesso e incolla Client ID e "
-        + "Client Secret."
+      "Cloudflare Access chiede il service token dell'app. Apri Altro › Impostazioni › Accesso e "
+        + "incolla Client ID e Client Secret."
     case .accesso(conToken: true):
       "Cloudflare Access non accetta il token salvato: forse è scaduto o è stato revocato. "
-        + "Tocca Accesso e incolla quello nuovo."
+        + "Apri Altro › Impostazioni › Accesso e incolla quello nuovo."
     case .login(conToken: false):
       "ron1nOS chiede il login. Nella dashboard apri Impostazioni › App iOS, crea un token e "
-        + "incollalo in Accesso."
+        + "incollalo in Altro › Impostazioni › Accesso."
     case .login(conToken: true):
       "ron1nOS non accetta il token salvato: forse è stato revocato. Creane uno nuovo in "
-        + "Impostazioni › App iOS della dashboard e incollalo in Accesso."
+        + "Impostazioni › App iOS della dashboard e incollalo in Altro › Impostazioni › Accesso."
     case .stato:
       "Il backend ron1nOS ha un problema: guarda i suoi log sul server."
     case .rispostaInattesa:

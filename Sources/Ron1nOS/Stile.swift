@@ -53,6 +53,17 @@
   extension View {
     func glassPanel(tinta: Color? = nil) -> some View { modifier(GlassPanel(tinta: tinta)) }
 
+    /// Su iOS 26 la TabBar si riduce scorrendo in basso e torna intera
+    /// scorrendo in su (IOS-009). Prima della 26 resta com'è.
+    @ViewBuilder
+    func riduciTabBarScorrendo() -> some View {
+      if #available(iOS 26.0, *) {
+        tabBarMinimizeBehavior(.onScrollDown)
+      } else {
+        self
+      }
+    }
+
     /// Pulsante a capsula con lo stesso velo delle card.
     func glassChip() -> some View {
       font(.subheadline.weight(.medium))

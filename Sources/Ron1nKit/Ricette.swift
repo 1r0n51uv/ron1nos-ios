@@ -34,7 +34,7 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
   }
 
   /// Qualche alimento è stato eliminato: i totali non contano quelle righe.
-  public var incompleta: Bool { items.contains(\.missing) }
+  public var incompleta: Bool { items.contains { $0.missing } }
 }
 
 /// Una riga di una ricetta.

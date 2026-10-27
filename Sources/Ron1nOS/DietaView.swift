@@ -320,8 +320,7 @@
               Button("Saltato") { segna(id, "skipped") }
               Button("Togli il piano", role: .destructive) { togliPiano(id) }
             } label: {
-              Image(systemName: "ellipsis"
-            )
+              Image(systemName: "ellipsis")
                 .foregroundStyle(Stile.testoTenue)
                 .frame(width: 30, height: 30)
             }

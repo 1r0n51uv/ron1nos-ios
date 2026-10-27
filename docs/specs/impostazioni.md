@@ -13,19 +13,19 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-090 · Elenco delle sezioni e Accesso
 
-Stato: pianificato (#58) · Parità: SET-001 · Mockup: tavole 26, 29
+Stato: fatto (#100) · Parità: SET-001 · Mockup: tavole 26, 29
 
 Accettazione:
 
-- [ ] Gruppi: **Questo iPhone** (Accesso, Notifiche e Salute), **ron1nOS**
+- [x] Gruppi: **Questo iPhone** (Accesso, Notifiche e Salute), **ron1nOS**
       (Aspetto, Dashboard, Moduli, Navigazione, Formati), **Account**
       (Account, App iOS), **Sistema** (Integrazioni, Backup
       configurazione, Informazioni).
-- [ ] Ogni riga mostra a destra lo stato in breve (`collegato`, `medio`,
+- [x] Ogni riga mostra a destra lo stato in breve (`collegato`, `medio`,
       `5 accesi`…).
-- [ ] Accesso è la schermata di IOS-004 e IOS-005 (service token di
+- [x] Accesso è la schermata di IOS-004 e IOS-005 (service token di
       Cloudflare, token ron1nOS), con lo stato di ognuno.
-- [ ] Ogni modifica si salva da sola; l'errore accanto al campo.
+- [x] Ogni modifica si salva da sola; l'errore accanto al campo.
 
 ### IOS-091 · Aspetto, Dashboard, Moduli, Navigazione, Formati
 

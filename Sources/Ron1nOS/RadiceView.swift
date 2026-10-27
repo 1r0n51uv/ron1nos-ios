@@ -34,6 +34,8 @@
     case documento(id: String)
     /// Impostazioni › Moduli › Documenti (IOS-063, IOS-064).
     case impostazioniDocumenti
+    /// Una sezione delle Impostazioni (IOS-090…094).
+    case impostazione(VoceImpostazioni)
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -219,6 +221,8 @@
         DettaglioDocumentoView(id: id)
       case .impostazioniDocumenti:
         ImpostazioniDocumentiView()
+      case .impostazione(let voce):
+        SezioneImpostazioni(voce: voce)
       }
     }
   }
@@ -238,47 +242,6 @@
       .scrollContentBackground(.hidden)
       .background(SfondoConAlone().ignoresSafeArea())
       .navigationTitle("Altro")
-    }
-  }
-
-  /// Impostazioni: per ora solo Accesso; le altre sezioni arrivano con
-  /// IOS-090…094.
-  struct ImpostazioniView: View {
-    var body: some View {
-      List {
-        Section("Moduli") {
-          NavigationLink(value: Pagina.impostazioniDieta) {
-            Label("Dieta · Obiettivo e YAZIO", systemImage: "fork.knife")
-              .foregroundStyle(Stile.testo)
-          }
-          .listRowBackground(Color.white.opacity(0.06))
-          NavigationLink(value: Pagina.alimenti(codice: nil)) {
-            Label("Dieta · Alimenti", systemImage: "carrot")
-              .foregroundStyle(Stile.testo)
-          }
-          .listRowBackground(Color.white.opacity(0.06))
-          NavigationLink(value: Pagina.impostazioniDocumenti) {
-            Label("Documenti · Tipi e Face ID", systemImage: "doc.text")
-              .foregroundStyle(Stile.testo)
-          }
-          .listRowBackground(Color.white.opacity(0.06))
-        }
-        Section("Questo iPhone") {
-          NavigationLink(value: Pagina.accesso) {
-            Label("Accesso", systemImage: "key")
-              .foregroundStyle(Stile.testo)
-          }
-          .listRowBackground(Color.white.opacity(0.06))
-          NavigationLink(value: Pagina.notifiche) {
-            Label("Notifiche", systemImage: "bell")
-              .foregroundStyle(Stile.testo)
-          }
-          .listRowBackground(Color.white.opacity(0.06))
-        }
-      }
-      .scrollContentBackground(.hidden)
-      .background(SfondoConAlone().ignoresSafeArea())
-      .navigationTitle("Impostazioni")
     }
   }
 

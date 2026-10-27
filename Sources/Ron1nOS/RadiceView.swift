@@ -9,8 +9,8 @@
     case notifiche
     /// Le pagine della Dieta sotto il giorno (IOS-030).
     case dieta(PaginaDieta)
-    /// Il foglio per registrare un pasto, con lo slot proposto (IOS-031).
-    case registraPasto(giorno: String, slot: String)
+    /// Il dettaglio di un pasto mangiato (IOS-031).
+    case dettaglioPasto(giorno: String, slot: String)
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -128,8 +128,8 @@
         NotificheView(centro: sessione.notifiche)
       case .dieta(let pagina):
         PaginaDietaInArrivo(titolo: pagina.titolo)
-      case .registraPasto(let giorno, let slot):
-        PaginaDietaInArrivo(titolo: "Registra pasto", nota: "Registrare un pasto di \(giorno) (\(slot))")
+      case .dettaglioPasto(let giorno, let slot):
+        DettaglioPastoView(giorno: giorno, slot: slot)
       }
     }
   }

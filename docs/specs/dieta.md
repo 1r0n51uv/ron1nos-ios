@@ -34,21 +34,21 @@ Accettazione:
 
 ### IOS-031 · Registrare e correggere un pasto
 
-Stato: pianificato (#32) · Parità: NUT-003, NUT-004, NUT-007, NUT-023 · Mockup: tavole 06, 08
+Stato: fatto (#74) · Parità: NUT-003, NUT-004, NUT-007, NUT-023 · Mockup: tavole 06, 08
 
 Accettazione:
 
-- [ ] `+` su uno slot apre un foglio: campo di ricerca (da 2 caratteri),
+- [x] `+` su uno slot apre un foglio: campo di ricerca (da 2 caratteri),
       filtro `Solo Italia` acceso, risultati con la fonte (`OFF`, `USDA`,
       `YAZIO`, `mio`) e kcal per 100 g; in cima gli alimenti recenti.
-- [ ] Scelto un alimento, i grammi si scrivono con il tastierino numerico
+- [x] Scelto un alimento, i grammi si scrivono con il tastierino numerico
       e kcal e macro si aggiornano mentre si scrive; si aggiungono più
       alimenti prima di salvare.
-- [ ] Lo slot proposto è quello dell'ora corrente.
-- [ ] Toccare un pasto mangiato apre il dettaglio: si cambia la quantità
+- [x] Lo slot proposto è quello dell'ora corrente.
+- [x] Toccare un pasto mangiato apre il dettaglio: si cambia la quantità
       di una riga, si toglie una riga scorrendo a sinistra, si aggiunge un
       alimento extra.
-- [ ] Ogni riga mostra lo stato di YAZIO: inviata, in coda, errore,
+- [x] Ogni riga mostra lo stato di YAZIO: inviata, in coda, errore,
       senza equivalente (NUT-023).
 
 ### IOS-032 · Codice a barre con la fotocamera

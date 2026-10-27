@@ -18,6 +18,10 @@
     case ricetta(id: String)
     /// Un template settimanale (IOS-035).
     case template(id: String)
+    /// Impostazioni › Moduli › Dieta: YAZIO e obiettivo (IOS-039).
+    case impostazioniDieta
+    /// Gli alimenti senza equivalente YAZIO (IOS-039).
+    case senzaEquivalente
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -154,6 +158,10 @@
         DettaglioRicettaView(id: id)
       case .template(let id):
         DettaglioTemplateView(id: id)
+      case .impostazioniDieta:
+        ImpostazioniDietaView()
+      case .senzaEquivalente:
+        SenzaEquivalenteView()
       }
     }
   }
@@ -182,6 +190,11 @@
     var body: some View {
       List {
         Section("Moduli") {
+          NavigationLink(value: Pagina.impostazioniDieta) {
+            Label("Dieta · Obiettivo e YAZIO", systemImage: "fork.knife")
+              .foregroundStyle(Stile.testo)
+          }
+          .listRowBackground(Color.white.opacity(0.06))
           NavigationLink(value: Pagina.alimenti(codice: nil)) {
             Label("Dieta · Alimenti", systemImage: "carrot")
               .foregroundStyle(Stile.testo)

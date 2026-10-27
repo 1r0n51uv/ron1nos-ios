@@ -121,6 +121,7 @@
       switch scheda {
       case .home: HomeView()
       case .dieta: DietaView()
+      case .palestra: PalestraView()
       case .altro: AltroView()
       case .impostazioni: ImpostazioniView()
       default: PaginaInArrivo(scheda: scheda)

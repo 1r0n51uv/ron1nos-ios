@@ -14,21 +14,21 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-050 · Pagina Palestra
 
-Stato: pianificato (#43) · Parità: GYM-002, GYM-007, GYM-010, GYM-013 · Mockup: tavola 13
+Stato: fatto (#85) · Parità: GYM-002, GYM-007, GYM-010, GYM-013 · Mockup: tavola 13
 
 Accettazione:
 
-- [ ] In cima l'ultimo allenamento a tutta larghezza: foto del primo
+- [x] In cima l'ultimo allenamento a tutta larghezza: foto del primo
       esercizio, routine, giorno, durata.
-- [ ] Sotto, due numeri grandi: allenamenti questa settimana e giorni di
+- [x] Sotto, due numeri grandi: allenamenti questa settimana e giorni di
       fila, con il grafico a barre delle ultime 12 settimane (corrente in
       rosso).
-- [ ] Una fila scorrevole in orizzontale con i 6 esercizi più allenati:
+- [x] Una fila scorrevole in orizzontale con i 6 esercizi più allenati:
       foto, nome, miglior 1RM stimato.
-- [ ] I record degli ultimi 30 giorni (al massimo 3), poi lo storico
+- [x] I record degli ultimi 30 giorni (al massimo 3), poi lo storico
       (IOS-052). Volume per gruppo e elenco esercizi sono link, non
       sezioni aperte.
-- [ ] Senza dati, solo l'invito a importare il CSV (IOS-051).
+- [x] Senza dati, solo l'invito a importare il CSV (IOS-051).
 
 ### IOS-051 · Import del CSV di Liftin'
 

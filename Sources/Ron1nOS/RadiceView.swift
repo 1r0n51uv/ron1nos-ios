@@ -16,6 +16,8 @@
     case alimenti(codice: String?)
     /// Il dettaglio di una ricetta (IOS-034).
     case ricetta(id: String)
+    /// Un template settimanale (IOS-035).
+    case template(id: String)
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -127,7 +129,8 @@
     private func paginaDieta(_ pagina: PaginaDieta) -> some View {
       switch pagina {
       case .ricette: RicetteView()
-      case .template, .spesa, .andamento: PaginaDietaInArrivo(titolo: pagina.titolo)
+      case .template: TemplateView()
+      case .spesa, .andamento: PaginaDietaInArrivo(titolo: pagina.titolo)
       }
     }
 
@@ -149,6 +152,8 @@
         AlimentiPersonaliView(codice: codice)
       case .ricetta(let id):
         DettaglioRicettaView(id: id)
+      case .template(let id):
+        DettaglioTemplateView(id: id)
       }
     }
   }

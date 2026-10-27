@@ -13,19 +13,19 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-070 · Pagina Torrent
 
-Stato: pianificato (#55) · Parità: DL-001, DL-002 · Mockup: tavola 21
+Stato: fatto (#98) · Parità: DL-001, DL-002 · Mockup: tavola 21
 
 Sul sito c'è solo il widget; su iPhone serve una pagina, in sola lettura
 come il widget.
 
 Accettazione:
 
-- [ ] In testata la velocità totale di download, grande, in mono.
-- [ ] I torrent in download, i più vicini alla fine per primi: nome,
+- [x] In testata la velocità totale di download, grande, in mono.
+- [x] I torrent in download, i più vicini alla fine per primi: nome,
       barra, percentuale, velocità e tempo rimanente. Sotto, in righe più
       piccole, quelli in coda e in seed (`Mostra tutto` oltre i 5).
-- [ ] Aggiornamento ogni 5 secondi in primo piano (IOS-012).
-- [ ] qBittorrent non raggiungibile o accesso non riuscito: lo dice con
+- [x] Aggiornamento ogni 5 secondi in primo piano (IOS-012).
+- [x] qBittorrent non raggiungibile o accesso non riuscito: lo dice con
       la StatusPill `offline`, e `Aggiungi` resta disattivato.
 
 ### IOS-071 · Aggiungere un torrent

@@ -159,3 +159,69 @@ import Testing
     }
   }
 }
+
+@Suite struct TrackerTests {
+  @Test func acquaECaffeinaDelGiorno() throws {
+    let giorno = try JSONDecoder().decode(GiornoDieta.self, from: Data(GiornoCompletoTests.corpo.utf8))
+    #expect(giorno.waterMl == 1500)
+    #expect(giorno.goal?.waterMl == 2500)
+    #expect(giorno.testoAcqua == "1,5 / 2,5 l")
+    #expect(giorno.avanzamentoAcqua == 0.6)
+    #expect(giorno.testoCaffeina == "180 mg · 60 dai pasti")
+  }
+
+  @Test func senzaObiettivoDellAcquaNienteBarra() {
+    let senza = GiornoDieta(
+      date: "2026-10-27", totals: Macro(kcal: 0, protein: 0, carbs: 0, fat: 0), waterMl: 750)
+    #expect(senza.avanzamentoAcqua == nil)
+    #expect(senza.testoAcqua == "0,8 l")
+    #expect(senza.testoCaffeina == "0 mg")
+    let soloContatore = GiornoDieta(
+      date: "2026-10-27", totals: Macro(kcal: 0, protein: 0, carbs: 0, fat: 0),
+      caffeine: GiornoDieta.Caffeina(totalMg: 80, mealsMg: 0))
+    #expect(soloContatore.testoCaffeina == "80 mg")
+  }
+
+  @Test func unBicchiereEUnEspresso() async throws {
+    let acqua = TransportFinto(.risposta(200, GiornoCompletoTests.corpo))
+    _ = try await APIClient(transport: acqua).aggiungiAcqua(giorno: "2026-10-27")
+    #expect(acqua.richiesta?.httpMethod == "POST")
+    #expect(acqua.richiesta?.url?.path == "/api/v1/nutrition/water")
+    let corpoAcqua = try #require(acqua.richiesta?.httpBody)
+    let jsonAcqua = try #require(
+      try JSONSerialization.jsonObject(with: corpoAcqua) as? [String: Any])
+    #expect(jsonAcqua["ml"] as? Double == 250)
+    #expect(jsonAcqua["date"] as? String == "2026-10-27")
+
+    let caffe = TransportFinto(.risposta(200, GiornoCompletoTests.corpo))
+    _ = try await APIClient(transport: caffe).aggiungiCaffeina(giorno: "2026-10-27")
+    let corpoCaffe = try #require(caffe.richiesta?.httpBody)
+    let jsonCaffe = try #require(
+      try JSONSerialization.jsonObject(with: corpoCaffe) as? [String: Any])
+    #expect(jsonCaffe["mg"] as? Double == 80)
+    #expect(jsonCaffe["source"] as? String == "Espresso")
+  }
+
+  @Test func annullaLUltimaVoce() async throws {
+    let acqua = TransportFinto(.risposta(200, GiornoCompletoTests.corpo))
+    _ = try await APIClient(transport: acqua).annullaAcqua(giorno: "2026-10-27")
+    #expect(acqua.richiesta?.httpMethod == "DELETE")
+    #expect(acqua.richiesta?.url?.path == "/api/v1/nutrition/water/last")
+    #expect(acqua.richiesta?.url?.query == "date=2026-10-27")
+
+    let caffe = TransportFinto(.risposta(200, GiornoCompletoTests.corpo))
+    _ = try await APIClient(transport: caffe).annullaCaffeina(giorno: "2026-10-27")
+    #expect(caffe.richiesta?.url?.path == "/api/v1/nutrition/caffeine/last")
+  }
+
+  @Test func spuntaUnIntegratore() async throws {
+    let transport = TransportFinto(.risposta(200, GiornoCompletoTests.corpo))
+    _ = try await APIClient(transport: transport).spuntaIntegratore(
+      "a", giorno: "2026-10-27", preso: true)
+    #expect(transport.richiesta?.httpMethod == "PUT")
+    #expect(transport.richiesta?.url?.path == "/api/v1/nutrition/supplements/a/taken")
+    let corpo = try #require(transport.richiesta?.httpBody)
+    let json = try #require(try JSONSerialization.jsonObject(with: corpo) as? [String: Any])
+    #expect(json["taken"] as? Bool == true)
+  }
+}

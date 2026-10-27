@@ -232,7 +232,7 @@ public struct SlotGiorno: Decodable, Equatable, Identifiable, Sendable {
 }
 
 /// Un integratore attivo e se è stato preso oggi.
-public struct IntegratoreGiorno: Decodable, Equatable, Sendable {
+public struct IntegratoreGiorno: Decodable, Equatable, Identifiable, Sendable {
   public let id: String
   public let name: String
   public let taken: Bool
@@ -258,12 +258,15 @@ public struct Macro: Decodable, Equatable, Sendable {
   public let protein: Double
   public let carbs: Double
   public let fat: Double
+  /// L'acqua da bere, solo nell'obiettivo del giorno (NUT-012).
+  public let waterMl: Double?
 
-  public init(kcal: Double, protein: Double, carbs: Double, fat: Double) {
+  public init(kcal: Double, protein: Double, carbs: Double, fat: Double, waterMl: Double? = nil) {
     self.kcal = kcal
     self.protein = protein
     self.carbs = carbs
     self.fat = fat
+    self.waterMl = waterMl
   }
 }
 
@@ -325,5 +328,91 @@ extension APIClient {
       throw .rispostaInattesa(codice: nil)
     }
     _ = try await dati("nutrition/plans/\(id)/status", metodo: "PUT", corpo: json)
+  }
+}
+
+extension GiornoDieta {
+  /// L'acqua del giorno sulla quota (NUT-012): da 0 a 1, nil senza
+  /// obiettivo dell'acqua.
+  public var avanzamentoAcqua: Double? {
+    guard let quota = goal?.waterMl, quota > 0 else { return nil }
+    return min(1, Double(waterMl ?? 0) / quota)
+  }
+
+  /// "1,5 / 2,5 l", o solo i litri bevuti senza obiettivo.
+  public var testoAcqua: String {
+    let bevuta = Formato.litri(waterMl ?? 0)
+    guard let quota = goal?.waterMl, quota > 0 else { return "\(bevuta) l" }
+    return "\(bevuta) / \(Formato.litri(Int(quota))) l"
+  }
+
+  /// "180 mg · 60 dai pasti".
+  public var testoCaffeina: String {
+    guard let caffeina = caffeine else { return "0 mg" }
+    guard caffeina.mealsMg > 0 else { return "\(caffeina.totalMg) mg" }
+    return "\(caffeina.totalMg) mg · \(caffeina.mealsMg) dai pasti"
+  }
+}
+
+extension Formato {
+  /// I millilitri in litri con una cifra: "1,5".
+  public static func litri(_ ml: Int) -> String {
+    numero(Double(ml) / 1000, decimali: 1)
+  }
+}
+
+extension APIClient {
+  /// `POST /nutrition/water` (NUT-012): un bicchiere da 250 ml.
+  public func aggiungiAcqua(giorno: String, ml: Double = 250) async throws(APIError) -> GiornoDieta {
+    struct Corpo: Encodable, Sendable {
+      let date: String
+      let ml: Double
+    }
+    return try await invia("POST", "nutrition/water", corpo: Corpo(date: giorno, ml: ml))
+  }
+
+  /// `DELETE /nutrition/water/last`: annulla l'ultima voce del giorno.
+  public func annullaAcqua(giorno: String) async throws(APIError) -> GiornoDieta {
+    try await inviaConGiorno("nutrition/water/last", giorno: giorno)
+  }
+
+  /// `POST /nutrition/caffeine` (NUT-013): un espresso, 80 mg.
+  public func aggiungiCaffeina(
+    giorno: String, mg: Double = 80, fonte: String = "Espresso"
+  ) async throws(APIError) -> GiornoDieta {
+    struct Corpo: Encodable, Sendable {
+      let date: String
+      let mg: Double
+      let source: String
+    }
+    return try await invia(
+      "POST", "nutrition/caffeine", corpo: Corpo(date: giorno, mg: mg, source: fonte))
+  }
+
+  /// `DELETE /nutrition/caffeine/last`.
+  public func annullaCaffeina(giorno: String) async throws(APIError) -> GiornoDieta {
+    try await inviaConGiorno("nutrition/caffeine/last", giorno: giorno)
+  }
+
+  /// `PUT /nutrition/supplements/{id}/taken` (NUT-014).
+  public func spuntaIntegratore(
+    _ id: String, giorno: String, preso: Bool
+  ) async throws(APIError) -> GiornoDieta {
+    struct Corpo: Encodable, Sendable {
+      let date: String
+      let taken: Bool
+    }
+    return try await invia(
+      "PUT", "nutrition/supplements/\(id)/taken", corpo: Corpo(date: giorno, taken: preso))
+  }
+
+  /// Le `DELETE` dei contatori vogliono il giorno nella query.
+  private func inviaConGiorno(_ path: String, giorno: String) async throws(APIError) -> GiornoDieta {
+    let data = try await dati(path, query: [URLQueryItem(name: "date", value: giorno)], metodo: "DELETE")
+    do {
+      return try JSONDecoder().decode(GiornoDieta.self, from: data)
+    } catch {
+      throw .rispostaInattesa(codice: nil)
+    }
   }
 }

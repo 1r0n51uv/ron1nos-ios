@@ -27,6 +27,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Formato e lint
         run: swift format lint --strict -r Sources Tests Package.swift
+      # Se il formato non torna, la patch da applicare finisce nel log.
+      - name: Diff del formato
+        if: failure()
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          swift format --in-place -r Sources Tests Package.swift
+          git diff
       - name: Build
         run: swift build
       - name: Test

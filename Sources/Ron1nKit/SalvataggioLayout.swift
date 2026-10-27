@@ -71,3 +71,8 @@ public final class SalvataggioLayout {
 extension Avviso {
   public static var layoutNonSalvato: Avviso { Avviso("Layout non salvato", azione: "Riprova") }
 }
+
+extension Avviso {
+  /// Dopo il `−` in Modifica (IOS-022): 8 secondi per annullare.
+  public static var widgetRimosso: Avviso { Avviso("Widget rimosso", azione: "Annulla") }
+}

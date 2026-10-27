@@ -28,28 +28,33 @@ import Testing
 
   @Test func predefinitoComeIlBackend() {
     let items = LayoutHome.predefinito.items
-    #expect(items.map(\.id) == [
-      "nutrition.summary", "workout.summary", "server.metric", "downloads.speed", "documents.summary",
-    ])
-    #expect(items.map { [$0.x, $0.y, $0.w, $0.h] } == [
-      [0, 0, 4, 4], [0, 4, 4, 2], [0, 6, 2, 2], [2, 6, 2, 2], [0, 8, 4, 2],
-    ])
+    #expect(
+      items.map(\.id) == [
+        "nutrition.summary", "workout.summary", "server.metric", "downloads.speed", "documents.summary",
+      ])
+    #expect(
+      items.map { [$0.x, $0.y, $0.w, $0.h] } == [
+        [0, 0, 4, 4], [0, 4, 4, 2], [0, 6, 2, 2], [2, 6, 2, 2], [0, 8, 4, 2],
+      ])
   }
 
   @Test func righeConIPiccoliAffiancati() {
     let righe = LayoutHome.predefinito.righe()
-    #expect(righe.map { $0.map(\.id) } == [
-      ["nutrition.summary"], ["workout.summary"], ["server.metric", "downloads.speed"], ["documents.summary"],
-    ])
+    #expect(
+      righe.map { $0.map(\.id) } == [
+        ["nutrition.summary"], ["workout.summary"], ["server.metric", "downloads.speed"],
+        ["documents.summary"],
+      ])
   }
 
   @Test func moduloSpentoNonSiVedeMaResta() {
     let layout = LayoutHome.predefinito
     let righe = layout.righe(spenti: ["server"])
     // downloads.speed sale e resta da solo: un piccolo a sinistra.
-    #expect(righe.map { $0.map(\.id) } == [
-      ["nutrition.summary"], ["workout.summary"], ["downloads.speed"], ["documents.summary"],
-    ])
+    #expect(
+      righe.map { $0.map(\.id) } == [
+        ["nutrition.summary"], ["workout.summary"], ["downloads.speed"], ["documents.summary"],
+      ])
     #expect(layout.items.count == 5)
   }
 

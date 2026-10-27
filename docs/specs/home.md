@@ -39,20 +39,20 @@ Accettazione:
 
 ### IOS-021 · Catalogo dei widget
 
-Stato: pianificato (#27) · Parità: DASH-001, DASH-002 · Mockup: tavola 03
+Stato: fatto (#69) · Parità: DASH-001, DASH-002 · Mockup: tavola 03
 
 Accettazione:
 
-- [ ] Gli stessi id del catalogo del sito (`nutrition.calories`,
+- [x] Gli stessi id del catalogo del sito (`nutrition.calories`,
       `server.metric`…), ognuno con le misure che ha senso avere su
       iPhone, dichiarate nel catalogo del backend per il layout `iphone`.
-- [ ] Primi widget: `nutrition.summary`, `nutrition.calories`,
+- [x] Primi widget: `nutrition.summary`, `nutrition.calories`,
       `nutrition.next-meal`, `nutrition.supplements`, `workout.summary`,
       `documents.summary`, `downloads.summary`, `downloads.speed`,
       `server.summary`, `server.metric`. Gli altri moduli quando sono veri.
-- [ ] Ogni widget legge dalla stessa rotta della pagina del suo modulo,
+- [x] Ogni widget legge dalla stessa rotta della pagina del suo modulo,
       senza rotte nuove.
-- [ ] Le card di IOS-006…008 diventano `nutrition.summary`,
+- [x] Le card di IOS-006…008 diventano `nutrition.summary`,
       `downloads.summary` e `server.summary`.
 
 ### IOS-022 · Modalità Modifica

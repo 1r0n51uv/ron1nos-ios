@@ -7,6 +7,8 @@
   struct CardDieta: View {
     let carico: Carico<GiornoDieta>
     var misura: Misura?
+    /// Le macro mostrate (opzione `macros` del widget).
+    var macro = ["protein", "carbs", "fat"]
     @Environment(\.formati) private var formati
 
     var body: some View {
@@ -26,7 +28,7 @@
               .foregroundStyle(giorno.oltre ? Stile.brand : Stile.testoTenue)
           }
           if misura == nil || misura == .large {
-            ForEach(giorno.macro, id: \.nome) { riga in
+            ForEach(giorno.macro.filter { macro.contains($0.chiave) }, id: \.nome) { riga in
               RigaValore(nome: riga.nome, valore: riga.testo)
             }
           }

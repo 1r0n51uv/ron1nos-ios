@@ -7,13 +7,15 @@
   struct CardTorrent: View {
     let carico: Carico<Download>
     var misura: Misura?
+    /// Quanti download mostrare (opzione `limit` del widget).
+    var limite = Download.visibili
 
     /// Quanti torrent si vedono: nessuno nel piccolo, uno nel medio.
     private var quanti: Int {
       switch misura {
       case .small: 0
       case .medium: 1
-      default: Download.visibili
+      default: limite
       }
     }
 
@@ -28,7 +30,7 @@
               .font(.subheadline)
               .foregroundStyle(Stile.testoTenue)
           }
-          ForEach(download.inVista.prefix(quanti), id: \.hash) { torrent in
+          ForEach(download.attivi.prefix(quanti), id: \.hash) { torrent in
             VStack(alignment: .leading, spacing: 6) {
               Text(torrent.name)
                 .font(.subheadline)

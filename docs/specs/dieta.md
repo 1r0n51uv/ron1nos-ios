@@ -91,17 +91,17 @@ Accettazione:
 
 ### IOS-035 · Template settimanale
 
-Stato: pianificato (#36) · Parità: NUT-010 · Mockup: tavola 10
+Stato: fatto (#79) · Parità: NUT-010 · Mockup: tavola 10
 
 Sul telefono la griglia 7 × 5 del sito non sta: si vede un giorno alla
 volta.
 
 Accettazione:
 
-- [ ] Elenco dei template; nel template una fila di 7 giorni (`L M M G V
+- [x] Elenco dei template; nel template una fila di 7 giorni (`L M M G V
   S D`) e sotto i 5 slot del giorno scelto, ognuno con ricetta o
       alimento.
-- [ ] `Applica a una settimana`: corrente, prossima o una data (sempre da
+- [x] `Applica a una settimana`: corrente, prossima o una data (sempre da
       lunedì), con il riepilogo di quanti pasti crea e sostituisce.
 
 ### IOS-036 · Lista della spesa

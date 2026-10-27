@@ -115,10 +115,17 @@ public struct DocumentoBreve: Decodable, Equatable, Sendable {
   public let holder: String
   public let expiry: Scadenza?
   public let pinnedAt: String?
+  /// Per l'elenco dei Documenti (IOS-060).
+  public let typeId: String?
+  public let typeIcon: String?
+  public let expiresOn: String?
+  public let tags: [String]?
+  public let thumbFileId: String?
 
   public init(
     id: String, typeName: String? = nil, title: String, holder: String = "Io", expiry: Scadenza? = nil,
-    pinnedAt: String? = nil
+    pinnedAt: String? = nil, typeId: String? = nil, typeIcon: String? = nil, expiresOn: String? = nil,
+    tags: [String]? = nil, thumbFileId: String? = nil
   ) {
     self.id = id
     self.typeName = typeName
@@ -126,6 +133,11 @@ public struct DocumentoBreve: Decodable, Equatable, Sendable {
     self.holder = holder
     self.expiry = expiry
     self.pinnedAt = pinnedAt
+    self.typeId = typeId
+    self.typeIcon = typeIcon
+    self.expiresOn = expiresOn
+    self.tags = tags
+    self.thumbFileId = thumbFileId
   }
 
   public struct Scadenza: Decodable, Equatable, Sendable {

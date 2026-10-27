@@ -16,16 +16,16 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-060 · Elenco dei documenti
 
-Stato: pianificato (#49) · Parità: DOC-002, DOC-008, DOC-010 · Mockup: tavola 18
+Stato: fatto (#92) · Parità: DOC-002, DOC-008, DOC-010 · Mockup: tavola 18
 
 Accettazione:
 
-- [ ] In cima i documenti fissati in card grandi con la miniatura;
+- [x] In cima i documenti fissati in card grandi con la miniatura;
       sotto, quelli in scadenza o scaduti (lo scaduto in rosso); poi gli
       altri raggruppati per tipo, in righe semplici.
-- [ ] Ricerca per titolo e tag nella barra di navigazione; filtri per
+- [x] Ricerca per titolo e tag nella barra di navigazione; filtri per
       tipo e titolare in un menu.
-- [ ] `+` in alto apre il nuovo documento (IOS-062).
+- [x] `+` in alto apre il nuovo documento (IOS-062).
 
 ### IOS-061 · Dettaglio e copia
 

@@ -79,15 +79,15 @@ Accettazione:
 
 ### IOS-023 · Opzioni del widget
 
-Stato: pianificato (#29) · Parità: DASH-005 · Mockup: tavola 04
+Stato: fatto (#72) · Parità: DASH-005 · Mockup: tavola 04
 
 Accettazione:
 
-- [ ] Un foglio con l'anteprima del widget in alto e sotto: misura,
+- [x] Un foglio con l'anteprima del widget in alto e sotto: misura,
       variante `compatta`/`dettagliata` se il widget le ha, dati mostrati
       (per esempio la risorsa di `server.metric`, le macro di
       `nutrition.summary`, quanti download).
-- [ ] Ogni cambio si vede subito nell'anteprima e si salva con il layout.
+- [x] Ogni cambio si vede subito nell'anteprima e si salva con il layout.
 
 ### IOS-024 · Salvataggio del layout
 

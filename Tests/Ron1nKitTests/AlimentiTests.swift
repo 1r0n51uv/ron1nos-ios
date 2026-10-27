@@ -190,8 +190,8 @@ import Testing
     let richiesta = try #require(transport.richiesta)
     #expect(richiesta.httpMethod == "POST")
     #expect(richiesta.url?.path == "/api/v1/nutrition/foods")
-    let json = try #require(
-      try JSONSerialization.jsonObject(with: try #require(richiesta.httpBody)) as? [String: Any])
+    let corpo = try #require(richiesta.httpBody)
+    let json = try #require(try JSONSerialization.jsonObject(with: corpo) as? [String: Any])
     #expect(json["name"] as? String == "Pane di segale")
     #expect(json["brand"] is NSNull)
     #expect(json["barcode"] is NSNull)

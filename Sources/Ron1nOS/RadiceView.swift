@@ -123,15 +123,14 @@
       }
     }
 
-    /// Le pagine della Dieta sotto il giorno: quelle pronte e le altre in
-    /// arrivo.
+    /// Le pagine della Dieta sotto il giorno.
     @ViewBuilder
     private func paginaDieta(_ pagina: PaginaDieta) -> some View {
       switch pagina {
       case .ricette: RicetteView()
       case .template: TemplateView()
       case .spesa: SpesaView()
-      case .andamento: PaginaDietaInArrivo(titolo: pagina.titolo)
+      case .andamento: AndamentoView()
       }
     }
 
@@ -205,24 +204,6 @@
       .scrollContentBackground(.hidden)
       .background(SfondoConAlone().ignoresSafeArea())
       .navigationTitle("Impostazioni")
-    }
-  }
-
-  /// Una pagina della Dieta che arriva con le issue successive.
-  struct PaginaDietaInArrivo: View {
-    let titolo: String
-    var nota: String?
-
-    var body: some View {
-      ScrollView {
-        Text("\(nota ?? titolo) arriva con i prossimi aggiornamenti dell'app.")
-          .font(.subheadline)
-          .foregroundStyle(Stile.testoTenue)
-          .glassPanel()
-          .padding(.horizontal, 16)
-      }
-      .background(SfondoConAlone().ignoresSafeArea())
-      .navigationTitle(titolo)
     }
   }
 

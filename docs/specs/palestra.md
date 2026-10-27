@@ -75,13 +75,13 @@ Accettazione:
 
 ### IOS-054 · Gruppo muscolare e immagine
 
-Stato: pianificato (#47) · Parità: GYM-011, GYM-014
+Stato: fatto (#90) · Parità: GYM-011, GYM-014
 
 Accettazione:
 
-- [ ] Dalla pagina dell'esercizio si sceglie il gruppo da un menu con
+- [x] Dalla pagina dell'esercizio si sceglie il gruppo da un menu con
       l'elenco fisso.
-- [ ] `Scegli immagine` apre un foglio con ricerca nel catalogo e griglia
+- [x] `Scegli immagine` apre un foglio con ricerca nel catalogo e griglia
       di foto; la scelta vale per tutto lo storico.
 
 ### IOS-055 · Volume per gruppo muscolare

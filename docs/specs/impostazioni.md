@@ -58,16 +58,16 @@ Accettazione:
 
 ### IOS-093 · Integrazioni, Backup, Informazioni
 
-Stato: pianificato (#61) · Parità: SET-009, SET-011, SET-012
+Stato: fatto (#103) · Parità: SET-009, SET-011, SET-012
 
 Accettazione:
 
-- [ ] Integrazioni: una riga per servizio con stato e ora del controllo;
+- [x] Integrazioni: una riga per servizio con stato e ora del controllo;
       `Verifica`; per i servizi non configurati, le variabili da
       impostare.
-- [ ] Backup: `Esporta` passa il JSON al foglio di condivisione;
+- [x] Backup: `Esporta` passa il JSON al foglio di condivisione;
       `Importa` lo legge da File, mostra cosa cambia e chiede conferma.
-- [ ] Informazioni: versione dell'app (`0.1.N` del builder) e del
+- [x] Informazioni: versione dell'app (`0.1.N` del builder) e del
       backend, stato di backend e database, uptime, link al repository.
 
 ### IOS-094 · Notifiche e Salute

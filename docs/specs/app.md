@@ -278,20 +278,20 @@ Accettazione:
 
 ### IOS-012 · Stati comuni delle schermate
 
-Stato: pianificato (#25) · Parità: skeleton ed errori dei widget del sito
+Stato: fatto (#66) · Parità: skeleton ed errori dei widget del sito
 
 Accettazione:
 
-- [ ] Primo caricamento: skeleton delle card, senza spinner a schermo
+- [x] Primo caricamento: skeleton delle card, senza spinner a schermo
       intero.
-- [ ] Trascinando in basso si ricarica la schermata.
-- [ ] Errore: la card o la sezione mostra il titolo e il codice in
+- [x] Trascinando in basso si ricarica la schermata.
+- [x] Errore: la card o la sezione mostra il titolo e il codice in
       monospazio (IOS-002), senza bloccare le altre sezioni.
-- [ ] Modulo spento (404 `module_disabled`): la pagina dice `Modulo
+- [x] Modulo spento (404 `module_disabled`): la pagina dice `Modulo
   spento` con il link a Impostazioni › Moduli.
-- [ ] Torrent e Server si aggiornano ogni 5 secondi solo con l'app in
+- [x] Torrent e Server si aggiornano ogni 5 secondi solo con l'app in
       primo piano e la schermata visibile.
-- [ ] Le azioni che cambiano dati mostrano l'esito con un toast in basso,
+- [x] Le azioni che cambiano dati mostrano l'esito con un toast in basso,
       sopra la TabBar (`Salvato`, `Copiato`, `Non salvato · Riprova`).
 
 ### IOS-013 · Build dell'interfaccia in CI

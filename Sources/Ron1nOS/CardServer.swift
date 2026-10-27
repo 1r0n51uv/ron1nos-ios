@@ -6,19 +6,24 @@
   /// poi temperatura, da quanto è acceso e la rete.
   struct CardServer: View {
     let carico: Carico<StatoServer>
+    var misura: Misura?
 
     var body: some View {
-      Card(titolo: "Server", carico: carico) { stato in
-        VStack(alignment: .leading, spacing: 10) {
+      Card(titolo: "Server", carico: carico, riempi: misura != nil) { stato in
+        VStack(alignment: .leading, spacing: misura == .small ? 6 : 10) {
           ForEach(stato.risorse, id: \.nome) { risorsa in
             VStack(alignment: .leading, spacing: 6) {
               RigaValore(nome: risorsa.nome, valore: risorsa.testo)
-              Barra(valore: risorsa.valore, segnale: risorsa.segnale)
+              if misura != .small {
+                Barra(valore: risorsa.valore, segnale: risorsa.segnale)
+              }
             }
           }
-          Text(stato.riepilogo)
-            .font(.system(.footnote, design: .monospaced))
-            .foregroundStyle(Stile.testoTenue)
+          if misura == nil || misura == .large {
+            Text(stato.riepilogo)
+              .font(.system(.footnote, design: .monospaced))
+              .foregroundStyle(Stile.testoTenue)
+          }
         }
       }
     }

@@ -7,12 +7,15 @@ public struct GiornoDieta: Decodable, Equatable, Sendable {
   /// Le kcal del giorno: obiettivo più l'attività letta da YAZIO. null
   /// senza obiettivo.
   public let quota: Quota?
+  /// Il prossimo slot ancora da mangiare oggi, se c'è: `dinner`.
+  public let nextSlot: String?
 
-  public init(date: String, totals: Macro, goal: Macro? = nil, quota: Quota? = nil) {
+  public init(date: String, totals: Macro, goal: Macro? = nil, quota: Quota? = nil, nextSlot: String? = nil) {
     self.date = date
     self.totals = totals
     self.goal = goal
     self.quota = quota
+    self.nextSlot = nextSlot
   }
 
   public struct Quota: Decodable, Equatable, Sendable {

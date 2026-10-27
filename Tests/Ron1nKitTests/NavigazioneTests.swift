@@ -44,3 +44,11 @@ import Testing
     #expect(preferenze.navOrder == Preferenze.predefinite.navOrder)
   }
 }
+
+@Suite struct SchedaPerModuloTests {
+  @Test func moduli() {
+    #expect(Scheda.perModulo("nutrition") == .dieta)
+    #expect(Scheda.perModulo("downloads") == .torrent)
+    #expect(Scheda.perModulo("notes") == nil)
+  }
+}

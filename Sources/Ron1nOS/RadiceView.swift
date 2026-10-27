@@ -49,6 +49,11 @@
         primoAvvio()
         await sessione.aggiornaPreferenze()
       }
+      .onChange(of: sessione.daAprire) { _, scheda in
+        guard let scheda else { return }
+        sessione.daAprire = nil
+        apri(scheda)
+      }
       .onChange(of: navigazione) { _, nuova in
         // Un modulo spento sparisce: se era aperto si torna alla Home.
         if !nuova.schede.contains(selezione) { selezione = .home }
@@ -76,6 +81,19 @@
       return true
     }
 
+    /// Un widget toccato apre il suo modulo: nella sua scheda se sta nella
+    /// TabBar, se no dentro `Altro`.
+    private func apri(_ scheda: Scheda) {
+      let navigazione = sessione.navigazione
+      if navigazione.schede.contains(scheda) {
+        percorsi[scheda] = []
+        selezione = scheda
+      } else if navigazione.altro.contains(scheda) {
+        percorsi[.altro] = [.modulo(scheda)]
+        selezione = .altro
+      }
+    }
+
     /// Al primo avvio, senza service token, l'app apre Impostazioni › Accesso.
     private func primoAvvio() {
       guard sessione.archivio.carica() == nil else { return }
@@ -86,7 +104,7 @@
     @ViewBuilder
     private func radice(_ scheda: Scheda) -> some View {
       switch scheda {
-      case .home: StatoView()
+      case .home: HomeView()
       case .altro: AltroView()
       case .impostazioni: ImpostazioniView()
       default: PaginaInArrivo(scheda: scheda)

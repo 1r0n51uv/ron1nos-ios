@@ -68,11 +68,19 @@ public struct RiepilogoAllenamento: Decodable, Equatable, Sendable {
     public let day: String
     public let routine: String
     public let durationSeconds: Int?
+    /// La sessione, per aprirne il dettaglio (IOS-052).
+    public let id: String?
+    /// Il primo esercizio, con la foto (IOS-050).
+    public let exercise: RifEsercizio?
 
-    public init(day: String, routine: String, durationSeconds: Int?) {
+    public init(
+      day: String, routine: String, durationSeconds: Int?, id: String? = nil, exercise: RifEsercizio? = nil
+    ) {
       self.day = day
       self.routine = routine
       self.durationSeconds = durationSeconds
+      self.id = id
+      self.exercise = exercise
     }
   }
 

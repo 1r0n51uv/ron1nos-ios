@@ -52,6 +52,7 @@
             }
             collegamento("Storico delle sessioni", icona: "clock.arrow.circlepath", pagina: .storicoPalestra)
             collegamento("Esercizi", icona: "dumbbell", pagina: .esercizi)
+            collegamento("Volume per gruppo", icona: "chart.bar", pagina: .volumeGruppi)
           }
         }
         .padding(16)

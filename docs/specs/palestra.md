@@ -86,10 +86,10 @@ Accettazione:
 
 ### IOS-055 · Volume per gruppo muscolare
 
-Stato: pianificato (#48) · Parità: GYM-012
+Stato: fatto (#91) · Parità: GYM-012
 
 Accettazione:
 
-- [ ] Barre impilate delle ultime 12 settimane in toni di grigio (Swift
+- [x] Barre impilate delle ultime 12 settimane in toni di grigio (Swift
       Charts), selettore `Volume` / `Serie`, legenda sotto, `Non
   assegnato` tratteggiato.

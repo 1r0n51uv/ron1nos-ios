@@ -51,7 +51,7 @@
       .refreshable { await carica() }
       .task(id: data) { await carica() }
       .task(id: sessione.versione) { await carica() }
-      .aggiornaOgni(secondi: 60) { await carica() }
+      .aggiornaOgni(60) { await carica() }
     }
 
     private func carica() async {

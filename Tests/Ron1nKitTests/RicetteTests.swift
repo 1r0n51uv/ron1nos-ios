@@ -69,8 +69,8 @@ import Testing
     let post = TransportFinto(.risposta(201, RicetteTests.dettaglio))
     _ = try await APIClient(transport: post).creaRicetta(modulo)
     #expect(post.richiesta?.httpMethod == "POST")
-    let json = try #require(
-      try JSONSerialization.jsonObject(with: try #require(post.richiesta?.httpBody)) as? [String: Any])
+    let corpo = try #require(post.richiesta?.httpBody)
+    let json = try #require(try JSONSerialization.jsonObject(with: corpo) as? [String: Any])
     #expect(json["name"] as? String == "Insalata")
     #expect(json["notes"] is NSNull)
     let items = try #require(json["items"] as? [[String: Any]])
@@ -93,8 +93,8 @@ import Testing
       giorno: "2026-10-27", slot: "dinner", ricetta: "r1", porzioni: 0.5)
     #expect(post.richiesta?.httpMethod == "POST")
     #expect(post.richiesta?.url?.path == "/api/v1/nutrition/meals")
-    let json = try #require(
-      try JSONSerialization.jsonObject(with: try #require(post.richiesta?.httpBody)) as? [String: Any])
+    let corpo = try #require(post.richiesta?.httpBody)
+    let json = try #require(try JSONSerialization.jsonObject(with: corpo) as? [String: Any])
     #expect(json["slot"] as? String == "dinner")
     let items = try #require(json["items"] as? [[String: Any]])
     #expect(items.first?["recipeId"] as? String == "r1")

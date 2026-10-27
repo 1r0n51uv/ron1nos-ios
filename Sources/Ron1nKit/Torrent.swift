@@ -86,3 +86,31 @@ extension APIClient {
     try await get("downloads")
   }
 }
+
+extension Download {
+  /// La pagina Torrent (IOS-070): sotto i download, in righe più piccole,
+  /// gli altri torrent; oltre 5 si vedono con `Mostra tutto`.
+  public static let altriVisibili = 5
+
+  /// In coda, in seed, fermi o in errore, nell'ordine del server.
+  public var altri: [Torrent] { torrents.filter { $0.state != .downloading } }
+}
+
+extension Torrent {
+  /// "In coda", "In seed", "Fermo", "Errore".
+  public var statoTesto: String {
+    switch state {
+    case .downloading: "In download"
+    case .queued: "In coda"
+    case .seeding: "In seed"
+    case .stopped: "Fermo"
+    case .error: "Errore"
+    case .sconosciuto(let valore): valore
+    }
+  }
+
+  /// La riga piccola: "In coda · 42%".
+  public var rigaBreve: String {
+    state == .seeding ? statoTesto : "\(statoTesto) · \(Formato.percento(progress * 100))"
+  }
+}

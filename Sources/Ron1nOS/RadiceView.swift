@@ -158,6 +158,7 @@
       case .dieta: DietaView()
       case .palestra: PalestraView()
       case .documenti: DocumentiView()
+      case .torrent: TorrentView()
       case .altro: AltroView()
       case .impostazioni: ImpostazioniView()
       default: PaginaInArrivo(scheda: scheda)

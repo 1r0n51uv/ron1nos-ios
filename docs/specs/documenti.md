@@ -91,14 +91,14 @@ Accettazione:
 
 ### IOS-065 · Avvisi di scadenza
 
-Stato: pianificato (#54) · Parità: DOC-010 · Solo iOS · Mockup: tavola 28
+Stato: fatto (#97) · Parità: DOC-010 · Solo iOS · Mockup: tavola 28
 
 Accettazione:
 
-- [ ] Per ogni documento con scadenza, una notifica locale per ogni
+- [x] Per ogni documento con scadenza, una notifica locale per ogni
       preavviso attivo (90, 30, 7 giorni) e il giorno dopo la scadenza,
       alle 9:00.
-- [ ] Il testo non contiene numeri né nomi, solo tipo e data:
+- [x] Il testo non contiene numeri né nomi, solo tipo e data:
       `Passaporto · scade tra 30 giorni`.
-- [ ] Toccare la notifica apre il documento, dopo Face ID.
-- [ ] Si basa sulle notifiche locali di IOS-011.
+- [x] Toccare la notifica apre il documento, dopo Face ID.
+- [x] Si basa sulle notifiche locali di IOS-011.

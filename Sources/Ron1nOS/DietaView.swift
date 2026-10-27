@@ -11,6 +11,8 @@
     @State private var giorno: Carico<GiornoDieta> = .inCorso
     @State private var scelto: String?
     @State private var striscia = Striscia()
+    /// Il pasto da registrare nel foglio (IOS-031).
+    @State private var registra: Pasto?
 
     private var data: String { scelto ?? striscia.oggi }
 
@@ -30,7 +32,9 @@
           case .pronto(let valore):
             QuotaDelGiorno(giorno: valore)
             ForEach(valore.slotInOrdine) { slot in
-              CardSlot(slot: slot, giorno: data, segna: segna)
+              CardSlot(slot: slot, giorno: data, segna: segna) { nuovo in
+                registra = Pasto(giorno: data, slot: nuovo)
+              }
             }
             TrackerInArrivo()
             CollegamentiDieta()
@@ -47,11 +51,30 @@
             Button("Oggi") { scelto = striscia.oggi }
           }
         }
+        ToolbarItem(placement: .topBarTrailing) {
+          Button {
+            registra = Pasto(giorno: data, slot: slotProposto)
+          } label: {
+            Image(systemName: "plus")
+          }
+          .accessibilityLabel("Registra un pasto")
+        }
+      }
+      .sheet(item: $registra) { pasto in
+        RegistraPastoView(giorno: pasto.giorno, slot: pasto.slot) { nuovo in
+          giorno = .pronto(nuovo)
+        }
       }
       .refreshable { await carica() }
       .task(id: data) { await carica() }
       .task(id: sessione.versione) { await carica() }
       .aggiornaOgni(60) { await carica() }
+    }
+
+    /// Lo slot proposto: quello dell'ora corrente, se no il prossimo da
+    /// segnare, se no il pranzo.
+    private var slotProposto: String {
+      giorno.valore?.suggestedSlot ?? giorno.valore?.nextSlot ?? "lunch"
     }
 
     private func carica() async {
@@ -73,6 +96,14 @@
         }
       }
     }
+  }
+
+  /// Il pasto che il foglio di registrazione sta compilando.
+  struct Pasto: Identifiable, Hashable {
+    let giorno: String
+    let slot: String
+
+    var id: String { "\(giorno)/\(slot)" }
   }
 
   /// La striscia dei giorni in alto, scorrevole, con oggi al centro.
@@ -217,6 +248,8 @@
     let slot: SlotGiorno
     let giorno: String
     let segna: (String, Bool) -> Void
+    /// Tocca `+`: apre il foglio per registrare in questo slot.
+    let registra: (String) -> Void
     @Environment(\.formati) private var formati
 
     var body: some View {
@@ -231,12 +264,15 @@
               .font(.system(.subheadline, design: .monospaced))
               .foregroundStyle(slot.mangiato ? Stile.testo : Stile.testoTenue)
           }
-          if slot.vuoto {
-            NavigationLink(value: Pagina.registraPasto(giorno: giorno, slot: slot.slot)) {
+          if !slot.mangiato {
+            Button {
+              registra(slot.slot)
+            } label: {
               Image(systemName: "plus")
                 .font(.system(size: 14, weight: .semibold))
                 .frame(width: 30, height: 30)
             }
+            .buttonStyle(.plain)
             .glassChip()
             .accessibilityLabel("Aggiungi a \(slot.titolo)")
           }
@@ -263,6 +299,14 @@
         }
       }
       .glassPanel()
+      .overlay {
+        if slot.mangiato {
+          NavigationLink(value: Pagina.dettaglioPasto(giorno: giorno, slot: slot.slot)) {
+            Color.clear
+          }
+          .accessibilityLabel("Apri \(slot.titolo)")
+        }
+      }
     }
   }
 

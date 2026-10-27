@@ -296,7 +296,7 @@ Accettazione:
 
 ### IOS-013 · Build dell'interfaccia in CI
 
-Stato: in corso · Origine: implementazione di IOS-009…094
+Stato: fatto (#63) · Origine: implementazione di IOS-009…094
 
 Su Linux `Sources/Ron1nOS` compila vuoto, quindi un errore nelle schermate
 SwiftUI si vedeva solo nella build sul server, dopo il merge. Con decine di
@@ -304,8 +304,8 @@ schermate nuove serve un controllo prima.
 
 Accettazione:
 
-- [ ] La CI ha un job `interfaccia` che compila il target `Ron1nOS` per iOS
+- [x] La CI ha un job `interfaccia` che compila il target `Ron1nOS` per iOS
       (`xcodebuild`, destinazione generica, senza firma) su un runner
       macOS di GitHub, gratuito per i repository pubblici.
-- [ ] Solo un controllo: niente IPA, niente firma, niente `.xcodeproj`. La
+- [x] Solo un controllo: niente IPA, niente firma, niente `.xcodeproj`. La
       build vera resta quella del server (IOSB).

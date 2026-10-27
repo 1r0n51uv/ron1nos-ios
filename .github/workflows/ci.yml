@@ -45,7 +45,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Versione di Xcode
         run: xcodebuild -version
+      # Nel log restano solo errori, avvisi del codice e l'esito.
       - name: Build dell'interfaccia per iOS
-        run: >-
-          xcodebuild build -scheme Ron1nOS -destination 'generic/platform=iOS'
-          -skipPackagePluginValidation CODE_SIGNING_ALLOWED=NO
+        run: |
+          set -o pipefail
+          xcodebuild build -scheme Ron1nOS -destination 'generic/platform=iOS' \
+            -skipPackagePluginValidation CODE_SIGNING_ALLOWED=NO 2>&1 |
+            grep -E "(error|warning): |BUILD (SUCCEEDED|FAILED)"

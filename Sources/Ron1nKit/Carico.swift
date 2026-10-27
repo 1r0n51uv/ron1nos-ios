@@ -8,7 +8,7 @@ public enum Carico<Valore: Equatable & Sendable>: Equatable, Sendable {
   case fallito(APIError)
 
   /// Esegue `richiesta` e ne fa lo stato della card.
-  public static func da(_ richiesta: () async throws -> Valore) async -> Carico {
+  public static func da(_ richiesta: @Sendable () async throws -> Valore) async -> Carico {
     do {
       return .pronto(try await richiesta())
     } catch {

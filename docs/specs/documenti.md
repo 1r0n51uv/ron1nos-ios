@@ -29,21 +29,21 @@ Accettazione:
 
 ### IOS-061 · Dettaglio e copia
 
-Stato: pianificato (#50) · Parità: DOC-004, DOC-009, DOC-012, DOC-013 · Mockup: tavola 19
+Stato: fatto (#93) · Parità: DOC-004, DOC-009, DOC-012, DOC-013 · Mockup: tavola 19
 
 Accettazione:
 
-- [ ] Allegati in alto, scorrevoli in orizzontale; un tocco apre
+- [x] Allegati in alto, scorrevoli in orizzontale; un tocco apre
       l'immagine o il PDF a schermo intero (Quick Look).
-- [ ] Sotto, i campi: etichetta piccola, valore in mono. Un tocco sul
+- [x] Sotto, i campi: etichetta piccola, valore in mono. Un tocco sul
       campo lo copia, con toast `Copiato` e feedback aptico. Gli appunti
       scadono dopo 2 minuti (`UIPasteboard` con scadenza) e restano su
       questo telefono (`localOnly`).
-- [ ] Tenendo premuta un'immagine: `Copia immagine`, `Condividi`.
-- [ ] Menu `⋯`: `Modifica`, `Fissa` / `Togli dall'evidenza`, `Copia
+- [x] Tenendo premuta un'immagine: `Copia immagine`, `Condividi`.
+- [x] Menu `⋯`: `Modifica`, `Fissa` / `Togli dall'evidenza`, `Copia
   tutto`, `PDF di riepilogo` (foglio di condivisione, con l'avviso che
       il file è in chiaro), `Elimina` con conferma.
-- [ ] Allegati e PDF passano da file temporanei cancellati alla chiusura.
+- [x] Allegati e PDF passano da file temporanei cancellati alla chiusura.
 
 ### IOS-062 · Nuovo documento
 

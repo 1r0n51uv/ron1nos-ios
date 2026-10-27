@@ -12,6 +12,7 @@
     /// Chiamata dopo un salvataggio o un'eliminazione.
     let cambiato: @MainActor () -> Void
 
+    /// Dopo un salvataggio si torna alla pagina di prima.
     @Environment(\.dismiss) private var chiudi
     @State private var clientId = ""
     @State private var clientSecret = ""
@@ -24,15 +25,6 @@
     var body: some View {
       ScrollView {
         VStack(alignment: .leading, spacing: 20) {
-          HStack {
-            Text("Accesso")
-              .font(.system(size: 28, weight: .semibold))
-              .foregroundStyle(Stile.testo)
-            Spacer()
-            Button("Chiudi") { chiudi() }
-              .foregroundStyle(Stile.testoTenue)
-          }
-
           Text(
             "Il service token di Cloudflare Access fa entrare l'app senza il codice via email. "
               + "Sul server è in ~/.cf-home/ron1nos-ios.json: copialo tutto e tocca Incolla."
@@ -92,9 +84,10 @@
           }
         }
         .padding(.horizontal, 16)
-        .padding(.top, 24)
+        .padding(.top, 8)
       }
       .background(SfondoConAlone().ignoresSafeArea())
+      .navigationTitle("Accesso")
       .onAppear {
         salvato = archivio.carica() != nil
         tokenSalvato = archivioToken.carica() != nil

@@ -203,32 +203,32 @@ Accettazione:
 
 ### IOS-009 · Navigazione a schede
 
-Stato: pianificato (#22) · Scelta del proprietario il 2026-10-26 · Mockup: tavole 01, 25, 29
+Stato: fatto (#64) · Scelta del proprietario il 2026-10-26 · Mockup: tavole 01, 25, 29
 
 Accettazione:
 
-- [ ] In basso la TabBar nativa di iOS 26 (`TabView`), in Liquid Glass
+- [x] In basso la TabBar nativa di iOS 26 (`TabView`), in Liquid Glass
       di sistema: flottante, staccata dai bordi, rifrange il contenuto
       che le scorre sotto. Richiesta del proprietario il 2026-10-26.
-- [ ] 5 voci: `Home`, `Dieta`, `Palestra`, `Documenti`, `Altro`, con
+- [x] 5 voci: `Home`, `Dieta`, `Palestra`, `Documenti`, `Altro`, con
       icona e nome. La voce attiva è tinta di rosso (`#FF2A2A`), l'unico
       accento della barra.
-- [ ] Scorrendo in basso la barra si riduce
+- [x] Scorrendo in basso la barra si riduce
       (`tabBarMinimizeBehavior(.onScrollDown)`) e torna intera scorrendo
       in su: lascia spazio ai contenuti.
-- [ ] Barre di navigazione, fogli e menu usano lo stesso Liquid Glass di
+- [x] Barre di navigazione, fogli e menu usano lo stesso Liquid Glass di
       sistema. Le card restano col velo di IOS-003: il vetro vero sta solo
       sui controlli che galleggiano sopra i contenuti.
-- [ ] Su iOS prima della 26 la TabBar standard, senza adattamenti.
-- [ ] `Altro` apre un elenco con `Torrent`, `Server`, `Impostazioni` e i
+- [x] Su iOS prima della 26 la TabBar standard, senza adattamenti.
+- [x] `Altro` apre un elenco con `Torrent`, `Server`, `Impostazioni` e i
       moduli che non stanno nelle prime quattro voci.
-- [ ] L'ordine dei moduli segue Impostazioni › Navigazione del sito
+- [x] L'ordine dei moduli segue Impostazioni › Navigazione del sito
       (SET-006): i primi tre moduli dopo Dashboard prendono le voci 2…4,
       gli altri finiscono in `Altro`. Home resta prima, `Altro` ultima.
-- [ ] Un modulo spento (SET-005) sparisce dalla TabBar e da `Altro`.
-- [ ] Ogni scheda tiene la sua pila di navigazione; toccare la voce già
+- [x] Un modulo spento (SET-005) sparisce dalla TabBar e da `Altro`.
+- [x] Ogni scheda tiene la sua pila di navigazione; toccare la voce già
       attiva torna alla radice.
-- [ ] La schermata di Accesso (IOS-004, IOS-005) passa in Impostazioni ›
+- [x] La schermata di Accesso (IOS-004, IOS-005) passa in Impostazioni ›
       Accesso (IOS-090); al primo avvio, senza token, l'app apre
       direttamente quella.
 

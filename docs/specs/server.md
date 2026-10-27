@@ -11,7 +11,7 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-080 · Pagina Server
 
-Stato: proposto · Parità: SRV-001…SRV-007 · Mockup: tavola 24
+Stato: pianificato (#57) · Parità: SRV-001…SRV-007 · Mockup: tavola 24
 
 Accettazione:
 

@@ -13,7 +13,7 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-070 · Pagina Torrent
 
-Stato: proposto · Parità: DL-001, DL-002 · Mockup: tavola 21
+Stato: pianificato (#55) · Parità: DL-001, DL-002 · Mockup: tavola 21
 
 Sul sito c'è solo il widget; su iPhone serve una pagina, in sola lettura
 come il widget.
@@ -30,7 +30,7 @@ Accettazione:
 
 ### IOS-071 · Aggiungere un torrent
 
-Stato: proposto · Parità: DL-003…DL-008 · Mockup: tavole 22, 23
+Stato: pianificato (#56) · Parità: DL-003…DL-008 · Mockup: tavole 22, 23
 
 Accettazione:
 

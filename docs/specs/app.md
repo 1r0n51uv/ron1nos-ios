@@ -181,7 +181,7 @@ Accettazione:
       (`2,4 MB/s`) e i primi tre torrent che scaricano: nome su una riga,
       barra, percentuale, velocità e tempo rimanente.
 - [x] Sotto, il riepilogo degli altri: `+2 attivi · 1 in coda · 4 in
-    seed`. Senza download attivi lo dice.
+  seed`. Senza download attivi lo dice.
 - [x] Con qBittorrent non raggiungibile (503) o il modulo spento vale
       quanto detto per le card in IOS-006. Test su Linux.
 
@@ -203,7 +203,7 @@ Accettazione:
 
 ### IOS-009 · Navigazione a schede
 
-Stato: proposto · Scelta del proprietario il 2026-10-26 · Mockup: tavole 01, 25, 29
+Stato: pianificato (#22) · Scelta del proprietario il 2026-10-26 · Mockup: tavole 01, 25, 29
 
 Accettazione:
 
@@ -234,7 +234,7 @@ Accettazione:
 
 ### IOS-010 · Aspetto e formati condivisi
 
-Stato: proposto · Parità: SET-002, SET-003, SET-010 · Mockup: tavola 01
+Stato: pianificato (#23) · Parità: SET-002, SET-003, SET-010 · Mockup: tavola 01
 
 Le preferenze sono una per tutti i dispositivi (decisione di
 settings.md): l'app le legge da `GET /preferences` all'avvio e le applica.
@@ -255,7 +255,7 @@ Accettazione:
 
 ### IOS-011 · Notifiche locali
 
-Stato: proposto · Solo iOS · Mockup: tavole 27, 28
+Stato: pianificato (#24) · Solo iOS · Mockup: tavole 27, 28
 
 Con SideStore e un Apple ID gratuito le notifiche push non ci sono: le
 notifiche le programma l'app sul telefono (`UNUserNotificationCenter`),
@@ -278,7 +278,7 @@ Accettazione:
 
 ### IOS-012 · Stati comuni delle schermate
 
-Stato: proposto · Parità: skeleton ed errori dei widget del sito
+Stato: pianificato (#25) · Parità: skeleton ed errori dei widget del sito
 
 Accettazione:
 
@@ -288,7 +288,7 @@ Accettazione:
 - [ ] Errore: la card o la sezione mostra il titolo e il codice in
       monospazio (IOS-002), senza bloccare le altre sezioni.
 - [ ] Modulo spento (404 `module_disabled`): la pagina dice `Modulo
-    spento` con il link a Impostazioni › Moduli.
+  spento` con il link a Impostazioni › Moduli.
 - [ ] Torrent e Server si aggiornano ogni 5 secondi solo con l'app in
       primo piano e la schermata visibile.
 - [ ] Le azioni che cambiano dati mostrano l'esito con un toast in basso,

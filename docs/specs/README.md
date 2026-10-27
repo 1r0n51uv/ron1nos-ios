@@ -49,14 +49,14 @@ riusano.
 ## Cosa serve nell'API
 
 Regola del repo: una funzione nuova che serve all'app va prima nell'API di
-ron1nOS. Queste parti non ci sono ancora e diventano issue nel repo
-ron1nOS, prima dei requisiti iOS che le usano:
+ron1nOS. Queste parti non ci sono ancora: sono specificate e pianificate
+nel repo ron1nOS e vanno fatte prima dei requisiti iOS che le usano.
 
-| Serve a     | Cosa manca nell'API                                                                                         |
-| ----------- | ----------------------------------------------------------------------------------------------------------- |
-| IOS-020…024 | Catalogo del layout `iphone`: griglia di 4 colonne e misure `piccolo` (2×2), `medio` (4×2), `grande` (4×4). |
-| IOS-040     | Rotte per i dati di Apple Salute: peso, acqua ed energia attiva inviati dall'app.                           |
-| IOS-041     | Orari dei 5 pasti e degli avvisi dell'acqua nelle preferenze (`/preferences`).                              |
+| Serve a     | Cosa manca nell'API                                                                                                                                                                   |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| IOS-020…024 | DASH-010 ([ron1nOS#208](https://github.com/1r0n51uv/ron1nOS/issues/208)): catalogo del layout `iphone`: griglia di 4 colonne e misure `piccolo` (2×2), `medio` (4×2), `grande` (4×4). |
+| IOS-040     | NUT-026 ([ron1nOS#209](https://github.com/1r0n51uv/ron1nOS/issues/209)): rotte per i dati di Apple Salute: peso, acqua ed energia attiva inviati dall'app.                            |
+| IOS-041     | NUT-027 ([ron1nOS#210](https://github.com/1r0n51uv/ron1nOS/issues/210)): orari dei 5 pasti e degli avvisi dell'acqua nelle preferenze (`/preferences`).                               |
 
 ## Stati dei requisiti
 

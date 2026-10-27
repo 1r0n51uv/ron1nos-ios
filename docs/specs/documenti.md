@@ -16,7 +16,7 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-060 · Elenco dei documenti
 
-Stato: proposto · Parità: DOC-002, DOC-008, DOC-010 · Mockup: tavola 18
+Stato: pianificato (#49) · Parità: DOC-002, DOC-008, DOC-010 · Mockup: tavola 18
 
 Accettazione:
 
@@ -29,7 +29,7 @@ Accettazione:
 
 ### IOS-061 · Dettaglio e copia
 
-Stato: proposto · Parità: DOC-004, DOC-009, DOC-012, DOC-013 · Mockup: tavola 19
+Stato: pianificato (#50) · Parità: DOC-004, DOC-009, DOC-012, DOC-013 · Mockup: tavola 19
 
 Accettazione:
 
@@ -41,13 +41,13 @@ Accettazione:
       questo telefono (`localOnly`).
 - [ ] Tenendo premuta un'immagine: `Copia immagine`, `Condividi`.
 - [ ] Menu `⋯`: `Modifica`, `Fissa` / `Togli dall'evidenza`, `Copia
-    tutto`, `PDF di riepilogo` (foglio di condivisione, con l'avviso che
+  tutto`, `PDF di riepilogo` (foglio di condivisione, con l'avviso che
       il file è in chiaro), `Elimina` con conferma.
 - [ ] Allegati e PDF passano da file temporanei cancellati alla chiusura.
 
 ### IOS-062 · Nuovo documento
 
-Stato: proposto · Parità: DOC-005, DOC-006, DOC-007, DOC-011 · Mockup: tavola 20
+Stato: pianificato (#51) · Parità: DOC-005, DOC-006, DOC-007, DOC-011 · Mockup: tavola 20
 
 Accettazione:
 
@@ -64,7 +64,7 @@ Accettazione:
 
 ### IOS-063 · Tipi personalizzati
 
-Stato: proposto · Parità: DOC-016
+Stato: pianificato (#52) · Parità: DOC-016
 
 Accettazione:
 
@@ -74,7 +74,7 @@ Accettazione:
 
 ### IOS-064 · Face ID
 
-Stato: proposto · Solo iOS · Mockup: tavola 17
+Stato: pianificato (#53) · Solo iOS · Mockup: tavola 17
 
 Accettazione:
 
@@ -91,7 +91,7 @@ Accettazione:
 
 ### IOS-065 · Avvisi di scadenza
 
-Stato: proposto · Parità: DOC-010 · Solo iOS · Mockup: tavola 28
+Stato: pianificato (#54) · Parità: DOC-010 · Solo iOS · Mockup: tavola 28
 
 Accettazione:
 

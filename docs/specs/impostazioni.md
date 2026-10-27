@@ -13,7 +13,7 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-090 · Elenco delle sezioni e Accesso
 
-Stato: proposto · Parità: SET-001 · Mockup: tavole 26, 29
+Stato: pianificato (#58) · Parità: SET-001 · Mockup: tavole 26, 29
 
 Accettazione:
 
@@ -29,7 +29,7 @@ Accettazione:
 
 ### IOS-091 · Aspetto, Dashboard, Moduli, Navigazione, Formati
 
-Stato: proposto · Parità: SET-003…SET-006, SET-010
+Stato: pianificato (#59) · Parità: SET-003…SET-006, SET-010
 
 Accettazione:
 
@@ -44,7 +44,7 @@ Accettazione:
 
 ### IOS-092 · Account e App iOS
 
-Stato: proposto · Parità: SET-007, SET-008, AUTH-002, AUTH-005
+Stato: pianificato (#60) · Parità: SET-007, SET-008, AUTH-002, AUTH-005
 
 Accettazione:
 
@@ -58,7 +58,7 @@ Accettazione:
 
 ### IOS-093 · Integrazioni, Backup, Informazioni
 
-Stato: proposto · Parità: SET-009, SET-011, SET-012
+Stato: pianificato (#61) · Parità: SET-009, SET-011, SET-012
 
 Accettazione:
 
@@ -72,7 +72,7 @@ Accettazione:
 
 ### IOS-094 · Notifiche e Salute
 
-Stato: proposto · Solo iOS · Mockup: tavola 27
+Stato: pianificato (#62) · Solo iOS · Mockup: tavola 27
 
 Accettazione:
 

@@ -17,7 +17,7 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-030 · Giorno
 
-Stato: proposto · Parità: NUT-002, NUT-016 · Mockup: tavola 05
+Stato: pianificato (#31) · Parità: NUT-002, NUT-016 · Mockup: tavola 05
 
 Accettazione:
 
@@ -34,7 +34,7 @@ Accettazione:
 
 ### IOS-031 · Registrare e correggere un pasto
 
-Stato: proposto · Parità: NUT-003, NUT-004, NUT-007, NUT-023 · Mockup: tavole 06, 08
+Stato: pianificato (#32) · Parità: NUT-003, NUT-004, NUT-007, NUT-023 · Mockup: tavole 06, 08
 
 Accettazione:
 
@@ -53,7 +53,7 @@ Accettazione:
 
 ### IOS-032 · Codice a barre con la fotocamera
 
-Stato: proposto · Parità: NUT-005 · Mockup: tavola 07
+Stato: pianificato (#33) · Parità: NUT-005 · Mockup: tavola 07
 
 Accettazione:
 
@@ -68,7 +68,7 @@ Accettazione:
 
 ### IOS-033 · Alimenti personali
 
-Stato: proposto · Parità: NUT-006
+Stato: pianificato (#34) · Parità: NUT-006
 
 Accettazione:
 
@@ -78,7 +78,7 @@ Accettazione:
 
 ### IOS-034 · Ricette e pianificazione
 
-Stato: proposto · Parità: NUT-008, NUT-009 · Mockup: tavola 09
+Stato: pianificato (#35) · Parità: NUT-008, NUT-009 · Mockup: tavola 09
 
 Accettazione:
 
@@ -91,7 +91,7 @@ Accettazione:
 
 ### IOS-035 · Template settimanale
 
-Stato: proposto · Parità: NUT-010 · Mockup: tavola 10
+Stato: pianificato (#36) · Parità: NUT-010 · Mockup: tavola 10
 
 Sul telefono la griglia 7 × 5 del sito non sta: si vede un giorno alla
 volta.
@@ -99,14 +99,14 @@ volta.
 Accettazione:
 
 - [ ] Elenco dei template; nel template una fila di 7 giorni (`L M M G V
-    S D`) e sotto i 5 slot del giorno scelto, ognuno con ricetta o
+  S D`) e sotto i 5 slot del giorno scelto, ognuno con ricetta o
       alimento.
 - [ ] `Applica a una settimana`: corrente, prossima o una data (sempre da
       lunedì), con il riepilogo di quanti pasti crea e sostituisce.
 
 ### IOS-036 · Lista della spesa
 
-Stato: proposto · Parità: NUT-011 · Mockup: tavola 11
+Stato: pianificato (#37) · Parità: NUT-011 · Mockup: tavola 11
 
 Accettazione:
 
@@ -119,7 +119,7 @@ Accettazione:
 
 ### IOS-037 · Acqua, caffeina, integratori
 
-Stato: proposto · Parità: NUT-012, NUT-013, NUT-014 · Mockup: tavola 05
+Stato: pianificato (#38) · Parità: NUT-012, NUT-013, NUT-014 · Mockup: tavola 05
 
 Accettazione:
 
@@ -133,7 +133,7 @@ Accettazione:
 
 ### IOS-038 · Andamento
 
-Stato: proposto · Parità: NUT-017 · Mockup: tavola 12
+Stato: pianificato (#39) · Parità: NUT-017 · Mockup: tavola 12
 
 Accettazione:
 
@@ -145,7 +145,7 @@ Accettazione:
 
 ### IOS-039 · Obiettivi e YAZIO
 
-Stato: proposto · Parità: NUT-015, NUT-020, NUT-023
+Stato: pianificato (#40) · Parità: NUT-015, NUT-020, NUT-023
 
 Accettazione:
 
@@ -158,7 +158,7 @@ Accettazione:
 
 ### IOS-040 · Apple Salute
 
-Stato: proposto · Parità: NUT-018 · Solo iOS · Mockup: tavola 27
+Stato: pianificato (#41) · Parità: NUT-018 · Solo iOS · Mockup: tavola 27
 
 Da verificare prima di pianificarlo: la firma con Apple ID gratuito di
 SideStore deve concedere l'entitlement HealthKit. Se non lo concede il
@@ -178,7 +178,7 @@ Accettazione:
 
 ### IOS-041 · Promemoria pasti e acqua
 
-Stato: proposto · Parità: NUT-019 · Solo iOS · Mockup: tavole 27, 28
+Stato: pianificato (#42) · Parità: NUT-019 · Solo iOS · Mockup: tavole 27, 28
 
 Accettazione:
 

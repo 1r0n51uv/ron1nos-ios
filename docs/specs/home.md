@@ -19,7 +19,7 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-020 · Home con i widget
 
-Stato: proposto · Parità: DASH-003, DASH-006 · Mockup: tavola 01
+Stato: pianificato (#26) · Parità: DASH-003, DASH-006 · Mockup: tavola 01
 
 Accettazione:
 
@@ -39,7 +39,7 @@ Accettazione:
 
 ### IOS-021 · Catalogo dei widget
 
-Stato: proposto · Parità: DASH-001, DASH-002 · Mockup: tavola 03
+Stato: pianificato (#27) · Parità: DASH-001, DASH-002 · Mockup: tavola 03
 
 Accettazione:
 
@@ -57,7 +57,7 @@ Accettazione:
 
 ### IOS-022 · Modalità Modifica
 
-Stato: proposto · Parità: DASH-004, DASH-009 · Mockup: tavola 02
+Stato: pianificato (#28) · Parità: DASH-004, DASH-009 · Mockup: tavola 02
 
 Accettazione:
 
@@ -68,7 +68,7 @@ Accettazione:
       cambiare ordine e gli altri si spostano per fare posto.
 - [ ] Toccare un widget in Modifica apre le sue opzioni (IOS-023).
 - [ ] `Rimuovi` toglie subito il widget e mostra il toast `Widget rimosso
-    · Annulla` per 8 secondi.
+  · Annulla` per 8 secondi.
 - [ ] In alto compaiono `+` (Aggiungi widget) e il menu della forma della
       testata.
 - [ ] `Aggiungi widget` apre un foglio con il catalogo diviso per modulo,
@@ -79,7 +79,7 @@ Accettazione:
 
 ### IOS-023 · Opzioni del widget
 
-Stato: proposto · Parità: DASH-005 · Mockup: tavola 04
+Stato: pianificato (#29) · Parità: DASH-005 · Mockup: tavola 04
 
 Accettazione:
 
@@ -91,7 +91,7 @@ Accettazione:
 
 ### IOS-024 · Salvataggio del layout
 
-Stato: proposto · Parità: DASH-007, DASH-008
+Stato: pianificato (#30) · Parità: DASH-007, DASH-008
 
 Accettazione:
 

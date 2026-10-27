@@ -14,7 +14,7 @@ Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV
 
 ### IOS-050 · Pagina Palestra
 
-Stato: proposto · Parità: GYM-002, GYM-007, GYM-010, GYM-013 · Mockup: tavola 13
+Stato: pianificato (#43) · Parità: GYM-002, GYM-007, GYM-010, GYM-013 · Mockup: tavola 13
 
 Accettazione:
 
@@ -32,13 +32,13 @@ Accettazione:
 
 ### IOS-051 · Import del CSV di Liftin'
 
-Stato: proposto · Parità: GYM-003 · Mockup: tavola 16
+Stato: pianificato (#44) · Parità: GYM-003 · Mockup: tavola 16
 
 Accettazione:
 
 - [ ] L'app si registra per i file `.csv` (`CFBundleDocumentTypes`): da
       Liftin', **Condividi → ron1nOS** apre l'import. In più, `Importa
-    CSV` nella pagina apre il selettore di File.
+  CSV` nella pagina apre il selettore di File.
 - [ ] Il file va a `POST /workout/import/preview`; il foglio mostra
       l'anteprima del server (allenamenti nuovi, aggiornati, righe
       scartate, periodo). `Importa` applica, `Annulla` non scrive niente.
@@ -47,7 +47,7 @@ Accettazione:
 
 ### IOS-052 · Storico e dettaglio di una sessione
 
-Stato: proposto · Parità: GYM-004, GYM-005, GYM-006 · Mockup: tavola 14
+Stato: pianificato (#45) · Parità: GYM-004, GYM-005, GYM-006 · Mockup: tavola 14
 
 Accettazione:
 
@@ -62,7 +62,7 @@ Accettazione:
 
 ### IOS-053 · Esercizi e record
 
-Stato: proposto · Parità: GYM-008, GYM-009, GYM-010 · Mockup: tavola 15
+Stato: pianificato (#46) · Parità: GYM-008, GYM-009, GYM-010 · Mockup: tavola 15
 
 Accettazione:
 
@@ -75,7 +75,7 @@ Accettazione:
 
 ### IOS-054 · Gruppo muscolare e immagine
 
-Stato: proposto · Parità: GYM-011, GYM-014
+Stato: pianificato (#47) · Parità: GYM-011, GYM-014
 
 Accettazione:
 
@@ -86,10 +86,10 @@ Accettazione:
 
 ### IOS-055 · Volume per gruppo muscolare
 
-Stato: proposto · Parità: GYM-012
+Stato: pianificato (#48) · Parità: GYM-012
 
 Accettazione:
 
 - [ ] Barre impilate delle ultime 12 settimane in toni di grigio (Swift
       Charts), selettore `Volume` / `Serie`, legenda sotto, `Non
-    assegnato` tratteggiato.
+  assegnato` tratteggiato.

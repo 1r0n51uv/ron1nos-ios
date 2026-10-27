@@ -145,3 +145,95 @@ import Testing
     #expect(delete.richiesta?.url?.path == "/api/v1/nutrition/meals/items/r1")
   }
 }
+
+@Suite struct AlimentiPersonaliTests {
+  @Test func validazioneComeIlBackend() {
+    var modulo = AlimentoPersonale()
+    #expect(modulo.problema == "Serve un nome.")
+    modulo.nome = "  "
+    #expect(!modulo.valido)
+    modulo.nome = "Pane di segale"
+    #expect(modulo.problema == "Le kcal per 100 g vanno da 0 a 900.")
+    modulo.kcal = "901"
+    #expect(modulo.problema == "Le kcal per 100 g vanno da 0 a 900.")
+    modulo.kcal = "265"
+    #expect(modulo.problema == "Le proteine per 100 g vanno da 0 a 100.")
+    modulo.proteine = "9"
+    modulo.carboidrati = "49"
+    modulo.grassi = "3"
+    #expect(modulo.valido)
+    modulo.porzione = "mezzo"
+    #expect(modulo.problema == "La porzione non è un numero.")
+    modulo.porzione = "80"
+    modulo.caffeina = "molta"
+    #expect(modulo.problema == "La caffeina non è un numero.")
+    modulo.caffeina = ""
+    modulo.codice = "12345"
+    #expect(modulo.problema == "Il codice a barre è di almeno 8 cifre.")
+    modulo.codice = "5201054017111"
+    #expect(modulo.valido)
+    modulo.nome = String(repeating: "a", count: 201)
+    #expect(modulo.problema == "Il nome è troppo lungo.")
+  }
+
+  @Test func iCampiVuotiViaggianoANull() async throws {
+    let risposta = """
+      {"id":"f9","source":"custom","externalId":null,"name":"Pane di segale","brand":null,
+       "barcode":null,"servingSizeG":null,"kcal":265,"protein":9,"carbs":49,"fat":3,
+       "caffeineMg":null,"yazioProductId":null}
+      """
+    let transport = TransportFinto(.risposta(201, risposta))
+    let modulo = AlimentoPersonale(
+      nome: " Pane di segale ", marca: "  ", kcal: "265", proteine: "9", carboidrati: "49", grassi: "3")
+    let creato = try await APIClient(transport: transport).creaAlimento(modulo)
+    #expect(creato.id == "f9")
+    let richiesta = try #require(transport.richiesta)
+    #expect(richiesta.httpMethod == "POST")
+    #expect(richiesta.url?.path == "/api/v1/nutrition/foods")
+    let corpo = try #require(richiesta.httpBody)
+    let json = try #require(try JSONSerialization.jsonObject(with: corpo) as? [String: Any])
+    #expect(json["name"] as? String == "Pane di segale")
+    #expect(json["brand"] is NSNull)
+    #expect(json["barcode"] is NSNull)
+    #expect(json["kcal"] as? Double == 265)
+  }
+
+  @Test func elencoCorreggiEElimina() async throws {
+    let elenco = """
+      {"foods":[{"id":"f9","source":"custom","externalId":null,"name":"Pane di segale","brand":"Mulino",
+        "barcode":"5201054017111","servingSizeG":80,"kcal":265,"protein":9,"carbs":49,"fat":3,
+        "caffeineMg":null,"yazioProductId":null}]}
+      """
+    let lettura = TransportFinto(.risposta(200, elenco))
+    let alimenti = try await APIClient(transport: lettura).alimentiPersonali()
+    #expect(lettura.richiesta?.url?.path == "/api/v1/nutrition/foods")
+    #expect(alimenti.map(\.name) == ["Pane di segale"])
+
+    // I campi del modulo partono dall'alimento letto.
+    let modulo = AlimentoPersonale(try #require(alimenti.first))
+    #expect(modulo.nome == "Pane di segale")
+    #expect(modulo.marca == "Mulino")
+    #expect(modulo.codice == "5201054017111")
+    #expect(modulo.porzione == "80")
+    #expect(modulo.kcal == "265")
+    #expect(modulo.valido)
+
+    let patch = TransportFinto(.risposta(200, elenco.replacingOccurrences(of: #"{"foods":["#, with: "")))
+    _ = try? await APIClient(transport: patch).correggiAlimento("f9", modulo)
+    #expect(patch.richiesta?.httpMethod == "PATCH")
+    #expect(patch.richiesta?.url?.path == "/api/v1/nutrition/foods/f9")
+
+    let delete = TransportFinto(.risposta(204, ""))
+    try await APIClient(transport: delete).eliminaAlimento("f9")
+    #expect(delete.richiesta?.httpMethod == "DELETE")
+    #expect(delete.richiesta?.url?.path == "/api/v1/nutrition/foods/f9")
+  }
+
+  @Test func codiceGiaUsatoEUnConflitto() async {
+    let transport = TransportFinto(.risposta(409, #"{"error":"barcode_exists"}"#))
+    await #expect(throws: APIError.self) {
+      _ = try await APIClient(transport: transport).creaAlimento(
+        AlimentoPersonale(nome: "Pane", kcal: "265", proteine: "9", carboidrati: "49", grassi: "3"))
+    }
+  }
+}

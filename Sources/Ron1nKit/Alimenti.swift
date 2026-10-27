@@ -254,3 +254,144 @@ struct CorpoPasto: Encodable, Sendable {
     }
   }
 }
+
+/// Un alimento personale da creare o correggere (NUT-006): valori per
+/// 100 g. Il testo lo scrive l'utente, quindi la validazione sta qui.
+public struct AlimentoPersonale: Equatable, Sendable {
+  public var nome: String
+  public var marca: String
+  public var codice: String
+  public var porzione: String
+  public var kcal: String
+  public var proteine: String
+  public var carboidrati: String
+  public var grassi: String
+  public var caffeina: String
+
+  public init(
+    nome: String = "", marca: String = "", codice: String = "", porzione: String = "", kcal: String = "",
+    proteine: String = "", carboidrati: String = "", grassi: String = "", caffeina: String = ""
+  ) {
+    self.nome = nome
+    self.marca = marca
+    self.codice = codice
+    self.porzione = porzione
+    self.kcal = kcal
+    self.proteine = proteine
+    self.carboidrati = carboidrati
+    self.grassi = grassi
+    self.caffeina = caffeina
+  }
+
+  /// I campi riempiti da un alimento già nel catalogo.
+  public init(_ alimento: Alimento) {
+    self.init(
+      nome: alimento.name, marca: alimento.brand ?? "", codice: alimento.barcode ?? "",
+      porzione: alimento.servingSizeG.map { Formato.numero($0) } ?? "",
+      kcal: Formato.numero(alimento.kcal), proteine: Formato.numero(alimento.protein),
+      carboidrati: Formato.numero(alimento.carbs), grassi: Formato.numero(alimento.fat),
+      caffeina: alimento.caffeineMg.map { Formato.numero($0) } ?? "")
+  }
+
+  static func numero(_ testo: String) -> Double? {
+    let pulito = testo.replacingOccurrences(of: ",", with: ".").trimmingCharacters(in: .whitespaces)
+    guard let valore = Double(pulito), valore >= 0 else { return nil }
+    return valore
+  }
+
+  /// Il primo problema del modulo, o nil: le stesse regole del backend.
+  public var problema: String? {
+    let nomePulito = nome.trimmingCharacters(in: .whitespaces)
+    if nomePulito.isEmpty { return "Serve un nome." }
+    if nomePulito.count > 200 { return "Il nome è troppo lungo." }
+    guard let energia = AlimentoPersonale.numero(kcal), energia <= 900 else {
+      return "Le kcal per 100 g vanno da 0 a 900."
+    }
+    let macro = [("Le proteine", proteine), ("I carboidrati", carboidrati), ("I grassi", grassi)]
+    for (nome, testo) in macro {
+      guard let valore = AlimentoPersonale.numero(testo), valore <= 100 else {
+        return "\(nome) per 100 g vanno da 0 a 100."
+      }
+    }
+    if !porzione.isEmpty, AlimentoPersonale.numero(porzione) == nil { return "La porzione non è un numero." }
+    if !caffeina.isEmpty, AlimentoPersonale.numero(caffeina) == nil { return "La caffeina non è un numero." }
+    let codicePulito = codice.trimmingCharacters(in: .whitespaces)
+    if !codicePulito.isEmpty, codicePulito.count < 8 || !codicePulito.allSatisfy(\.isNumber) {
+      return "Il codice a barre è di almeno 8 cifre."
+    }
+    return nil
+  }
+
+  public var valido: Bool { problema == nil }
+
+  /// Il corpo del `POST` e del `PATCH`, con i campi vuoti a null.
+  var corpo: Corpo {
+    func testo(_ valore: String) -> String? {
+      let pulito = valore.trimmingCharacters(in: .whitespaces)
+      return pulito.isEmpty ? nil : pulito
+    }
+    return Corpo(
+      name: nome.trimmingCharacters(in: .whitespaces), brand: testo(marca), barcode: testo(codice),
+      servingSizeG: testo(porzione).flatMap(AlimentoPersonale.numero),
+      kcal: AlimentoPersonale.numero(kcal) ?? 0, protein: AlimentoPersonale.numero(proteine) ?? 0,
+      carbs: AlimentoPersonale.numero(carboidrati) ?? 0, fat: AlimentoPersonale.numero(grassi) ?? 0,
+      caffeineMg: testo(caffeina).flatMap(AlimentoPersonale.numero))
+  }
+
+  struct Corpo: Encodable, Sendable {
+    let name: String
+    let brand: String?
+    let barcode: String?
+    let servingSizeG: Double?
+    let kcal: Double
+    let protein: Double
+    let carbs: Double
+    let fat: Double
+    let caffeineMg: Double?
+
+    // I campi vuoti vanno scritti come null: in una correzione tolgono il
+    // valore di prima.
+    func encode(to encoder: Encoder) throws {
+      var contenitore = encoder.container(keyedBy: CodingKeys.self)
+      try contenitore.encode(name, forKey: .name)
+      try contenitore.encode(brand, forKey: .brand)
+      try contenitore.encode(barcode, forKey: .barcode)
+      try contenitore.encode(servingSizeG, forKey: .servingSizeG)
+      try contenitore.encode(kcal, forKey: .kcal)
+      try contenitore.encode(protein, forKey: .protein)
+      try contenitore.encode(carbs, forKey: .carbs)
+      try contenitore.encode(fat, forKey: .fat)
+      try contenitore.encode(caffeineMg, forKey: .caffeineMg)
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case name, brand, barcode, servingSizeG, kcal, protein, carbs, fat, caffeineMg
+    }
+  }
+}
+
+extension APIClient {
+  /// `GET /nutrition/foods`: gli alimenti personali (NUT-006).
+  public func alimentiPersonali() async throws(APIError) -> [Alimento] {
+    struct Risposta: Decodable { let foods: [Alimento] }
+    let risposta: Risposta = try await get("nutrition/foods")
+    return risposta.foods
+  }
+
+  /// `POST /nutrition/foods`.
+  public func creaAlimento(_ alimento: AlimentoPersonale) async throws(APIError) -> Alimento {
+    try await invia("POST", "nutrition/foods", corpo: alimento.corpo)
+  }
+
+  /// `PATCH /nutrition/foods/{id}`.
+  public func correggiAlimento(
+    _ id: String, _ alimento: AlimentoPersonale
+  ) async throws(APIError) -> Alimento {
+    try await invia("PATCH", "nutrition/foods/\(id)", corpo: alimento.corpo)
+  }
+
+  /// `DELETE /nutrition/foods/{id}`.
+  public func eliminaAlimento(_ id: String) async throws(APIError) {
+    _ = try await dati("nutrition/foods/\(id)", metodo: "DELETE")
+  }
+}

@@ -14,10 +14,11 @@
     @State private var download: Carico<Download> = .inCorso
     @State private var server: Carico<StatoServer> = .inCorso
     @EnvironmentObject private var sessione: Sessione
+    @Environment(\.aspetto) private var aspetto
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: aspetto.spazio) {
           intestazione
           pannelloStato
           if case .fallito(let errore, _) = controllo {

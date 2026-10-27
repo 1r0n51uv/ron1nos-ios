@@ -1,6 +1,7 @@
 #if canImport(SwiftUI)
   import Combine
   import Ron1nKit
+  import UIKit
 
   /// Lo stato condiviso dell'app: le credenziali nel Portachiavi e le
   /// preferenze del sito, che decidono la TabBar (IOS-009). Niente macro
@@ -9,7 +10,12 @@
   final class Sessione: ObservableObject {
     let archivio = Portachiavi()
     let archivioToken = PortachiaviToken()
-    @Published var preferenze = Preferenze.predefinite
+    /// Finché il backend non risponde valgono le ultime salvate sul
+    /// telefono, poi i predefiniti (IOS-010).
+    @Published var preferenze: Preferenze
+    /// L'immagine di sfondo caricata sul sito, se in uso.
+    @Published var immagineSfondo: UIImage?
+    private let memoria = MemoriaPreferenze()
     /// Cresce a ogni cambio delle credenziali: le pagine ricaricano.
     @Published var versione = 0
 
@@ -19,12 +25,32 @@
 
     var navigazione: Navigazione { Navigazione(preferenze) }
 
+    init() {
+      preferenze = memoria.carica() ?? .predefinite
+    }
+
     /// Se la lettura non riesce restano le preferenze di prima.
     func aggiornaPreferenze() async {
-      if let lette = try? await client.preferenze() {
-        preferenze = lette
+      guard let lette = try? await client.preferenze() else { return }
+      if lette != preferenze { preferenze = lette }
+      memoria.salva(lette)
+      await caricaSfondo()
+    }
+
+    /// L'immagine si scarica solo se è in uso e non c'è già.
+    private func caricaSfondo() async {
+      guard preferenze.sfondo == .image, let versione = preferenze.backgroundImage else {
+        immagineSfondo = nil
+        return
+      }
+      if immagineSfondo != nil, versioneSfondo == versione { return }
+      if let dati = try? await client.immagineSfondo(versione: versione), let immagine = UIImage(data: dati) {
+        immagineSfondo = immagine
+        versioneSfondo = versione
       }
     }
+
+    private var versioneSfondo: String?
 
     /// Le credenziali sono cambiate in Accesso.
     func credenzialiCambiate() {

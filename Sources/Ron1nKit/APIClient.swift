@@ -113,7 +113,20 @@ public struct APIClient: Sendable {
   }
 
   func get<T: Decodable>(_ path: String) async throws(APIError) -> T {
-    var request = URLRequest(url: baseURL.appendingPathComponent(path))
+    let data = try await dati(path)
+    do {
+      return try JSONDecoder().decode(T.self, from: data)
+    } catch {
+      throw .rispostaInattesa(codice: nil)
+    }
+  }
+
+  /// Il corpo della risposta così com'è, dopo i controlli di Access, login e
+  /// codice HTTP.
+  func dati(_ path: String, query: [URLQueryItem] = []) async throws(APIError) -> Data {
+    var url = baseURL.appendingPathComponent(path)
+    if !query.isEmpty { url.append(queryItems: query) }
+    var request = URLRequest(url: url)
     request.setValue("application/json", forHTTPHeaderField: "Accept")
     let header = (credenziali?.header ?? [:]).merging(token?.header ?? [:]) { $1 }
     for (nome, valore) in header {
@@ -131,11 +144,7 @@ public struct APIClient: Sendable {
     if APIClient.versoAccess(http) { throw .accesso(conToken: credenziali != nil) }
     if http.statusCode == 401 { throw .login(conToken: token != nil) }
     guard (200..<300).contains(http.statusCode) else { throw .stato(http.statusCode) }
-    do {
-      return try JSONDecoder().decode(T.self, from: data)
-    } catch {
-      throw .rispostaInattesa(codice: nil)
-    }
+    return data
   }
 
   /// Un redirect verso il login di Cloudflare Access

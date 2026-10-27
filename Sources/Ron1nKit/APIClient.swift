@@ -112,8 +112,8 @@ public struct APIClient: Sendable {
     try await get("auth/me")
   }
 
-  func get<T: Decodable>(_ path: String) async throws(APIError) -> T {
-    let data = try await dati(path)
+  func get<T: Decodable>(_ path: String, query: [URLQueryItem] = []) async throws(APIError) -> T {
+    let data = try await dati(path, query: query)
     do {
       return try JSONDecoder().decode(T.self, from: data)
     } catch {

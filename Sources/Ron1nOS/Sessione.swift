@@ -21,6 +21,8 @@
     private let memoria = MemoriaPreferenze()
     /// Le notifiche locali di questo telefono (IOS-011).
     let notifiche = CentroNotifiche()
+    /// Una pagina da aprire dalla Home (un widget toccato): la apre la TabBar.
+    @Published var daAprire: Scheda?
     /// Il toast in basso (IOS-012) e cosa fa il suo pulsante.
     @Published private(set) var avviso: Avviso?
     private var azioneAvviso: (@MainActor () -> Void)?
@@ -59,6 +61,10 @@
     }
 
     private var versioneSfondo: String?
+
+    func apri(_ scheda: Scheda) {
+      daAprire = scheda
+    }
 
     /// Mostra il toast; ne resta uno solo, l'ultimo.
     func mostra(_ nuovo: Avviso, azione: (@MainActor () -> Void)? = nil) {

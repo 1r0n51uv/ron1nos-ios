@@ -84,3 +84,10 @@ public struct Navigazione: Equatable, Sendable {
     schede.contains(scheda) || altro.contains(scheda)
   }
 }
+
+extension Scheda {
+  /// La pagina di un modulo del backend: `nutrition` è la Dieta.
+  public static func perModulo(_ modulo: String) -> Scheda? {
+    Scheda.allCases.first { $0.modulo == modulo }
+  }
+}

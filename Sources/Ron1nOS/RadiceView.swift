@@ -22,6 +22,9 @@
     case impostazioniDieta
     /// Gli alimenti senza equivalente YAZIO (IOS-039).
     case senzaEquivalente
+    /// Lo storico delle sessioni e il dettaglio di una (IOS-052).
+    case storicoPalestra
+    case sessione(id: String)
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -168,6 +171,10 @@
         ImpostazioniDietaView()
       case .senzaEquivalente:
         SenzaEquivalenteView()
+      case .storicoPalestra:
+        StoricoView()
+      case .sessione(let id):
+        DettaglioSessioneView(id: id)
       }
     }
   }

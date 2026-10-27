@@ -130,7 +130,8 @@
       switch pagina {
       case .ricette: RicetteView()
       case .template: TemplateView()
-      case .spesa, .andamento: PaginaDietaInArrivo(titolo: pagina.titolo)
+      case .spesa: SpesaView()
+      case .andamento: PaginaDietaInArrivo(titolo: pagina.titolo)
       }
     }
 

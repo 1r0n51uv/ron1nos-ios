@@ -255,7 +255,7 @@ Accettazione:
 
 ### IOS-011 · Notifiche locali
 
-Stato: pianificato (#24) · Solo iOS · Mockup: tavole 27, 28
+Stato: fatto (#67) · Solo iOS · Mockup: tavole 27, 28
 
 Con SideStore e un Apple ID gratuito le notifiche push non ci sono: le
 notifiche le programma l'app sul telefono (`UNUserNotificationCenter`),
@@ -263,17 +263,17 @@ a partire dai dati letti dall'API. Servono a IOS-041 e IOS-065.
 
 Accettazione:
 
-- [ ] Il permesso si chiede la prima volta che si accende una notifica in
+- [x] Il permesso si chiede la prima volta che si accende una notifica in
       Impostazioni › Notifiche, mai all'avvio.
-- [ ] Impostazioni › Notifiche ha un interruttore per gruppo: `Pasti`,
+- [x] Impostazioni › Notifiche ha un interruttore per gruppo: `Pasti`,
       `Acqua`, `Scadenze documenti`. Spento il permesso di iOS, lo dice
       con il link alle impostazioni di sistema.
-- [ ] Le notifiche si ricalcolano a ogni apertura dell'app e con
+- [x] Le notifiche si ricalcolano a ogni apertura dell'app e con
       l'aggiornamento in background di iOS (`BGAppRefreshTask`), quando
       iOS lo concede: se l'app non si apre per giorni restano quelle già
       programmate.
-- [ ] I testi seguono lo stile: brevi, senza punti esclamativi, con `·`.
-- [ ] La logica che sceglie quali notifiche programmare sta in Ron1nKit,
+- [x] I testi seguono lo stile: brevi, senza punti esclamativi, con `·`.
+- [x] La logica che sceglie quali notifiche programmare sta in Ron1nKit,
       con test su Linux.
 
 ### IOS-012 · Stati comuni delle schermate

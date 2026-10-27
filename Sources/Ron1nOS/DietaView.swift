@@ -32,7 +32,7 @@
           case .pronto(let valore):
             QuotaDelGiorno(giorno: valore)
             ForEach(valore.slotInOrdine) { slot in
-              CardSlot(slot: slot, giorno: data, segna: segna) { nuovo in
+              CardSlot(slot: slot, giorno: data, segna: segna, togliPiano: togliPiano) { nuovo in
                 registra = Pasto(giorno: data, slot: nuovo)
               }
             }
@@ -84,15 +84,28 @@
       giorno = await Carico.da { try await client.dieta(data) }
     }
 
-    /// L'interruttore `Mangiato` di un pasto pianificato (NUT-009).
-    private func segna(_ id: String, _ mangiato: Bool) {
+    /// L'interruttore `Mangiato` e il menu di un pasto pianificato
+    /// (NUT-009): `eaten`, `skipped` o di nuovo `planned`.
+    private func segna(_ id: String, _ stato: String) {
       let client = sessione.client
       Task {
         do {
-          try await client.statoPiano(id, mangiato ? "eaten" : "planned")
+          try await client.statoPiano(id, stato)
           await carica()
         } catch {
-          sessione.mostra(.nonSalvato) { segna(id, mangiato) }
+          sessione.mostra(.nonSalvato) { segna(id, stato) }
+        }
+      }
+    }
+
+    /// Toglie un piano non ancora mangiato.
+    private func togliPiano(_ id: String) {
+      let client = sessione.client
+      Task {
+        do {
+          giorno = .pronto(try await client.eliminaPiano(id))
+        } catch {
+          sessione.mostra(.nonSalvato) { togliPiano(id) }
         }
       }
     }
@@ -247,7 +260,10 @@
   struct CardSlot: View {
     let slot: SlotGiorno
     let giorno: String
-    let segna: (String, Bool) -> Void
+    /// Cambia lo stato di un piano: `eaten`, `skipped` o `planned`.
+    let segna: (String, String) -> Void
+    /// Toglie il piano del giorno e slot.
+    let togliPiano: (String) -> Void
     /// Tocca `+`: apre il foglio per registrare in questo slot.
     let registra: (String) -> Void
     @Environment(\.formati) private var formati
@@ -293,9 +309,28 @@
             .foregroundStyle(Stile.testoTenue)
         }
         if slot.state == "planned", let id = slot.planned?.id {
-          Toggle("Mangiato", isOn: Binding(get: { false }, set: { nuovo in segna(id, nuovo) }))
+          HStack {
+            Toggle(
+              "Mangiato",
+              isOn: Binding(get: { false }, set: { mangiato in segna(id, mangiato ? "eaten" : "planned") })
+            )
             .font(.subheadline)
             .tint(Stile.brand)
+            Menu {
+              Button("Saltato") { segna(id, "skipped") }
+              Button("Togli il piano", role: .destructive) { togliPiano(id) }
+            } label: {
+              Image(systemName: "ellipsis")
+                .foregroundStyle(Stile.testoTenue)
+                .frame(width: 30, height: 30)
+            }
+            .accessibilityLabel("Altre azioni per \(slot.titolo)")
+          }
+        }
+        if slot.saltato, let id = slot.planned?.id {
+          Button("Rimetti in programma") { segna(id, "planned") }
+            .font(.subheadline)
+            .glassChip()
         }
       }
       .glassPanel()

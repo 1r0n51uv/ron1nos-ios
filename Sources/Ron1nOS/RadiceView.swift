@@ -14,6 +14,8 @@
     /// Gli alimenti personali (IOS-033), con un codice a barre da
     /// precompilare se si arriva dalla fotocamera.
     case alimenti(codice: String?)
+    /// Il dettaglio di una ricetta (IOS-034).
+    case ricetta(id: String)
   }
 
   /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
@@ -119,6 +121,16 @@
       }
     }
 
+    /// Le pagine della Dieta sotto il giorno: quelle pronte e le altre in
+    /// arrivo.
+    @ViewBuilder
+    private func paginaDieta(_ pagina: PaginaDieta) -> some View {
+      switch pagina {
+      case .ricette: RicetteView()
+      case .template, .spesa, .andamento: PaginaDietaInArrivo(titolo: pagina.titolo)
+      }
+    }
+
     @ViewBuilder
     private func destinazione(_ pagina: Pagina) -> some View {
       switch pagina {
@@ -130,11 +142,13 @@
       case .notifiche:
         NotificheView(centro: sessione.notifiche)
       case .dieta(let pagina):
-        PaginaDietaInArrivo(titolo: pagina.titolo)
+        paginaDieta(pagina)
       case .dettaglioPasto(let giorno, let slot):
         DettaglioPastoView(giorno: giorno, slot: slot)
       case .alimenti(let codice):
         AlimentiPersonaliView(codice: codice)
+      case .ricetta(let id):
+        DettaglioRicettaView(id: id)
       }
     }
   }

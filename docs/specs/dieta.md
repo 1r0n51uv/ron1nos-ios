@@ -78,15 +78,15 @@ Accettazione:
 
 ### IOS-034 · Ricette e pianificazione
 
-Stato: pianificato (#35) · Parità: NUT-008, NUT-009 · Mockup: tavola 09
+Stato: fatto (#77) · Parità: NUT-008, NUT-009 · Mockup: tavola 09
 
 Accettazione:
 
-- [ ] Elenco delle ricette con kcal e macro totali; dettaglio con gli
+- [x] Elenco delle ricette con kcal e macro totali; dettaglio con gli
       alimenti e i grammi; creare, modificare, eliminare.
-- [ ] Da una ricetta: `Registra` (in uno slot di oggi) o `Pianifica` (su
+- [x] Da una ricetta: `Registra` (in uno slot di oggi) o `Pianifica` (su
       giorno e slot, anche nel futuro).
-- [ ] Un pasto pianificato si modifica finché non è mangiato;
+- [x] Un pasto pianificato si modifica finché non è mangiato;
       l'interruttore lo segna `mangiato` o `saltato` (NUT-009).
 
 ### IOS-035 · Template settimanale

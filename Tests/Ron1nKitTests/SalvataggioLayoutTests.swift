@@ -98,5 +98,7 @@ final class InvioFinto: @unchecked Sendable {
   @Test func avviso() {
     #expect(Avviso.layoutNonSalvato.etichetta == "Layout non salvato · Riprova")
     #expect(Avviso.layoutNonSalvato.durata == 8)
+    #expect(Avviso.widgetRimosso.etichetta == "Widget rimosso · Annulla")
+    #expect(Avviso.widgetRimosso.durata == 8)
   }
 }

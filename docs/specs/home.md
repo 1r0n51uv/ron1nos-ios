@@ -57,24 +57,24 @@ Accettazione:
 
 ### IOS-022 · Modalità Modifica
 
-Stato: pianificato (#28) · Parità: DASH-004, DASH-009 · Mockup: tavola 02
+Stato: fatto (#71) · Parità: DASH-004, DASH-009 · Mockup: tavola 02
 
 Accettazione:
 
-- [ ] Si entra con il pulsante `Modifica` in alto a destra o tenendo
+- [x] Si entra con il pulsante `Modifica` in alto a destra o tenendo
       premuto un widget; si esce con `Fine`. La modalità non si ricorda.
-- [ ] In Modifica i widget tremano come nella Home di iOS e hanno in alto
+- [x] In Modifica i widget tremano come nella Home di iOS e hanno in alto
       a sinistra il pulsante `−` per toglierli; si trascinano per
       cambiare ordine e gli altri si spostano per fare posto.
-- [ ] Toccare un widget in Modifica apre le sue opzioni (IOS-023).
-- [ ] `Rimuovi` toglie subito il widget e mostra il toast `Widget rimosso
+- [x] Toccare un widget in Modifica apre le sue opzioni (IOS-023).
+- [x] `Rimuovi` toglie subito il widget e mostra il toast `Widget rimosso
   · Annulla` per 8 secondi.
-- [ ] In alto compaiono `+` (Aggiungi widget) e il menu della forma della
+- [x] In alto compaiono `+` (Aggiungi widget) e il menu della forma della
       testata.
-- [ ] `Aggiungi widget` apre un foglio con il catalogo diviso per modulo,
+- [x] `Aggiungi widget` apre un foglio con il catalogo diviso per modulo,
       con anteprima viva e le misure scorrevoli; il widget scelto entra in
       cima.
-- [ ] VoiceOver: ogni widget ha le azioni `Sposta su`, `Sposta giù`,
+- [x] VoiceOver: ogni widget ha le azioni `Sposta su`, `Sposta giù`,
       `Rimuovi`, `Opzioni`.
 
 ### IOS-023 · Opzioni del widget

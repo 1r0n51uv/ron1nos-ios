@@ -122,6 +122,16 @@ public struct ModuloRicetta: Equatable, Sendable {
     let name: String
     let notes: String?
     let items: [CorpoPasto.Riga]
+
+    enum CodingKeys: String, CodingKey { case name, notes, items }
+
+    /// Note vuote viaggiano come null, così si cancellano anche sul server.
+    func encode(to encoder: Encoder) throws {
+      var c = encoder.container(keyedBy: CodingKeys.self)
+      try c.encode(name, forKey: .name)
+      try c.encode(notes, forKey: .notes)
+      try c.encode(items, forKey: .items)
+    }
   }
 }
 

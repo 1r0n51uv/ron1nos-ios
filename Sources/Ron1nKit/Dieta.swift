@@ -1,3 +1,5 @@
+import Foundation
+
 /// Il giorno del diario, da `GET /api/v1/nutrition/day` (NUT-001 di
 /// ron1nOS). L'app ne usa solo i totali e l'obiettivo.
 public struct GiornoDieta: Decodable, Equatable, Sendable {

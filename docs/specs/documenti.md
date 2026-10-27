@@ -74,19 +74,19 @@ Accettazione:
 
 ### IOS-064 · Face ID
 
-Stato: pianificato (#53) · Solo iOS · Mockup: tavola 17
+Stato: fatto (#96) · Solo iOS · Mockup: tavola 17
 
 Accettazione:
 
-- [ ] Entrando nella scheda Documenti l'app chiede Face ID
+- [x] Entrando nella scheda Documenti l'app chiede Face ID
       (`LocalAuthentication`), con il codice del telefono come riserva.
-- [ ] Lo sblocco vale finché l'app resta in primo piano e fino a 1 minuto
+- [x] Lo sblocco vale finché l'app resta in primo piano e fino a 1 minuto
       in background; poi si richiede.
-- [ ] Nel selettore delle app i Documenti sono coperti da un velo con il
+- [x] Nel selettore delle app i Documenti sono coperti da un velo con il
       sigillo, così i dati non si vedono nell'anteprima.
-- [ ] Il widget Documenti della Home mostra solo tipo, titolo e
+- [x] Il widget Documenti della Home mostra solo tipo, titolo e
       scadenza, come sul sito, senza chiedere Face ID.
-- [ ] Interruttore in Impostazioni › Moduli › Documenti, acceso di
+- [x] Interruttore in Impostazioni › Moduli › Documenti, acceso di
       default.
 
 ### IOS-065 · Avvisi di scadenza

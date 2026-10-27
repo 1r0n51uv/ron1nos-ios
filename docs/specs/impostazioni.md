@@ -44,16 +44,16 @@ Accettazione:
 
 ### IOS-092 · Account e App iOS
 
-Stato: pianificato (#60) · Parità: SET-007, SET-008, AUTH-002, AUTH-005
+Stato: fatto (#102) · Parità: SET-007, SET-008, AUTH-002, AUTH-005
 
 Accettazione:
 
-- [ ] Account: sessioni web attive con `Chiudi` e `Chiudi le altre`;
+- [x] Account: sessioni web attive con `Chiudi` e `Chiudi le altre`;
       come cambiare la password (spiegazione, come sul sito).
-- [ ] App iOS: i token con nome e ultimo uso, quello di questo telefono
+- [x] App iOS: i token con nome e ultimo uso, quello di questo telefono
       segnato; `Revoca` con conferma. `Nuovo token` crea un token e lo
       salva direttamente nel Portachiavi, senza copia e incolla.
-- [ ] `Esci da questo iPhone` revoca il token del telefono e lo toglie dal
+- [x] `Esci da questo iPhone` revoca il token del telefono e lo toglie dal
       Portachiavi.
 
 ### IOS-093 · Integrazioni, Backup, Informazioni

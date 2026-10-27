@@ -63,7 +63,10 @@
           identifier: "\(richiesta.identifier)-rimandata", content: copia, trigger: fra)
         try? await center.add(rimandata)
       default:
-        break
+        // Un avviso di scadenza apre il suo documento (IOS-065).
+        if let documento = richiesta.content.userInfo[AvvisiScadenze.chiave] as? String {
+          await MainActor.run { Sessione.condivisa.apri(documento: documento) }
+        }
       }
     }
 

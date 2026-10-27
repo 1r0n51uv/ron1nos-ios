@@ -30,20 +30,20 @@ Accettazione:
 
 ### IOS-071 · Aggiungere un torrent
 
-Stato: pianificato (#56) · Parità: DL-003…DL-008 · Mockup: tavole 22, 23
+Stato: fatto (#82) · Parità: DL-003…DL-008 · Mockup: tavole 22, 23
 
 Accettazione:
 
-- [ ] `Aggiungi` apre il wizard in un foglio a tutta altezza, con i 4
+- [x] `Aggiungi` apre il wizard in un foglio a tutta altezza, con i 4
       passi del sito: sorgente, lettura dei contenuti, scelta dei file,
       riepilogo e avvio. Stesse regole e stessi testi.
-- [ ] Sorgente: `File` apre il selettore di File; `Link` ha il campo e
+- [x] Sorgente: `File` apre il selettore di File; `Link` ha il campo e
       `Incolla`, che si propone da solo se negli appunti c'è un magnet o
       un URL.
-- [ ] L'app si registra per i file `.torrent` e per i link `magnet:`:
+- [x] L'app si registra per i file `.torrent` e per i link `magnet:`:
       toccando un magnet in Safari o aprendo un `.torrent` con
       **Condividi → ron1nOS**, il wizard parte già al passo 2.
-- [ ] Scelta dei file ad albero, cartelle che si aprono, `Tutti` /
+- [x] Scelta dei file ad albero, cartelle che si aprono, `Tutti` /
       `Nessuno`, il totale fisso in fondo sopra `Avanti`.
-- [ ] Chiudere il foglio prima di `Avvia` annulla la bozza
+- [x] Chiudere il foglio prima di `Avvia` annulla la bozza
       (`DELETE /downloads/drafts/{id}`), come `Annulla` sul sito.

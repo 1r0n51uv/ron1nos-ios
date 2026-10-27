@@ -74,6 +74,10 @@
           .environmentObject(sessione)
           .environment(\.formati, sessione.preferenze.formats)
       }
+      .sheet(item: $sessione.torrentInArrivo) { partenza in
+        AggiungiTorrentView(partenza: partenza)
+          .environmentObject(sessione)
+      }
       .environmentObject(sessione)
       .environment(\.aspetto, sessione.preferenze.appearance)
       .environment(\.formati, sessione.preferenze.formats)

@@ -4,7 +4,8 @@
 
   /// La pagina Torrent (IOS-070, DL-001, DL-002): velocità totale grande, i
   /// download con barra e tempo, sotto gli altri in righe piccole. In sola
-  /// lettura come il widget; si aggiorna ogni 5 secondi.
+  /// lettura come il widget, più `Aggiungi` (IOS-071); si aggiorna ogni 5
+  /// secondi.
   struct TorrentView: View {
     @EnvironmentObject private var sessione: Sessione
     @State private var stato: Carico<Download> = .inCorso
@@ -48,6 +49,13 @@
       }
       .background(SfondoConAlone().ignoresSafeArea())
       .navigationTitle("Torrent")
+      .toolbar {
+        ToolbarItem(placement: .topBarTrailing) {
+          // Senza qBittorrent il wizard non può leggere nulla (IOS-071).
+          Button("Aggiungi", systemImage: "plus") { sessione.torrentInArrivo = .nuovo }
+            .disabled(offline || stato.valore == nil)
+        }
+      }
       .refreshable { await carica() }
       .task { await carica() }
       .aggiornaOgni(5) { await carica() }

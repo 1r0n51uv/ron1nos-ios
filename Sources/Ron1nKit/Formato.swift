@@ -33,6 +33,19 @@ public enum Formato {
     return b < 1_000_000 ? "\(numero(b / 1_000)) kB/s" : "\(numero(b / 1_000_000, decimali: 1)) MB/s"
   }
 
+  /// Una dimensione come sul sito: "850 KB", "3,9 GB"; un decimale sotto
+  /// 10, dai MB in su.
+  public static func dimensione(_ byte: Double) -> String {
+    let unita = ["B", "KB", "MB", "GB", "TB"]
+    var valore = max(0, byte)
+    var indice = 0
+    while valore >= 1_000, indice < unita.count - 1 {
+      valore /= 1_000
+      indice += 1
+    }
+    return "\(numero(valore, decimali: indice >= 2 && valore < 10 ? 1 : 0)) \(unita[indice])"
+  }
+
   /// Da quanto è acceso il server: ore sotto il giorno, poi giorni.
   public static func acceso(_ secondi: Int) -> String {
     let ore = max(0, secondi) / 3_600

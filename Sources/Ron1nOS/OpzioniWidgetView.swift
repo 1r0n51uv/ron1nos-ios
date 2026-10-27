@@ -63,7 +63,8 @@
         WidgetHome(elemento: elemento, dati: dati)
           .frame(
             width: elemento.misura == .small ? lato : spazio.size.width,
-            height: elemento.misura == .large ? lato * 2 + aspetto.spazio : lato)
+            height: elemento.misura == .large ? lato * 2 + aspetto.spazio : lato
+          )
           .allowsHitTesting(false)
           .accessibilityHidden(true)
       }

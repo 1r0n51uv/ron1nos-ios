@@ -34,6 +34,8 @@
       .tint(Stile.brand)
       .riduciTabBarScorrendo()
       .environmentObject(sessione)
+      .environment(\.aspetto, sessione.preferenze.appearance)
+      .environment(\.formati, sessione.preferenze.formats)
       .task {
         primoAvvio()
         await sessione.aggiornaPreferenze()

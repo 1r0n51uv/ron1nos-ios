@@ -24,18 +24,24 @@ public struct GiornoDieta: Decodable, Equatable, Sendable {
   public var kcalObiettivo: Double? { quota?.kcal ?? goal?.kcal }
 
   /// "1.450 / 2.200 kcal", o solo le mangiate senza obiettivo.
-  public var testoKcal: String {
-    let mangiate = Formato.numero(totals.kcal)
-    guard let obiettivo = kcalObiettivo else { return "\(mangiate) kcal" }
-    return "\(mangiate) / \(Formato.numero(obiettivo)) kcal"
+  public var testoKcal: String { testoEnergia(Formati()) }
+
+  /// Come `testoKcal`, nell'unità scelta (SET-010): "6.067 / 9.205 kJ".
+  public func testoEnergia(_ formati: Formati) -> String {
+    let mangiate = Formato.numero(formati.valoreEnergia(totals.kcal))
+    let unita = formati.energyUnit.rawValue
+    guard let obiettivo = kcalObiettivo else { return "\(mangiate) \(unita)" }
+    return "\(mangiate) / \(Formato.numero(formati.valoreEnergia(obiettivo))) \(unita)"
   }
 
   /// Quanto manca, o di quanto si è oltre: "750 kcal rimanenti".
-  public var testoRimanenti: String? {
+  public var testoRimanenti: String? { testoRimanenti(Formati()) }
+
+  public func testoRimanenti(_ formati: Formati) -> String? {
     guard let obiettivo = kcalObiettivo else { return nil }
     let differenza = obiettivo - totals.kcal
     return differenza >= 0
-      ? "\(Formato.numero(differenza)) kcal rimanenti" : "\(Formato.numero(-differenza)) kcal oltre"
+      ? "\(formati.energia(differenza)) rimanenti" : "\(formati.energia(-differenza)) oltre"
   }
 
   /// Da 0 a 1, per la barra; nil senza obiettivo.

@@ -249,9 +249,9 @@ extension APIClient {
 
   /// 400, 409 e 413 portano un messaggio da mostrare; gli altri errori no.
   static func esito<Valore: Decodable & Equatable & Sendable>(
-    _ data: Data, _ http: HTTPURLResponse
+    _ data: Data, _ http: HTTPURLResponse, conMessaggio: Set<Int> = [400, 409, 413]
   ) throws(APIError) -> Esito<Valore> {
-    if [400, 409, 413].contains(http.statusCode) {
+    if conMessaggio.contains(http.statusCode) {
       let errore = try? JSONDecoder().decode(MessaggioErrore.self, from: data)
       return .rifiutato(errore?.message ?? "Richiesta non valida.")
     }

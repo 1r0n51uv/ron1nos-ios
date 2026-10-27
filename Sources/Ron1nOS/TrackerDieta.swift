@@ -107,7 +107,7 @@
     }
 
     /// Un tocco: feedback aptico, chiamata e giorno aggiornato.
-    private func chiama(_ azione: (APIClient) async throws(APIError) -> GiornoDieta) async {
+    private func chiama(_ azione: (APIClient) async throws -> GiornoDieta) async {
       UIImpactFeedbackGenerator(style: .light).impactOccurred()
       do {
         aggiornato(try await azione(sessione.client))

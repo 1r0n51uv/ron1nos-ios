@@ -36,7 +36,7 @@
                 registra = Pasto(giorno: data, slot: nuovo)
               }
             }
-            TrackerInArrivo()
+            TrackerDieta(giorno: valore, data: data) { nuovo in giorno = .pronto(nuovo) }
             CollegamentiDieta()
           }
         }
@@ -342,16 +342,6 @@
           .accessibilityLabel("Apri \(slot.titolo)")
         }
       }
-    }
-  }
-
-  /// I tracker di acqua, caffeina e integratori arrivano con IOS-037.
-  struct TrackerInArrivo: View {
-    var body: some View {
-      Text("Acqua, caffeina e integratori arrivano con il prossimo aggiornamento.")
-        .font(.footnote)
-        .foregroundStyle(Stile.testoTenue)
-        .glassPanel()
     }
   }
 

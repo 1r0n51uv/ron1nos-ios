@@ -9,6 +9,8 @@
       WindowGroup {
         RadiceView()
           .preferredColorScheme(.dark)
+          // Da Liftin', Condividi → ron1nOS (IOS-051).
+          .onOpenURL { url in Sessione.condivisa.apri(file: url) }
       }
       .onChange(of: fase) { _, nuova in
         // A ogni apertura le notifiche locali si ricalcolano (IOS-011).

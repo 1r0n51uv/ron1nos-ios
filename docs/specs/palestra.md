@@ -32,17 +32,17 @@ Accettazione:
 
 ### IOS-051 · Import del CSV di Liftin'
 
-Stato: pianificato (#44) · Parità: GYM-003 · Mockup: tavola 16
+Stato: fatto (#86) · Parità: GYM-003 · Mockup: tavola 16
 
 Accettazione:
 
-- [ ] L'app si registra per i file `.csv` (`CFBundleDocumentTypes`): da
+- [x] L'app si registra per i file `.csv` (`CFBundleDocumentTypes`): da
       Liftin', **Condividi → ron1nOS** apre l'import. In più, `Importa
   CSV` nella pagina apre il selettore di File.
-- [ ] Il file va a `POST /workout/import/preview`; il foglio mostra
+- [x] Il file va a `POST /workout/import/preview`; il foglio mostra
       l'anteprima del server (allenamenti nuovi, aggiornati, righe
       scartate, periodo). `Importa` applica, `Annulla` non scrive niente.
-- [ ] Gli errori del server (file vuoto, colonne mancanti…) si mostrano
+- [x] Gli errori del server (file vuoto, colonne mancanti…) si mostrano
       con il loro testo.
 
 ### IOS-052 · Storico e dettaglio di una sessione

@@ -57,6 +57,11 @@
         }
       }
       .animation(.easeOut(duration: 0.2), value: sessione.avviso)
+      .sheet(item: $sessione.csvInArrivo) { file in
+        ImportCSVView(file: file)
+          .environmentObject(sessione)
+          .environment(\.formati, sessione.preferenze.formats)
+      }
       .environmentObject(sessione)
       .environment(\.aspetto, sessione.preferenze.appearance)
       .environment(\.formati, sessione.preferenze.formats)

@@ -210,12 +210,15 @@ Accettazione:
 - [x] In basso la TabBar nativa di iOS 26 (`TabView`), in Liquid Glass
       di sistema: flottante, staccata dai bordi, rifrange il contenuto
       che le scorre sotto. Richiesta del proprietario il 2026-10-26.
+      Da IOS-015 la barra di sistema è nascosta e al suo posto c'è la
+      pillola di vetro; voci e comportamento restano questi.
 - [x] 5 voci: `Home`, `Dieta`, `Palestra`, `Documenti`, `Altro`, con
       icona e nome. La voce attiva è tinta di rosso (`#FF2A2A`), l'unico
       accento della barra.
 - [x] Scorrendo in basso la barra si riduce
       (`tabBarMinimizeBehavior(.onScrollDown)`) e torna intera scorrendo
-      in su: lascia spazio ai contenuti.
+      in su: lascia spazio ai contenuti. Tolto con IOS-015: la pillola
+      resta sempre intera.
 - [x] Barre di navigazione, fogli e menu usano lo stesso Liquid Glass di
       sistema. Le card restano col velo di IOS-003: il vetro vero sta solo
       sui controlli che galleggiano sopra i contenuti.
@@ -312,7 +315,7 @@ Accettazione:
 
 ### IOS-014 · Contrasto e rosso come segnale
 
-Stato: in corso (#106) · Origine: revisione con la skill `apple-design` del
+Stato: fatto (#108) · Origine: revisione con la skill `apple-design` del
 2026-10-28, richiesta del proprietario
 
 La revisione ha trovato il rosso del marchio (`#FF2A2A`) usato per testi
@@ -323,17 +326,47 @@ ron1nOS.
 
 Accettazione:
 
-- [ ] I colori stanno in `Palette` di Ron1nKit, con i test di contrasto
+- [x] I colori stanno in `Palette` di Ron1nKit, con i test di contrasto
       WCAG che girano su Linux. `Stile` li legge da lì.
-- [ ] I testi e i simboli rossi usano `brandTesto` (`#FF8A8A`, lo stesso
+- [x] I testi e i simboli rossi usano `brandTesto` (`#FF8A8A`, lo stesso
       `--brand-text` del sito): almeno 4,5:1 anche sul fondo peggiore,
       una pillola dentro una card sopra l'alone `brace`. Il `brand` resta
       per barre, bordi, punti, interruttori e la voce attiva della TabBar.
-- [ ] Il testo secondario passa dal 55% al 60% di bianco: sul fondo
+- [x] Il testo secondario passa dal 55% al 60% di bianco: sul fondo
       peggiore arriva a 4,9:1 (prima 4,4:1).
-- [ ] Il rosso è solo un segnale (errore, scaduto, oltre l'obiettivo,
+- [x] Il rosso è solo un segnale (errore, scaduto, oltre l'obiettivo,
       in errore). Diventano bianchi: record degli esercizi e la sigla
       `RECORD`, la settimana in corso nel grafico della Palestra, la linea
       del grafico di un esercizio, gli integratori presi, le voci della
       spesa spuntate, i file scelti di un torrent, lo sfondo scelto nelle
       Impostazioni. `questo iPhone` nelle sessioni diventa tenue.
+
+### IOS-015 · TabBar a pillola in vetro
+
+Stato: fatto (#109) · Richiesta del proprietario il 2026-10-28
+
+La TabBar diventa una pillola flottante con l'effetto vetro di iOS 26.
+Cambia solo la forma: voci e comportamento restano quelli di IOS-009.
+
+Accettazione:
+
+- [x] La barra di sistema della `TabView` è nascosta; al suo posto una
+      pillola staccata dai bordi (16 pt) e dal fondo, alta 62 pt, larga al
+      massimo 440 pt e centrata.
+- [x] Su iOS 26 la pillola è Liquid Glass (`glassEffect`, interattivo);
+      prima della 26 materiale sfocato con il bordo di luce. Con "Riduci
+      trasparenza" diventa un grigio pieno.
+- [x] Le stesse 5 voci, con icona e nome. La voce attiva ha una bolla di
+      vetro e icona e nome in `brandTesto` (IOS-014); le altre sono
+      bianche. La bolla scorre da una voce all'altra, senza animazione con
+      "Riduci movimento". Ogni cambio di voce dà un tocco aptico leggero.
+- [x] Ogni voce misura almeno 44×44 pt anche sullo schermo più stretto
+      (test in Ron1nKit, `BarraSchede`).
+- [x] Accessibilità: ogni voce ha il nome come etichetta e lo stato
+      selezionato; tenendola premuta con il testo grande si ingrandisce
+      (Large Content Viewer).
+- [x] I contenuti di ogni scheda e delle pagine sotto lasciano in fondo lo
+      spazio della pillola, che non copre l'ultima riga. Il toast sta
+      sopra la pillola. Con la tastiera aperta la pillola resta sotto.
+- [x] Non si riduce più scorrendo (`tabBarMinimizeBehavior` vale solo per
+      la barra di sistema).

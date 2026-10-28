@@ -196,7 +196,7 @@
           if let rimanenti = giorno.testoRimanenti(formati) {
             Text(rimanenti)
               .font(.subheadline)
-              .foregroundStyle(giorno.oltre ? Stile.brand : Stile.testoTenue)
+              .foregroundStyle(giorno.oltre ? Stile.brandTesto : Stile.testoTenue)
           }
           ForEach(giorno.macro, id: \.chiave) { riga in
             BarraMacro(riga: riga, valori: giorno)

@@ -163,7 +163,7 @@
         HStack(spacing: 14) {
           Image(systemName: voce.checked ? "checkmark.circle.fill" : "circle")
             .font(.title2)
-            .foregroundStyle(voce.checked ? Stile.brand : Stile.testoTenue)
+            .foregroundStyle(voce.checked ? Stile.testo : Stile.testoTenue)
           Text(voce.name)
             .font(.title3)
             .strikethrough(voce.checked)
@@ -200,7 +200,7 @@
             DatePicker("Al", selection: $a, displayedComponents: .date)
           } footer: {
             Text(intervallo.problema ?? "\(intervallo.giorni) giorni · i pasti saltati non contano")
-              .foregroundStyle(intervallo.problema == nil ? Stile.testoTenue : Stile.brand)
+              .foregroundStyle(intervallo.problema == nil ? Stile.testoTenue : Stile.brandTesto)
           }
           .listRowBackground(Color.white.opacity(0.06))
           Section {

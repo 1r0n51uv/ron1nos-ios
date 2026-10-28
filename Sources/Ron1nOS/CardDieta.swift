@@ -25,7 +25,7 @@
           if let rimanenti = giorno.testoRimanenti(formati) {
             Text(rimanenti)
               .font(.system(.footnote, design: .monospaced))
-              .foregroundStyle(giorno.oltre ? Stile.brand : Stile.testoTenue)
+              .foregroundStyle(giorno.oltre ? Stile.brandTesto : Stile.testoTenue)
           }
           if misura == nil || misura == .large {
             ForEach(giorno.macro.filter { macro.contains($0.chiave) }, id: \.nome) { riga in

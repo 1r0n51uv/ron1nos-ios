@@ -196,7 +196,7 @@
                 Spacer()
                 Text(documento.expiry?.testo ?? "")
                   .font(.system(.footnote, design: .monospaced))
-                  .foregroundStyle(documento.expiry?.scaduto == true ? Stile.brand : Stile.testoTenue)
+                  .foregroundStyle(documento.expiry?.scaduto == true ? Stile.brandTesto : Stile.testoTenue)
               }
             }
           }
@@ -237,7 +237,7 @@
           if let valore = stato.percentuale(risorsa) {
             Text(Formato.percento(valore))
               .font(.system(.title, design: .monospaced).weight(.semibold))
-              .foregroundStyle(valore >= StatoServer.soglia ? Stile.brand : Stile.testo)
+              .foregroundStyle(valore >= StatoServer.soglia ? Stile.brandTesto : Stile.testo)
             if !compatto {
               Barra(valore: valore / 100, segnale: valore >= StatoServer.soglia)
             }

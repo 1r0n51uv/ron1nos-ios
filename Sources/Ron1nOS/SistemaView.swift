@@ -22,7 +22,7 @@
           EmptyView()
         case .fallito:
           Text("Integrazioni non disponibili")
-            .foregroundStyle(Stile.brand)
+            .foregroundStyle(Stile.brandTesto)
             .listRowBackground(veloSistema)
         case .pronto(let elenco):
           ForEach(elenco) { servizio in
@@ -44,7 +44,7 @@
           Spacer()
           Text(servizio.state.testo)
             .font(.system(.caption, design: .monospaced))
-            .foregroundStyle(servizio.state == .error ? Stile.brand : Stile.testoTenue)
+            .foregroundStyle(servizio.state == .error ? Stile.brandTesto : Stile.testoTenue)
         }
         if let messaggio = servizio.message {
           Text(messaggio)
@@ -237,7 +237,7 @@
             EmptyView()
           case .fallito:
             Text("non raggiungibile")
-              .foregroundStyle(Stile.brand)
+              .foregroundStyle(Stile.brandTesto)
               .listRowBackground(veloSistema)
           case .pronto(let info):
             backend(info)

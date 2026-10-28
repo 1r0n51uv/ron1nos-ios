@@ -96,7 +96,7 @@
       if let testo = errori[campo] ?? (vuoto ? nil : modulo.problemi[campo]) {
         Text(testo)
           .font(.footnote)
-          .foregroundStyle(Stile.brand)
+          .foregroundStyle(Stile.brandTesto)
       }
     }
 
@@ -182,7 +182,7 @@
       NavigationStack {
         Form {
           if let errore = errori["_"] {
-            Text(errore).font(.footnote).foregroundStyle(Stile.brand)
+            Text(errore).font(.footnote).foregroundStyle(Stile.brandTesto)
           }
           if modulo != nil {
             CampiDocumento(

@@ -41,7 +41,7 @@
             }
             if bozza.water.count < Promemoria.massimoAcqua {
               Button("Aggiungi un avviso") { aggiungiAvviso() }
-                .foregroundStyle(Stile.brand)
+                .foregroundStyle(Stile.brandTesto)
                 .listRowBackground(Color.white.opacity(0.06))
             }
           } header: {

@@ -125,7 +125,7 @@
       NavigationStack {
         Form {
           if let errore {
-            Text(errore).font(.footnote).foregroundStyle(Stile.brand)
+            Text(errore).font(.footnote).foregroundStyle(Stile.brandTesto)
           }
           Section {
             TextField("Nome", text: $modulo.nome)
@@ -163,7 +163,7 @@
             Text("Togliendo un campo, i suoi valori restano come campi liberi sui documenti.")
           }
           if let problema = modulo.problema, !modulo.nome.isEmpty {
-            Text(problema).font(.footnote).foregroundStyle(Stile.brand)
+            Text(problema).font(.footnote).foregroundStyle(Stile.brandTesto)
           }
         }
         .scrollContentBackground(.hidden)

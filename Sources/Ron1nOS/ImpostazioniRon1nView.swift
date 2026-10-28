@@ -15,7 +15,7 @@
       if let testo {
         Text(testo)
           .font(.footnote)
-          .foregroundStyle(Stile.brand)
+          .foregroundStyle(Stile.brandTesto)
       }
     }
   }
@@ -46,7 +46,7 @@
                   .foregroundStyle(Stile.testo)
                 Spacer()
                 if sessione.preferenze.sfondo == sfondo {
-                  Image(systemName: "checkmark").foregroundStyle(Stile.brand)
+                  Image(systemName: "checkmark").foregroundStyle(Stile.testo)
                 }
               }
             }

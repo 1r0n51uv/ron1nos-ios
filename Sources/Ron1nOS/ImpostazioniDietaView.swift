@@ -39,7 +39,7 @@
           if let errore = collegamento.error, collegamento.inErrore {
             Text(errore)
               .font(.footnote)
-              .foregroundStyle(Stile.brand)
+              .foregroundStyle(Stile.brandTesto)
           }
           if collegamento.configured {
             riga(
@@ -63,7 +63,7 @@
                 Spacer()
                 Text("\(collegamento.unmatched)")
                   .font(.system(.body, design: .monospaced))
-                  .foregroundStyle(collegamento.unmatched > 0 ? Stile.brand : Stile.testoTenue)
+                  .foregroundStyle(collegamento.unmatched > 0 ? Stile.brandTesto : Stile.testoTenue)
               }
             }
           } else {
@@ -129,7 +129,7 @@
         Spacer()
         Text(valore)
           .font(.system(.body, design: .monospaced))
-          .foregroundStyle(rosso ? Stile.brand : Stile.testoTenue)
+          .foregroundStyle(rosso ? Stile.brandTesto : Stile.testoTenue)
       }
       .accessibilityElement(children: .combine)
     }

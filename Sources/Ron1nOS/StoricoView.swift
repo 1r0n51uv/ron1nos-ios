@@ -273,7 +273,7 @@
               Text("RECORD")
                 .font(.system(.caption, design: .monospaced).weight(.semibold))
                 .tracking(1.6)
-                .foregroundStyle(Stile.brand)
+                .foregroundStyle(Stile.testo)
             }
           }
         }

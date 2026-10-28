@@ -15,7 +15,7 @@
           .frame(width: 6, height: 6)
         Text(testo)
           .font(.system(.caption, design: .monospaced))
-          .foregroundStyle(tono == .alert ? Stile.brand : Stile.testoTenue)
+          .foregroundStyle(tono == .alert ? Stile.brandTesto : Stile.testoTenue)
       }
       .padding(.horizontal, 10)
       .padding(.vertical, 5)

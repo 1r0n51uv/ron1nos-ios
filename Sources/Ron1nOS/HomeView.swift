@@ -306,7 +306,7 @@
       VStack(alignment: .leading, spacing: 8) {
         Text(errore.titolo)
           .font(.headline)
-          .foregroundStyle(Stile.brand)
+          .foregroundStyle(Stile.brandTesto)
         Text(errore.suggerimento)
           .font(.subheadline)
           .foregroundStyle(Stile.testo)

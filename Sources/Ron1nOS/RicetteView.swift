@@ -95,7 +95,7 @@
         if ricetta.incompleta {
           Text("Un alimento è stato eliminato.")
             .font(.footnote)
-            .foregroundStyle(Stile.brand)
+            .foregroundStyle(Stile.brandTesto)
         }
       }
       .padding(.vertical, 4)

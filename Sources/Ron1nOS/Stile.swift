@@ -5,14 +5,25 @@
 
   /// Token del design system ron1nOS (tokens.json): nero, vetro, un solo
   /// rosso usato come segnale.
+  /// I valori stanno in `Palette` di Ron1nKit, dove i test ne provano il
+  /// contrasto (IOS-014).
   enum Stile {
-    static let brand = Color(red: 1, green: 42 / 255, blue: 42 / 255)
-    static let sfondo = Color(red: 7 / 255, green: 7 / 255, blue: 7 / 255)
+    /// Barre, bordi, punti, interruttori: elementi grafici.
+    static let brand = Color(Palette.brand)
+    /// Testi e simboli rossi: `brand` non arriva a 4,5:1 sul velo.
+    static let brandTesto = Color(Palette.brandTesto)
+    static let sfondo = Color(Palette.sfondo)
     static let foschia = Color(red: 110 / 255, green: 110 / 255, blue: 130 / 255)
     static let testo = Color.white
-    static let testoTenue = Color.white.opacity(0.55)
+    static let testoTenue = Color.white.opacity(Palette.opacitaTestoTenue)
     static let bordo = Color.white.opacity(0.12)
     static let raggio: CGFloat = 20
+  }
+
+  extension Color {
+    init(_ colore: ColoreRGB) {
+      self.init(red: colore.rosso, green: colore.verde, blue: colore.blu)
+    }
   }
 
   private struct ChiaveAspetto: EnvironmentKey {

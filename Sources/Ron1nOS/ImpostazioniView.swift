@@ -74,7 +74,7 @@
         if let riepilogo {
           Text(riepilogo)
             .font(.system(.footnote, design: .monospaced))
-            .foregroundStyle(segnale ? Stile.brand : Stile.testoTenue)
+            .foregroundStyle(segnale ? Stile.brandTesto : Stile.testoTenue)
             .lineLimit(1)
         }
       }

@@ -44,7 +44,7 @@
             if let avviso {
               Text(avviso)
                 .font(.footnote)
-                .foregroundStyle(Stile.brand)
+                .foregroundStyle(Stile.brandTesto)
             }
           }
           .glassPanel()
@@ -76,13 +76,13 @@
               Spacer()
               Text(login.testo)
                 .font(.system(.footnote, design: .monospaced))
-                .foregroundStyle(login.problema ? Stile.brand : Stile.testo)
+                .foregroundStyle(login.problema ? Stile.brandTesto : Stile.testo)
             }
             campo("Token ron1nOS", testo: $token, segreto: true)
             if let avvisoToken {
               Text(avvisoToken)
                 .font(.footnote)
-                .foregroundStyle(Stile.brand)
+                .foregroundStyle(Stile.brandTesto)
             }
           }
           .glassPanel()

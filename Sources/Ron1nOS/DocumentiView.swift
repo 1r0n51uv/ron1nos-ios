@@ -184,7 +184,7 @@
           .lineLimit(1)
         Text(documento.sottotitolo)
           .font(.footnote)
-          .foregroundStyle(documento.expiry?.scaduto == true ? Stile.brand : Stile.testoTenue)
+          .foregroundStyle(documento.expiry?.scaduto == true ? Stile.brandTesto : Stile.testoTenue)
           .lineLimit(1)
       }
       .frame(width: 200, alignment: .leading)
@@ -210,7 +210,7 @@
           if !documento.sottotitolo.isEmpty {
             Text(documento.sottotitolo)
               .font(.footnote)
-              .foregroundStyle(documento.expiry?.scaduto == true ? Stile.brand : Stile.testoTenue)
+              .foregroundStyle(documento.expiry?.scaduto == true ? Stile.brandTesto : Stile.testoTenue)
           }
         }
       }

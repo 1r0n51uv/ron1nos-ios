@@ -132,7 +132,7 @@
         Chart {
           ForEach(Array(settimane.enumerated()), id: \.element.monday) { indice, settimana in
             BarMark(x: .value("Settimana", settimana.monday), y: .value("Allenamenti", settimana.count))
-              .foregroundStyle(indice == settimane.count - 1 ? Stile.brand : Color.white.opacity(0.3))
+              .foregroundStyle(indice == settimane.count - 1 ? Stile.testo : Color.white.opacity(0.3))
               .cornerRadius(3)
           }
         }
@@ -205,7 +205,7 @@
                 .foregroundStyle(Stile.testo)
               Text(voce.testo(formati))
                 .font(.system(.footnote, design: .monospaced))
-                .foregroundStyle(Stile.brand)
+                .foregroundStyle(Stile.testo)
             }
           }
           .accessibilityElement(children: .combine)

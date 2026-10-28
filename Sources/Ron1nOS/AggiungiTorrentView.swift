@@ -149,7 +149,7 @@
             } else if !link.isEmpty {
               Text("Serve un link magnet o l’URL http(s) di un file .torrent.")
                 .font(.caption)
-                .foregroundStyle(Stile.brand)
+                .foregroundStyle(Stile.brandTesto)
             }
             Spacer()
             // Il pulsante di sistema: niente richiesta di permesso.
@@ -484,7 +484,7 @@
       Button(action: alterna) {
         HStack(spacing: 10) {
           Image(systemName: icona)
-            .foregroundStyle(spunta == .niente ? Stile.testoTenue : Stile.brand)
+            .foregroundStyle(spunta == .niente ? Stile.testoTenue : Stile.testo)
           if nodo.cartella {
             Image(systemName: "folder")
               .foregroundStyle(Stile.testoTenue)
@@ -557,7 +557,7 @@
       VStack(alignment: .leading, spacing: 4) {
         Text(titolo)
           .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.brand)
+          .foregroundStyle(Stile.brandTesto)
         if let testo {
           Text(testo)
             .font(.footnote)

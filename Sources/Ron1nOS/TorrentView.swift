@@ -101,7 +101,7 @@
             Spacer()
             Text(torrent.rigaBreve)
               .font(.system(.caption, design: .monospaced))
-              .foregroundStyle(torrent.state == .error ? Stile.brand : Stile.testoTenue)
+              .foregroundStyle(torrent.state == .error ? Stile.brandTesto : Stile.testoTenue)
           }
           .accessibilityElement(children: .combine)
         }

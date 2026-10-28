@@ -289,7 +289,7 @@
           TextField("0", text: $riga.testoGrammi)
             .keyboardType(.decimalPad)
             .font(.system(.body, design: .monospaced))
-            .foregroundStyle(riga.valida ? Stile.testo : Stile.brand)
+            .foregroundStyle(riga.valida ? Stile.testo : Stile.brandTesto)
             .frame(width: 80)
             .glassChip()
             .accessibilityLabel("Grammi di \(riga.alimento.name)")

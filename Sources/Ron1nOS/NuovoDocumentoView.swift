@@ -191,7 +191,7 @@
     private var form: some View {
       Form {
         if let errore = errori["_"] {
-          Text(errore).font(.footnote).foregroundStyle(Stile.brand)
+          Text(errore).font(.footnote).foregroundStyle(Stile.brandTesto)
         }
         CampiDocumento(modulo: $modulo, titolari: titolari, errori: errori)
         if !file.isEmpty {
@@ -218,7 +218,7 @@
                 ProgressView().progressViewStyle(.linear).tint(Stile.brand)
               }
               if case .errore(let messaggio) = voce.stato {
-                Text(messaggio).font(.footnote).foregroundStyle(Stile.brand)
+                Text(messaggio).font(.footnote).foregroundStyle(Stile.brandTesto)
               }
             }
           }
@@ -235,7 +235,7 @@
       case .inCoda: Text("in coda").font(.footnote).foregroundStyle(Stile.testoTenue)
       case .inCorso: Text("in corso").font(.footnote).foregroundStyle(Stile.testoTenue)
       case .caricato: Image(systemName: "checkmark").foregroundStyle(Stile.testo)
-      case .errore: Image(systemName: "exclamationmark.triangle").foregroundStyle(Stile.brand)
+      case .errore: Image(systemName: "exclamationmark.triangle").foregroundStyle(Stile.brandTesto)
       }
     }
 

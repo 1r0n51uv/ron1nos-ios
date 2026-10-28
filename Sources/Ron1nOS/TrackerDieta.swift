@@ -92,7 +92,7 @@
           } label: {
             HStack(spacing: 10) {
               Image(systemName: integratore.taken ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(integratore.taken ? Stile.brand : Stile.testoTenue)
+                .foregroundStyle(integratore.taken ? Stile.testo : Stile.testoTenue)
               Text(integratore.name)
                 .font(.subheadline)
                 .foregroundStyle(Stile.testo)

@@ -33,7 +33,7 @@
             Spacer()
             Text(permesso.testo)
               .font(.system(.subheadline, design: .monospaced))
-              .foregroundStyle(permesso.segnale ? Stile.brand : Stile.testoTenue)
+              .foregroundStyle(permesso.segnale ? Stile.brandTesto : Stile.testoTenue)
           }
           .listRowBackground(Color.white.opacity(0.06))
           Button("Apri le impostazioni di iOS") {
@@ -41,7 +41,7 @@
               UIApplication.shared.open(url)
             }
           }
-          .foregroundStyle(permesso.segnale ? Stile.brand : Stile.testo)
+          .foregroundStyle(permesso.segnale ? Stile.brandTesto : Stile.testo)
           .listRowBackground(Color.white.opacity(0.06))
         } header: {
           Text("Permesso di iOS")

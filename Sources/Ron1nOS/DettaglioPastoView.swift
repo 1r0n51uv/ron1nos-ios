@@ -95,7 +95,7 @@
               if let yazio = riga.statoYazio {
                 Text("· \(yazio)")
                   .font(.footnote)
-                  .foregroundStyle(riga.sync == "error" ? Stile.brand : Stile.testoTenue)
+                  .foregroundStyle(riga.sync == "error" ? Stile.brandTesto : Stile.testoTenue)
               }
             }
           }

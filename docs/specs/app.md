@@ -309,3 +309,31 @@ Accettazione:
       macOS di GitHub, gratuito per i repository pubblici.
 - [x] Solo un controllo: niente IPA, niente firma, niente `.xcodeproj`. La
       build vera resta quella del server (IOSB).
+
+### IOS-014 · Contrasto e rosso come segnale
+
+Stato: in corso (#106) · Origine: revisione con la skill `apple-design` del
+2026-10-28, richiesta del proprietario
+
+La revisione ha trovato il rosso del marchio (`#FF2A2A`) usato per testi
+piccoli, dove sul velo delle card sopra l'alone dello sfondo `brace` scende
+a 2,8:1, e usato anche per cose che non sono segnali (record, voce
+spuntata, settimana in corso). Il tema resta solo scuro: è la scelta di
+ron1nOS.
+
+Accettazione:
+
+- [ ] I colori stanno in `Palette` di Ron1nKit, con i test di contrasto
+      WCAG che girano su Linux. `Stile` li legge da lì.
+- [ ] I testi e i simboli rossi usano `brandTesto` (`#FF8A8A`, lo stesso
+      `--brand-text` del sito): almeno 4,5:1 anche sul fondo peggiore,
+      una pillola dentro una card sopra l'alone `brace`. Il `brand` resta
+      per barre, bordi, punti, interruttori e la voce attiva della TabBar.
+- [ ] Il testo secondario passa dal 55% al 60% di bianco: sul fondo
+      peggiore arriva a 4,9:1 (prima 4,4:1).
+- [ ] Il rosso è solo un segnale (errore, scaduto, oltre l'obiettivo,
+      in errore). Diventano bianchi: record degli esercizi e la sigla
+      `RECORD`, la settimana in corso nel grafico della Palestra, la linea
+      del grafico di un esercizio, gli integratori presi, le voci della
+      spesa spuntate, i file scelti di un torrent, lo sfondo scelto nelle
+      Impostazioni. `questo iPhone` nelle sessioni diventa tenue.

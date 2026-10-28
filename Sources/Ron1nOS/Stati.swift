@@ -49,7 +49,7 @@
       VStack(alignment: .leading, spacing: 4) {
         Text(errore.titolo)
           .font(.subheadline)
-          .foregroundStyle(Stile.brand)
+          .foregroundStyle(Stile.brandTesto)
         if let dettaglio = errore.dettaglio {
           Text(dettaglio)
             .font(.system(.footnote, design: .monospaced))
@@ -72,7 +72,7 @@
         if let titolo = avviso.azione {
           Button(titolo, action: azione)
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(Stile.brand)
+            .foregroundStyle(Stile.brandTesto)
         }
       }
       .padding(.horizontal, 18)

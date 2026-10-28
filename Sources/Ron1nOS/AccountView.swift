@@ -34,7 +34,7 @@
               )
               .foregroundStyle(Stile.testoTenue)
               if let errore {
-                Text(errore).foregroundStyle(Stile.brand)
+                Text(errore).foregroundStyle(Stile.brandTesto)
               }
             }
           }
@@ -75,7 +75,7 @@
         EmptyView()
       case .fallito:
         Text("Sessioni non disponibili")
-          .foregroundStyle(Stile.brand)
+          .foregroundStyle(Stile.brandTesto)
           .listRowBackground(veloAccount)
       case .pronto(let elenco):
         if elenco.isEmpty {
@@ -176,7 +176,7 @@
               )
               .foregroundStyle(Stile.testoTenue)
               if let errore {
-                Text(errore).foregroundStyle(Stile.brand)
+                Text(errore).foregroundStyle(Stile.brandTesto)
               }
             }
           }
@@ -222,7 +222,7 @@
         EmptyView()
       case .fallito:
         Text("Token non disponibili")
-          .foregroundStyle(Stile.brand)
+          .foregroundStyle(Stile.brandTesto)
           .listRowBackground(veloAccount)
       case .pronto(let elenco):
         if elenco.isEmpty {
@@ -238,7 +238,7 @@
                 if voce.current {
                   Text("questo iPhone")
                     .font(.caption)
-                    .foregroundStyle(Stile.brand)
+                    .foregroundStyle(Stile.testoTenue)
                 }
               }
               Text("ultimo uso \(voce.lastUsedAt.flatMap { Formato.momento($0, fuso: fuso) } ?? "mai")")

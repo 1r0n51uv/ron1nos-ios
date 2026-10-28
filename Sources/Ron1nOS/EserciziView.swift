@@ -78,7 +78,7 @@
           .lineLimit(1)
         Text(esercizio.nomeGruppo)
           .font(.footnote)
-          .foregroundStyle(esercizio.group == nil ? Stile.brand : Stile.testoTenue)
+          .foregroundStyle(esercizio.group == nil ? Stile.brandTesto : Stile.testoTenue)
       }
       .accessibilityElement(children: .combine)
     }
@@ -240,7 +240,7 @@
           Chart {
             ForEach(Array(valori.enumerated()), id: \.offset) { indice, valore in
               LineMark(x: .value("Giorno", esercizio.points[indice].day), y: .value("Valore", valore))
-                .foregroundStyle(Stile.brand)
+                .foregroundStyle(Stile.testo)
                 .interpolationMethod(.monotone)
             }
           }
@@ -295,7 +295,7 @@
           HStack {
             Text(voce.testo(formati))
               .font(.system(.footnote, design: .monospaced))
-              .foregroundStyle(Stile.brand)
+              .foregroundStyle(Stile.testo)
             Spacer()
             Text(Giorni.relativo(voce.day, oggi: oggi))
               .font(.footnote)

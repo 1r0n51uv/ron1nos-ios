@@ -136,7 +136,7 @@
           if let errore {
             Text(errore)
               .font(.subheadline)
-              .foregroundStyle(Stile.brand)
+              .foregroundStyle(Stile.brandTesto)
           }
         }
         .scrollContentBackground(.hidden)

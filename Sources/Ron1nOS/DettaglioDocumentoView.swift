@@ -100,7 +100,7 @@
         if !documento.sottotitolo.isEmpty {
           Text(documento.sottotitolo)
             .font(.subheadline)
-            .foregroundStyle(documento.expiry?.scaduto == true ? Stile.brand : Stile.testoTenue)
+            .foregroundStyle(documento.expiry?.scaduto == true ? Stile.brandTesto : Stile.testoTenue)
         }
       }
       .accessibilityElement(children: .combine)

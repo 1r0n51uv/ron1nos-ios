@@ -38,10 +38,10 @@
     case impostazione(VoceImpostazioni)
   }
 
-  /// La TabBar dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
-  /// sito e `Altro`. Su iOS 26 è il Liquid Glass di sistema e si riduce
-  /// scorrendo in basso. Ogni scheda ha la sua pila; toccare la voce già
-  /// attiva torna alla radice.
+  /// Le schede dell'app (IOS-009): Home, i primi tre moduli nell'ordine del
+  /// sito e `Altro`. La barra di sistema è nascosta: al suo posto la
+  /// pillola di vetro (IOS-015). Ogni scheda ha la sua pila; toccare la
+  /// voce già attiva torna alla radice.
   struct RadiceView: View {
     @StateObject private var sessione = Sessione.condivisa
     @State private var selezione: Scheda = .home
@@ -57,16 +57,22 @@
                 destinazione(pagina)
               }
           }
-          .tabItem { Label(scheda.titolo, systemImage: scheda.icona) }
+          .safeAreaInset(edge: .bottom, spacing: 0) {
+            Color.clear.frame(height: BarraSchede.spazioContenuti)
+          }
+          .toolbar(.hidden, for: .tabBar)
           .tag(scheda)
         }
       }
       .tint(Stile.brand)
-      .riduciTabBarScorrendo()
+      .overlay(alignment: .bottom) {
+        BarraPillola(schede: navigazione.schede, selezione: selezioneConRitorno)
+          .ignoresSafeArea(.keyboard)
+      }
       .overlay(alignment: .bottom) {
         if let avviso = sessione.avviso {
           VistaAvviso(avviso: avviso) { sessione.eseguiAvviso() }
-            .padding(.bottom, 96)
+            .padding(.bottom, BarraSchede.spazioContenuti + 12)
             .transition(.move(edge: .bottom).combined(with: .opacity))
         }
       }

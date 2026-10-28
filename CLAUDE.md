@@ -21,3 +21,7 @@ italiano.
 - Ogni PR porta i suoi test. Non disattivare né saltare test per far
   passare la CI.
 - Branch con l'id del requisito, per esempio `ios-001-app-prova-xtool`.
+- Per rivedere un'interfaccia o una PR con UI usa la skill `apple-design`
+  in `.claude/skills/`. Dove non concorda con lo stile ron1nOS (per esempio
+  il tema solo scuro) vince lo stile. Si aggiorna con
+  `npx skills update -p`.

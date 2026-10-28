@@ -20,6 +20,9 @@ italiano.
   esclamativi né emoji, separatore `·`.
 - Ogni PR porta i suoi test. Non disattivare né saltare test per far
   passare la CI.
+- Ogni PR aggiunge in cima a `CHANGELOG.md` la sezione
+  `## 0.1.N · AAAA-MM-GG`, con N = commit di main + 1, e righe su cosa
+  cambia per chi usa l'app: diventano le note della versione su SideStore.
 - Branch con l'id del requisito, per esempio `ios-001-app-prova-xtool`.
 - Per rivedere un'interfaccia o una PR con UI usa la skill `apple-design`
   in `.claude/skills/`. Dove non concorda con lo stile ron1nOS (per esempio

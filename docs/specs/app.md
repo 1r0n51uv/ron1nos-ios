@@ -370,3 +370,22 @@ Accettazione:
       sopra la pillola. Con la tastiera aperta la pillola resta sotto.
 - [x] Non si riduce più scorrendo (`tabBarMinimizeBehavior` vale solo per
       la barra di sistema).
+
+### IOS-016 · CHANGELOG e note su SideStore
+
+Stato: fatto (#111) · Richiesta del proprietario il 2026-10-28
+
+Ogni versione dice cosa cambia, nel repo e in SideStore.
+
+Accettazione:
+
+- [x] `CHANGELOG.md` con una sezione per versione, `## 0.1.N · AAAA-MM-GG`,
+      la più recente in alto, ricostruito dalla storia di main: N è il
+      numero di commit di main a quel merge, come lo calcola il builder
+      (IOSB-003 di ron1n).
+- [x] Ogni PR aggiunge in cima la sua sezione, con N = commit di main + 1,
+      e righe brevi su cosa cambia per chi usa l'app.
+- [x] Il builder copia la sezione nelle note della versione su SideStore
+      (IOSB-005 di ron1n); se la versione non c'è, mostra i titoli dei
+      commit.
+

@@ -315,7 +315,7 @@ Accettazione:
 
 ### IOS-014 · Contrasto e rosso come segnale
 
-Stato: in corso (#106) · Origine: revisione con la skill `apple-design` del
+Stato: fatto (#108) · Origine: revisione con la skill `apple-design` del
 2026-10-28, richiesta del proprietario
 
 La revisione ha trovato il rosso del marchio (`#FF2A2A`) usato per testi
@@ -326,15 +326,15 @@ ron1nOS.
 
 Accettazione:
 
-- [ ] I colori stanno in `Palette` di Ron1nKit, con i test di contrasto
+- [x] I colori stanno in `Palette` di Ron1nKit, con i test di contrasto
       WCAG che girano su Linux. `Stile` li legge da lì.
-- [ ] I testi e i simboli rossi usano `brandTesto` (`#FF8A8A`, lo stesso
+- [x] I testi e i simboli rossi usano `brandTesto` (`#FF8A8A`, lo stesso
       `--brand-text` del sito): almeno 4,5:1 anche sul fondo peggiore,
       una pillola dentro una card sopra l'alone `brace`. Il `brand` resta
       per barre, bordi, punti, interruttori e la voce attiva della TabBar.
-- [ ] Il testo secondario passa dal 55% al 60% di bianco: sul fondo
+- [x] Il testo secondario passa dal 55% al 60% di bianco: sul fondo
       peggiore arriva a 4,9:1 (prima 4,4:1).
-- [ ] Il rosso è solo un segnale (errore, scaduto, oltre l'obiettivo,
+- [x] Il rosso è solo un segnale (errore, scaduto, oltre l'obiettivo,
       in errore). Diventano bianchi: record degli esercizi e la sigla
       `RECORD`, la settimana in corso nel grafico della Palestra, la linea
       del grafico di un esercizio, gli integratori presi, le voci della
@@ -343,30 +343,30 @@ Accettazione:
 
 ### IOS-015 · TabBar a pillola in vetro
 
-Stato: in corso (#107) · Richiesta del proprietario il 2026-10-28
+Stato: fatto (#109) · Richiesta del proprietario il 2026-10-28
 
 La TabBar diventa una pillola flottante con l'effetto vetro di iOS 26.
 Cambia solo la forma: voci e comportamento restano quelli di IOS-009.
 
 Accettazione:
 
-- [ ] La barra di sistema della `TabView` è nascosta; al suo posto una
+- [x] La barra di sistema della `TabView` è nascosta; al suo posto una
       pillola staccata dai bordi (16 pt) e dal fondo, alta 62 pt, larga al
       massimo 440 pt e centrata.
-- [ ] Su iOS 26 la pillola è Liquid Glass (`glassEffect`, interattivo);
+- [x] Su iOS 26 la pillola è Liquid Glass (`glassEffect`, interattivo);
       prima della 26 materiale sfocato con il bordo di luce. Con "Riduci
       trasparenza" diventa un grigio pieno.
-- [ ] Le stesse 5 voci, con icona e nome. La voce attiva ha una bolla di
+- [x] Le stesse 5 voci, con icona e nome. La voce attiva ha una bolla di
       vetro e icona e nome in `brandTesto` (IOS-014); le altre sono
       bianche. La bolla scorre da una voce all'altra, senza animazione con
       "Riduci movimento". Ogni cambio di voce dà un tocco aptico leggero.
-- [ ] Ogni voce misura almeno 44×44 pt anche sullo schermo più stretto
+- [x] Ogni voce misura almeno 44×44 pt anche sullo schermo più stretto
       (test in Ron1nKit, `BarraSchede`).
-- [ ] Accessibilità: ogni voce ha il nome come etichetta e lo stato
+- [x] Accessibilità: ogni voce ha il nome come etichetta e lo stato
       selezionato; tenendola premuta con il testo grande si ingrandisce
       (Large Content Viewer).
-- [ ] I contenuti di ogni scheda e delle pagine sotto lasciano in fondo lo
+- [x] I contenuti di ogni scheda e delle pagine sotto lasciano in fondo lo
       spazio della pillola, che non copre l'ultima riga. Il toast sta
       sopra la pillola. Con la tastiera aperta la pillola resta sotto.
-- [ ] Non si riduce più scorrendo (`tabBarMinimizeBehavior` vale solo per
+- [x] Non si riduce più scorrendo (`tabBarMinimizeBehavior` vale solo per
       la barra di sistema).

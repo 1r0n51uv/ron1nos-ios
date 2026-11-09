@@ -10,6 +10,11 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.66 · 2026-11-09
+
+- L'app torna a installarsi: dal 28 ottobre le versioni non uscivano più perché la build falliva su Foto e Anteprima dei documenti (IOS-018).
+- Dentro ci sono anche le correzioni della 0.1.63: meno errori "URLError -999" e un nuovo tentativo sul 401.
+
 ## 0.1.63 · 2026-11-09
 
 - Meno errori "URLError -999" cambiando pagina o aggiornando: la richiesta non si interrompe più a metà, e se iOS la annulla si riprova da sola.

@@ -42,7 +42,7 @@
             if case .fallito(let errore, _) = controllo {
               PannelloErrore(errore: errore)
             } else if login.problema {
-              PannelloErrore(errore: .login(conToken: login == .tokenRifiutato))
+              PannelloErrore(errore: .login(conSessione: login == .sessioneScaduta))
             }
             griglia(larghezza: larghezza, lato: lato)
           }

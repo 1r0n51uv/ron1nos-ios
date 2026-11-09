@@ -22,6 +22,10 @@ public struct URLSessionTransport: HTTPTransport {
   private static func creaSessione(timeout: TimeInterval) -> URLSession {
     let config = URLSessionConfiguration.ephemeral
     config.timeoutIntervalForRequest = timeout
+    // Il cookie di sessione lo gestisce l'app (Portachiavi): URLSession non
+    // ne aggiunge né ne tiene di suoi (IOS-019).
+    config.httpShouldSetCookies = false
+    config.httpCookieAcceptPolicy = .never
     return URLSession(configuration: config)
   }
 
@@ -108,18 +112,22 @@ public struct APIClient: Sendable {
   public let baseURL: URL
   /// Il service token di Access, se c'è. Senza, Access rimanda al login.
   public let credenziali: CredenzialiAccesso?
-  /// Il token di ron1nOS (IOS-005), se c'è. Senza, con il login acceso le
-  /// rotte rispondono 401.
-  public let token: TokenRon1n?
+  /// La sessione nel login di ron1nOS (IOS-019), se c'è. Senza, con il login
+  /// acceso le rotte rispondono 401.
+  public let sessione: CookieSessione?
+  /// Chi rifà il login quando la sessione non vale più, se può.
+  let rinnovo: RinnovoSessione?
   let transport: HTTPTransport
 
   public init(
     baseURL: URL = APIClient.indirizzoPredefinito, credenziali: CredenzialiAccesso? = nil,
-    token: TokenRon1n? = nil, transport: HTTPTransport = URLSessionTransport()
+    sessione: CookieSessione? = nil, rinnovo: RinnovoSessione? = nil,
+    transport: HTTPTransport = URLSessionTransport()
   ) {
     self.baseURL = baseURL
     self.credenziali = credenziali
-    self.token = token
+    self.sessione = sessione
+    self.rinnovo = rinnovo
     self.transport = transport
   }
 
@@ -128,7 +136,7 @@ public struct APIClient: Sendable {
     try await get("health")
   }
 
-  /// `GET /auth/me`: con il login acceso chiede il token.
+  /// `GET /auth/me`: con il login acceso chiede la sessione.
   public func me() async throws(APIError) -> Me {
     try await get("auth/me")
   }
@@ -192,21 +200,35 @@ public struct APIClient: Sendable {
       request.httpBody = corpo
       request.setValue(tipo, forHTTPHeaderField: "Content-Type")
     }
-    let header = (credenziali?.header ?? [:]).merging(token?.header ?? [:]) { $1 }
-    for (nome, valore) in header {
-      request.setValue(valore, forHTTPHeaderField: nome)
+    var usata = sessione
+    func intestazioni() {
+      let header = (credenziali?.header ?? [:]).merging(usata?.header ?? [:]) { $1 }
+      for (nome, valore) in header {
+        request.setValue(valore, forHTTPHeaderField: nome)
+      }
     }
+    intestazioni()
 
     var (data, http) = try await invio(request)
-    // Un 401 con il token in mano è quasi sempre un intoppo passeggero del
-    // backend (riavvio, database che parte): si riprova una volta. Con il
-    // token davvero revocato costa mezzo secondo.
-    if http.statusCode == 401, token != nil, !Task.isCancelled {
+    // Un 401 con la sessione in mano è spesso un intoppo passeggero del
+    // backend (riavvio, database che parte): si riprova una volta. Con la
+    // sessione davvero scaduta costa mezzo secondo.
+    if http.statusCode == 401, usata != nil, !Task.isCancelled {
       try? await Task.sleep(nanoseconds: 500_000_000)
       (data, http) = try await invio(request)
     }
+    // Ancora 401: si rifà il login con la password salvata (Face ID) e si
+    // ripete la richiesta con la sessione nuova.
+    if http.statusCode == 401, let rinnovo, !Task.isCancelled {
+      let base = APIClient(baseURL: baseURL, credenziali: credenziali, transport: transport)
+      if let nuova = await rinnovo.rinnova(rifiutato: usata, con: base) {
+        usata = nuova
+        intestazioni()
+        (data, http) = try await invio(request)
+      }
+    }
     if APIClient.versoAccess(http) { throw .accesso(conToken: credenziali != nil) }
-    if http.statusCode == 401 { throw .login(conToken: token != nil) }
+    if http.statusCode == 401 { throw .login(conSessione: usata != nil) }
     return (data, http)
   }
 
@@ -240,7 +262,7 @@ public struct APIClient: Sendable {
   }
 
   /// Un redirect verso il login di Cloudflare Access
-  /// (`<team>.cloudflareaccess.com`): token mancante o non valido.
+  /// (`<team>.cloudflareaccess.com`): service token mancante o non valido.
   static func versoAccess(_ http: HTTPURLResponse) -> Bool {
     guard (300..<400).contains(http.statusCode),
       let location = http.value(forHTTPHeaderField: "Location"),

@@ -194,7 +194,7 @@
       switch pagina {
       case .modulo(let scheda): radice(scheda)
       case .accesso:
-        AccessoView(archivio: sessione.archivio, archivioToken: sessione.archivioToken) {
+        AccessoView(archivio: sessione.archivio) {
           sessione.credenzialiCambiate()
         }
       case .notifiche:

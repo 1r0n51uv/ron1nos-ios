@@ -17,7 +17,7 @@ import Testing
     preferenze.appearance.glass = .medium
     let stato = StatoImpostazioni(
       preferenze: preferenze, credenziali: true, login: .valido, notificheAccese: 2, widget: 6,
-      sessioni: 1, token: 2,
+      sessioni: 1,
       integrazioni: [
         Integrazione(id: "postgres", name: "Postgres", state: .connected, checkedAt: "x"),
         Integrazione(id: "yazio", name: "YAZIO", state: .notConfigured, checkedAt: "x"),
@@ -25,7 +25,7 @@ import Testing
     let riepiloghi = VoceImpostazioni.allCases.map { stato.riepilogo($0) ?? "-" }
     let attesi = [
       "collegato", "2 accese", "medio", "6 widget", "7 accesi", "prima Dieta", "kg · kcal", "1 sessione",
-      "2 token", "1 di 2 collegate", "-", "0.1.120",
+      "1 di 2 collegate", "-", "0.1.120",
     ]
     #expect(riepiloghi == attesi)
     #expect(!VoceImpostazioni.allCases.contains { stato.segnale($0) })
@@ -38,14 +38,14 @@ import Testing
     #expect(senza.riepilogo(.notifiche) == "spente")
     #expect(senza.riepilogo(.dashboard) == nil)
     let rifiutato = StatoImpostazioni(
-      preferenze: .predefinite, credenziali: true, login: .tokenRifiutato,
+      preferenze: .predefinite, credenziali: true, login: .sessioneScaduta,
       integrazioni: [Integrazione(id: "glances", name: "Glances", state: .error, checkedAt: "x")])
-    #expect(rifiutato.riepilogo(.accesso) == "token rifiutato")
+    #expect(rifiutato.riepilogo(.accesso) == "sessione scaduta")
     #expect(rifiutato.riepilogo(.integrazioni) == "1 in errore")
     #expect(rifiutato.segnale(.integrazioni))
   }
 
-  @Test func sessioniTokenEIntegrazioni() async throws {
+  @Test func sessioniEIntegrazioni() async throws {
     let elenco = """
       {"sessions":[{"id":"s1","device":"Safari su iPhone","createdAt":"a","lastSeenAt":"b","current":true}]}
       """
@@ -53,12 +53,6 @@ import Testing
     let lette = try await APIClient(transport: sessioni).sessioniWeb()
     #expect(sessioni.richiesta?.url?.path == "/api/v1/auth/sessions")
     #expect(lette.first?.current == true)
-
-    let token = TransportFinto(
-      .risposta(200, #"{"tokens":[{"id":"t1","name":"iPhone","createdAt":"a","lastUsedAt":null}]}"#))
-    let letti = try await APIClient(transport: token).tokenApp()
-    #expect(token.richiesta?.url?.path == "/api/v1/auth/tokens")
-    #expect(letti == [TokenApp(id: "t1", name: "iPhone", createdAt: "a")])
 
     let json = """
       {"integrations":[{"id":"homeassistant","name":"Home Assistant","state":"not_configured",

@@ -6,6 +6,11 @@ italiano.
 - Niente Mac e niente Xcode: il progetto è un pacchetto SwiftPM che xtool
   compila su Linux (`Package.swift`, `xtool.yml`). Non aggiungere progetti
   `.xcodeproj` né dipendenze che richiedono Xcode.
+- La compilazione avviene sempre in un container, e l'app la compila sempre
+  xtool: la CI usa `swift:6.4.1-noble` (formato, lint, build e test della
+  logica), il builder sul server usa xtool per l'IPA. Sul computer di
+  sviluppo `swift build` può non partire (manca la libc): non cercare di
+  ripararlo, controlla la CI.
 - La build dell'IPA gira sul server con il builder dell'hub ron1n
   (`infra/ios`, spec IOSB). La CI su GitHub fa formato, lint, build e test
   su Linux.

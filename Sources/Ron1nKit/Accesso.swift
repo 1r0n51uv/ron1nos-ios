@@ -83,12 +83,16 @@ public final class ArchivioInMemoria: ArchivioCredenziali, @unchecked Sendable {
 }
 
 #if canImport(Security)
+  import LocalAuthentication
   import Security
 
   /// Una voce generic password del Portachiavi di iOS, leggibile solo su
-  /// questo telefono dopo il primo sblocco.
+  /// questo telefono dopo il primo sblocco. Con `conFaceID` si legge solo
+  /// con Face ID, o con il codice del telefono, e solo se il telefono ha un
+  /// codice (IOS-019).
   struct VocePortachiavi: Sendable {
     let servizio: String
+    var conFaceID = false
 
     private var query: [String: Any] {
       [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: servizio]
@@ -98,6 +102,11 @@ public final class ArchivioInMemoria: ArchivioCredenziali, @unchecked Sendable {
       var q = query
       q[kSecReturnData as String] = true
       q[kSecMatchLimit as String] = kSecMatchLimitOne
+      if conFaceID {
+        let contesto = LAContext()
+        contesto.localizedReason = "Per entrare in ron1nOS"
+        q[kSecUseAuthenticationContext as String] = contesto
+      }
       var risultato: AnyObject?
       guard SecItemCopyMatching(q as CFDictionary, &risultato) == errSecSuccess else { return nil }
       return risultato as? Data
@@ -107,7 +116,16 @@ public final class ArchivioInMemoria: ArchivioCredenziali, @unchecked Sendable {
       try cancella()
       var q = query
       q[kSecValueData as String] = dati
-      q[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+      if conFaceID {
+        var errore: Unmanaged<CFError>?
+        guard
+          let controllo = SecAccessControlCreateWithFlags(
+            nil, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, .userPresence, &errore)
+        else { throw ErrorePortachiavi(stato: errSecParam) }
+        q[kSecAttrAccessControl as String] = controllo
+      } else {
+        q[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+      }
       let stato = SecItemAdd(q as CFDictionary, nil)
       guard stato == errSecSuccess else { throw ErrorePortachiavi(stato: stato) }
     }

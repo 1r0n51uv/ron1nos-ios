@@ -17,9 +17,9 @@ public enum APIError: Error, Equatable, Sendable {
   /// Cloudflare Access ha fermato la richiesta: manca il service token, o
   /// quello salvato non vale più (IOS-004).
   case accesso(conToken: Bool)
-  /// ron1nOS chiede il login (HTTP 401): manca il token dell'app, o quello
-  /// salvato è stato revocato (IOS-005).
-  case login(conToken: Bool)
+  /// ron1nOS chiede il login (HTTP 401): l'app non ha fatto l'accesso, o la
+  /// sessione salvata è scaduta o è stata chiusa (IOS-019).
+  case login(conSessione: Bool)
   /// Il server ha risposto con un codice HTTP di errore.
   case stato(Int)
   /// Ha risposto, ma non con quello che l'app si aspetta.
@@ -72,8 +72,8 @@ public enum APIError: Error, Equatable, Sendable {
     case .certificato: "Certificato non attendibile"
     case .accesso(conToken: false): "Manca l'accesso"
     case .accesso(conToken: true): "Accesso rifiutato"
-    case .login(conToken: false): "Manca il token ron1nOS"
-    case .login(conToken: true): "Token ron1nOS rifiutato"
+    case .login(conSessione: false): "Manca l'accesso a ron1nOS"
+    case .login(conSessione: true): "Sessione ron1nOS scaduta"
     case .stato(let codice): "Errore del server · \(codice)"
     case .rispostaInattesa: "Risposta inattesa"
     }
@@ -94,12 +94,10 @@ public enum APIError: Error, Equatable, Sendable {
     case .accesso(conToken: true):
       "Cloudflare Access non accetta il token salvato: forse è scaduto o è stato revocato. "
         + "Apri Altro › Impostazioni › Accesso e incolla quello nuovo."
-    case .login(conToken: false):
-      "ron1nOS chiede il login. Nella dashboard apri Impostazioni › App iOS, crea un token e "
-        + "incollalo in Altro › Impostazioni › Accesso."
-    case .login(conToken: true):
-      "ron1nOS non accetta il token salvato: forse è stato revocato. Creane uno nuovo in "
-        + "Impostazioni › App iOS della dashboard e incollalo in Altro › Impostazioni › Accesso."
+    case .login(conSessione: false):
+      "ron1nOS chiede la password della dashboard. Inseriscila in Altro › Impostazioni › Accesso."
+    case .login(conSessione: true):
+      "La sessione è scaduta o è stata chiusa. Entra di nuovo in Altro › Impostazioni › Accesso."
     case .stato:
       "Il backend ron1nOS ha un problema: guarda i suoi log sul server."
     case .rispostaInattesa:

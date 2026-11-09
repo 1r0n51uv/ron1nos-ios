@@ -127,7 +127,7 @@ Accettazione:
 
 ### IOS-005 · Token di ron1nOS
 
-Stato: fatto (#12)
+Stato: sostituito da IOS-019 (il token non c'è più)
 
 Con il login di ron1nOS acceso le rotte dei moduli rispondono 401 senza
 sessione. L'app entra con un token creato nella dashboard (AUTH-005 e
@@ -389,3 +389,35 @@ Accettazione:
       (IOSB-005 di ron1n); se la versione non c'è, mostra i titoli dei
       commit.
 
+
+### IOS-019 · Login con la password e Face ID
+
+Stato: da fare · Parità: AUTH-001, AUTH-002, AUTH-004
+
+L'app entra nel login di ron1nOS come il sito: con la password della
+dashboard (`POST /auth/login`), non più con un token creato a mano. Il
+token dell'app (IOS-005) sparisce.
+
+Accettazione:
+
+- [ ] In Accesso si scrive la password e si tocca `Entra`. La sessione
+      (cookie `ron1nos_session`, 30 giorni) sta nel Portachiavi e va in
+      ogni richiesta insieme agli header di Access. Password errata,
+      login spento e troppi tentativi (429) hanno un messaggio loro.
+- [ ] `Ricorda con Face ID` (acceso di default) tiene la password nel
+      Portachiavi dietro Face ID, con il codice del telefono come riserva.
+      Quando la sessione scade o viene chiusa, un 401 la rifà da sola:
+      Face ID compare una volta sola anche con più richieste insieme, e
+      dopo un tentativo andato male non si richiede per 30 secondi.
+- [ ] `Esci` chiude la sessione sul server e toglie sessione e password dal
+      telefono, senza chiedere Face ID.
+- [ ] La riga Login dice: sessione valida, spento, da accedere, sessione
+      scaduta. Un 401 diventa "Manca l'accesso a ron1nOS" o "Sessione
+      ron1nOS scaduta".
+- [ ] Impostazioni › Account mostra anche la sessione di questo iPhone,
+      segnata, senza `Chiudi`; `Chiudi le altre` usa
+      `DELETE /auth/sessions/others`.
+- [ ] Spariscono la voce Impostazioni › App iOS, i token e il loro
+      salvataggio nel Portachiavi.
+- [ ] Test unitari su Linux per il cookie, l'accesso (200, 401, 409, 429),
+      il rinnovo sul 401 e la pausa dopo un tentativo fallito.

@@ -3,12 +3,12 @@
   import SwiftUI
   import UIKit
 
-  /// Il service token di Cloudflare Access (IOS-004) e il token di ron1nOS
-  /// (IOS-005): si incollano, si salvano nel Portachiavi, si eliminano. I
-  /// segreti non si rileggono mai a schermo.
+  /// Il service token di Cloudflare Access (IOS-004) si incolla e si salva
+  /// nel Portachiavi; il login di ron1nOS (IOS-019) si fa con la password
+  /// della dashboard, che resta nel Portachiavi dietro Face ID per rifarlo
+  /// quando la sessione scade. I segreti non si rileggono mai a schermo.
   struct AccessoView: View {
     let archivio: ArchivioCredenziali
-    let archivioToken: ArchivioToken
     /// Chiamata dopo un salvataggio o un'eliminazione.
     let cambiato: @MainActor () -> Void
 
@@ -18,10 +18,12 @@
     @State private var clientSecret = ""
     @State private var avviso: String?
     @State private var salvato = false
-    @State private var token = ""
-    @State private var avvisoToken: String?
-    @State private var tokenSalvato = false
-    /// Lo stato del login con il token salvato (IOS-090).
+    @State private var password = ""
+    @State private var ricordaConFaceID = true
+    @State private var avvisoLogin: String?
+    @State private var entrato = false
+    @State private var inCorso = false
+    /// Lo stato del login con la sessione salvata (IOS-090).
     @State private var login = StatoLogin.inCorso
     @EnvironmentObject private var sessione: Sessione
 
@@ -58,17 +60,14 @@
           }
 
           Text(
-            "Il token di ron1nOS fa entrare l'app nel login della dashboard. Crealo in "
-              + "Impostazioni › App iOS, copialo e tocca Incolla."
+            "Il login di ron1nOS chiede la password della dashboard. La sessione dura 30 giorni; "
+              + "quando scade l'app la rifà con Face ID."
           )
           .font(.subheadline)
           .foregroundStyle(Stile.testoTenue)
           .padding(.top, 8)
 
           VStack(alignment: .leading, spacing: 14) {
-            Text(tokenSalvato ? "Token ron1nOS salvato in questo telefono" : "Nessun token ron1nOS salvato")
-              .font(.system(.footnote, design: .monospaced))
-              .foregroundStyle(Stile.testoTenue)
             HStack {
               Text("Login")
                 .font(.footnote)
@@ -78,9 +77,13 @@
                 .font(.system(.footnote, design: .monospaced))
                 .foregroundStyle(login.problema ? Stile.brandTesto : Stile.testo)
             }
-            campo("Token ron1nOS", testo: $token, segreto: true)
-            if let avvisoToken {
-              Text(avvisoToken)
+            campo("Password", testo: $password, segreto: true)
+            Toggle("Ricorda con Face ID", isOn: $ricordaConFaceID)
+              .font(.footnote)
+              .foregroundStyle(Stile.testoTenue)
+              .tint(Stile.brand)
+            if let avvisoLogin {
+              Text(avvisoLogin)
                 .font(.footnote)
                 .foregroundStyle(Stile.brandTesto)
             }
@@ -88,10 +91,11 @@
           .glassPanel()
 
           HStack(spacing: 12) {
-            pulsante("Incolla") { incollaToken() }
-            pulsante("Salva") { salvaToken() }
-            if tokenSalvato {
-              pulsante("Elimina") { eliminaToken() }
+            pulsante("Entra") { Task { await entra() } }
+              .disabled(inCorso)
+            if entrato {
+              pulsante("Esci") { Task { await esci() } }
+                .disabled(inCorso)
             }
           }
         }
@@ -102,7 +106,7 @@
       .navigationTitle("Accesso")
       .onAppear {
         salvato = archivio.carica() != nil
-        tokenSalvato = archivioToken.carica() != nil
+        entrato = sessione.archivioCookie.carica() != nil
       }
       .task(id: sessione.versione) { login = await StatoLogin.verifica(con: sessione.client) }
     }
@@ -171,40 +175,54 @@
       }
     }
 
-    private func incollaToken() {
-      guard let testo = UIPasteboard.general.string, let letto = TokenRon1n.leggi(da: testo) else {
-        avvisoToken = "Negli appunti non c'è un token ron1nOS."
+    private func entra() async {
+      guard !password.isEmpty else {
+        avvisoLogin = "Serve la password."
         return
       }
-      token = letto.valore
-      avvisoToken = nil
+      inCorso = true
+      defer { inCorso = false }
+      let base = APIClient(credenziali: archivio.carica())
+      do {
+        switch try await base.accedi(password: password) {
+        case .entrato(let cookie):
+          try sessione.archivioCookie.salva(cookie.valore)
+          if ricordaConFaceID {
+            try sessione.archivioPassword.salva(password)
+          } else {
+            try sessione.archivioPassword.cancella()
+          }
+          password = ""
+          avvisoLogin = nil
+          entrato = true
+          cambiato()
+          chiudi()
+        case .passwordErrata:
+          avvisoLogin = "Password non valida."
+        case .loginSpento:
+          avvisoLogin = "Il login di ron1nOS è spento: la password non serve."
+        case .troppiTentativi:
+          avvisoLogin = "Troppi tentativi · riprova tra qualche minuto."
+        }
+      } catch let errore as APIError {
+        avvisoLogin = errore.titolo
+      } catch {
+        avvisoLogin = "Il Portachiavi non ha salvato l'accesso."
+      }
     }
 
-    private func salvaToken() {
-      guard let letto = TokenRon1n.leggi(da: token) else {
-        avvisoToken = "Il token inizia con r1n_, senza spazi."
-        return
-      }
-      do {
-        try archivioToken.salva(letto)
-        token = ""
-        avvisoToken = nil
-        tokenSalvato = true
-        cambiato()
-        chiudi()
-      } catch {
-        avvisoToken = "Il Portachiavi non ha salvato il token."
-      }
-    }
-
-    private func eliminaToken() {
-      do {
-        try archivioToken.cancella()
-        tokenSalvato = false
-        cambiato()
-      } catch {
-        avvisoToken = "Il Portachiavi non ha eliminato il token."
-      }
+    /// Chiude la sessione sul server, se risponde, e toglie sessione e
+    /// password dal telefono comunque.
+    private func esci() async {
+      inCorso = true
+      defer { inCorso = false }
+      // Senza rinnovo: uscire non deve chiedere Face ID per rifare il login.
+      let cookie = sessione.archivioCookie.carica().map(CookieSessione.init)
+      try? await APIClient(credenziali: archivio.carica(), sessione: cookie).esci()
+      try? sessione.archivioCookie.cancella()
+      try? sessione.archivioPassword.cancella()
+      entrato = false
+      cambiato()
     }
   }
 #endif

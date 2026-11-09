@@ -19,7 +19,7 @@ Accettazione:
 
 - [x] Gruppi: **Questo iPhone** (Accesso, Notifiche e Salute), **ron1nOS**
       (Aspetto, Dashboard, Moduli, Navigazione, Formati), **Account**
-      (Account, App iOS), **Sistema** (Integrazioni, Backup
+      (Account), **Sistema** (Integrazioni, Backup
       configurazione, Informazioni).
 - [x] Ogni riga mostra a destra lo stato in breve (`collegato`, `medio`,
       `5 accesi`…).
@@ -42,7 +42,7 @@ Accettazione:
       quali moduli finiscono nella TabBar e quali in `Altro` (IOS-009).
 - [x] Formati: fuso, peso, energia; lingua mostrata e non modificabile.
 
-### IOS-092 · Account e App iOS
+### IOS-092 · Account
 
 Stato: fatto (#102) · Parità: SET-007, SET-008, AUTH-002, AUTH-005
 
@@ -50,11 +50,8 @@ Accettazione:
 
 - [x] Account: sessioni web attive con `Chiudi` e `Chiudi le altre`;
       come cambiare la password (spiegazione, come sul sito).
-- [x] App iOS: i token con nome e ultimo uso, quello di questo telefono
-      segnato; `Revoca` con conferma. `Nuovo token` crea un token e lo
-      salva direttamente nel Portachiavi, senza copia e incolla.
-- [x] `Esci da questo iPhone` revoca il token del telefono e lo toglie dal
-      Portachiavi.
+- [x] App iOS (token, `Esci da questo iPhone`): sostituita dal login con
+      la password, vedi IOS-019 in `app.md`.
 
 ### IOS-093 · Integrazioni, Backup, Informazioni
 

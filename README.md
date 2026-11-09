@@ -13,7 +13,14 @@ Specifiche in [`docs/specs/`](docs/specs/).
 
 ## Sviluppo
 
-Serve solo Swift 6.4 per Linux (o il container `swift:6.4.1-noble`):
+La compilazione avviene sempre in un container, mai sul computer di
+sviluppo: la CI di GitHub usa `swift:6.4.1-noble` per formato, lint, build
+e test della logica; l'app vera la compila xtool nel container del builder
+sul server. Sul computer di sviluppo può mancare la libc di sviluppo e
+`swift build` non parte: non è un errore del progetto, si guarda la CI.
+
+Per provare la logica a mano serve Swift 6.4 per Linux, meglio nel
+container `swift:6.4.1-noble`:
 
 ```sh
 swift format --in-place -r Sources Tests Package.swift   # formato
@@ -51,7 +58,7 @@ token `ron1nos-ios`. Sul server è in `~/.cf-home/ron1nos-ios.json`:
 copia il contenuto, poi nell'app tocca **Accesso → Incolla → Salva**. Il
 token resta nel Portachiavi del telefono e scade dopo un anno.
 
-Con il login di ron1nOS acceso serve anche il token di ron1nOS: nella
-dashboard apri **Impostazioni › App iOS**, crea un token, copialo e
-nell'app tocca **Accesso**, poi **Incolla → Salva** sotto "Token ron1nOS".
-Vale finché non lo revochi dalla dashboard.
+Con il login di ron1nOS acceso serve anche la password della dashboard:
+nell'app tocca **Accesso**, scrivila e tocca **Entra**. La sessione dura 30
+giorni; con **Ricorda con Face ID** acceso la password resta nel Portachiavi
+e, quando la sessione scade, l'app la rifà da sola con Face ID.

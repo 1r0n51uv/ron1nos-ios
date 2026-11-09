@@ -49,12 +49,10 @@
       async let login = StatoLogin.verifica(con: client)
       async let layout = Carico.da { try await client.layoutHome() }
       async let sessioni = Carico.da { try await client.sessioniWeb() }
-      async let token = Carico.da { try await client.tokenApp() }
       async let integrazioni = Carico.da { try await client.integrazioni() }
       nuovo.login = await login
       nuovo.widget = await layout.valore?.items.count
       nuovo.sessioni = await sessioni.valore?.count
-      nuovo.token = await token.valore?.count
       nuovo.integrazioni = await integrazioni.valore
       stato = nuovo
     }
@@ -94,7 +92,6 @@
       case .navigazione: NavigazioneView()
       case .formati: FormatiView()
       case .account: AccountView()
-      case .appIOS: AppIOSView()
       case .integrazioni: IntegrazioniView()
       case .backup: BackupView()
       case .informazioni: InformazioniView()

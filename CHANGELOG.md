@@ -10,6 +10,14 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.67 · 2026-11-09
+
+- Si entra in ron1nOS con la password della dashboard, come sul sito: niente più token da creare e incollare (IOS-019).
+- Con "Ricorda con Face ID" la password resta nel Portachiavi e, quando la sessione scade, l'app la rifà da sola con Face ID.
+- Accesso ha il pulsante "Esci", che chiude la sessione e toglie la password dal telefono.
+- Impostazioni › Account mostra anche questo iPhone tra le sessioni; "Chiudi le altre" lo lascia aperto.
+- Impostazioni › App iOS non c'è più. Dopo l'aggiornamento serve entrare una volta con la password.
+
 ## 0.1.66 · 2026-11-09
 
 - L'app torna a installarsi: dal 28 ottobre le versioni non uscivano più perché la build falliva su Foto e Anteprima dei documenti (IOS-018).

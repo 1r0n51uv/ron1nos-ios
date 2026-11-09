@@ -21,53 +21,15 @@ extension Formato {
   }
 }
 
-/// Un token appena creato: il segreto si vede solo qui e va dritto nel
-/// Portachiavi (IOS-092).
-public struct TokenCreato: Decodable, Equatable, Sendable {
-  public let id: String
-  public let name: String
-  public let token: String
-
-  public init(id: String, name: String, token: String) {
-    self.id = id
-    self.name = name
-    self.token = token
-  }
-}
-
-/// Il nome di un token nuovo: non vuoto, al massimo 60 caratteri.
-public enum NomeToken {
-  public static let predefinito = "iPhone"
-
-  public static func problema(_ nome: String) -> String? {
-    let pulito = nome.trimmingCharacters(in: .whitespaces)
-    if pulito.isEmpty { return "Serve un nome." }
-    if pulito.count > 60 { return "Al massimo 60 caratteri." }
-    return nil
-  }
-}
-
 extension APIClient {
   /// `DELETE /auth/sessions/{id}`.
   public func chiudiSessione(_ id: String) async throws(APIError) {
     _ = try await dati("auth/sessions/\(APIClient.segmento(id))", metodo: "DELETE")
   }
 
-  /// `DELETE /auth/sessions`: l'app entra con il suo token e non ha una
-  /// sessione, quindi chiude tutte quelle web.
-  public func chiudiSessioniWeb() async throws(APIError) {
-    _ = try await dati("auth/sessions", metodo: "DELETE")
-  }
-
-  /// `POST /auth/tokens`.
-  public func creaToken(nome: String) async throws(APIError) -> TokenCreato {
-    struct Corpo: Encodable, Sendable { let name: String }
-    let corpo = Corpo(name: nome.trimmingCharacters(in: .whitespaces))
-    return try await invia("POST", "auth/tokens", corpo: corpo)
-  }
-
-  /// `DELETE /auth/tokens/{id}`: da subito quel token risponde 401.
-  public func revocaToken(_ id: String) async throws(APIError) {
-    _ = try await dati("auth/tokens/\(APIClient.segmento(id))", metodo: "DELETE")
+  /// `DELETE /auth/sessions/others`: resta aperta solo la sessione di
+  /// questo telefono.
+  public func chiudiAltreSessioni() async throws(APIError) {
+    _ = try await dati("auth/sessions/others", metodo: "DELETE")
   }
 }

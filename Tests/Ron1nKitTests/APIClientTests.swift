@@ -145,21 +145,21 @@ final class TransportFinto: HTTPTransport, @unchecked Sendable {
   @Test func loginPassegueroSiRiprova() async throws {
     let transport = TransportFinto(
       .sequenza([.risposta(401, "{}"), .risposta(200, #"{"ok":true,"database":"ok"}"#)]))
-    let client = APIClient(token: TokenRon1n("r1n_abcdefghijklmnopqrstu"), transport: transport)
+    let client = APIClient(sessione: CookieSessione("abcdefghijklmnopqrstu"), transport: transport)
     #expect(try await client.health().ok)
     #expect(transport.invii == 2)
   }
 
   @Test func loginRifiutatoDueVolte() async {
     let transport = TransportFinto(.risposta(401, "{}"))
-    let client = APIClient(token: TokenRon1n("r1n_abcdefghijklmnopqrstu"), transport: transport)
-    await #expect(throws: APIError.login(conToken: true)) { try await client.health() }
+    let client = APIClient(sessione: CookieSessione("abcdefghijklmnopqrstu"), transport: transport)
+    await #expect(throws: APIError.login(conSessione: true)) { try await client.health() }
     #expect(transport.invii == 2)
   }
 
-  @Test func senzaTokenIl401NonSiRiprova() async {
+  @Test func senzaSessioneIl401NonSiRiprova() async {
     let transport = TransportFinto(.risposta(401, "{}"))
-    await #expect(throws: APIError.login(conToken: false)) {
+    await #expect(throws: APIError.login(conSessione: false)) {
       try await APIClient(transport: transport).health()
     }
     #expect(transport.invii == 1)

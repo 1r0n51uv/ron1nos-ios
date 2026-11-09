@@ -13,7 +13,12 @@
     static let condivisa = Sessione()
 
     let archivio = Portachiavi()
-    let archivioToken = PortachiaviToken()
+    /// La sessione nel login di ron1nOS e la password per rifarla, questa
+    /// dietro Face ID (IOS-019).
+    let archivioCookie = PortachiaviTesto(servizio: "home.ron1n.ios.sessione-ron1nos")
+    let archivioPassword = PortachiaviTesto(
+      servizio: "home.ron1n.ios.password-ron1nos", conFaceID: true)
+    let rinnovo: RinnovoSessione
     /// Finché il backend non risponde valgono le ultime salvate sul
     /// telefono, poi i predefiniti (IOS-010).
     @Published var preferenze: Preferenze
@@ -44,12 +49,15 @@
     @Published var blocco = BloccoDocumenti(defaults: .standard)
 
     var client: APIClient {
-      APIClient(credenziali: archivio.carica(), token: archivioToken.carica())
+      APIClient(
+        credenziali: archivio.carica(), sessione: archivioCookie.carica().map(CookieSessione.init),
+        rinnovo: rinnovo)
     }
 
     var navigazione: Navigazione { Navigazione(preferenze) }
 
     init() {
+      rinnovo = RinnovoSessione(cookie: archivioCookie, password: archivioPassword)
       preferenze = memoria.carica() ?? .predefinite
       // I promemoria dei pasti e dell'acqua (IOS-041).
       PromemoriaApp.registraCategorie()

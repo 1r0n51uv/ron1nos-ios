@@ -5,7 +5,7 @@ import Foundation
 public enum VoceImpostazioni: String, CaseIterable, Hashable, Sendable {
   case accesso, notifiche
   case aspetto, dashboard, moduli, navigazione, formati
-  case account, appIOS
+  case account
   case integrazioni, backup, informazioni
 
   public var titolo: String {
@@ -18,7 +18,6 @@ public enum VoceImpostazioni: String, CaseIterable, Hashable, Sendable {
     case .navigazione: "Navigazione"
     case .formati: "Formati"
     case .account: "Account"
-    case .appIOS: "App iOS"
     case .integrazioni: "Integrazioni"
     case .backup: "Backup configurazione"
     case .informazioni: "Informazioni"
@@ -36,7 +35,6 @@ public enum VoceImpostazioni: String, CaseIterable, Hashable, Sendable {
     case .navigazione: "list.bullet"
     case .formati: "textformat.123"
     case .account: "person.crop.circle"
-    case .appIOS: "iphone"
     case .integrazioni: "point.3.connected.trianglepath.dotted"
     case .backup: "arrow.up.arrow.down.square"
     case .informazioni: "info.circle"
@@ -51,7 +49,7 @@ public enum VoceImpostazioni: String, CaseIterable, Hashable, Sendable {
   public static let gruppi = [
     Gruppo(titolo: "Questo iPhone", voci: [.accesso, .notifiche]),
     Gruppo(titolo: "ron1nOS", voci: [.aspetto, .dashboard, .moduli, .navigazione, .formati]),
-    Gruppo(titolo: "Account", voci: [.account, .appIOS]),
+    Gruppo(titolo: "Account", voci: [.account]),
     Gruppo(titolo: "Sistema", voci: [.integrazioni, .backup, .informazioni]),
   ]
 }
@@ -65,13 +63,12 @@ public struct StatoImpostazioni: Equatable, Sendable {
   public var notificheAccese: Int
   public var widget: Int?
   public var sessioni: Int?
-  public var token: Int?
   public var integrazioni: [Integrazione]?
   public var versioneApp: String?
 
   public init(
     preferenze: Preferenze, credenziali: Bool, login: StatoLogin? = nil, notificheAccese: Int = 0,
-    widget: Int? = nil, sessioni: Int? = nil, token: Int? = nil, integrazioni: [Integrazione]? = nil,
+    widget: Int? = nil, sessioni: Int? = nil, integrazioni: [Integrazione]? = nil,
     versioneApp: String? = nil
   ) {
     self.preferenze = preferenze
@@ -80,7 +77,6 @@ public struct StatoImpostazioni: Equatable, Sendable {
     self.notificheAccese = notificheAccese
     self.widget = widget
     self.sessioni = sessioni
-    self.token = token
     self.integrazioni = integrazioni
     self.versioneApp = versioneApp
   }
@@ -115,8 +111,6 @@ public struct StatoImpostazioni: Equatable, Sendable {
       return "\(formati.weightUnit.rawValue) · \(formati.energyUnit.rawValue)"
     case .account:
       return sessioni.map { $0 == 1 ? "1 sessione" : "\($0) sessioni" }
-    case .appIOS:
-      return token.map { $0 == 1 ? "1 token" : "\($0) token" }
     case .integrazioni:
       guard let integrazioni else { return nil }
       let errori = integrazioni.filter { $0.state == .error }.count
@@ -163,38 +157,6 @@ public struct SessioneWeb: Decodable, Equatable, Identifiable, Sendable {
   }
 }
 
-/// Un token dell'app iOS (AUTH-005, SET-008). Il segreto non torna mai.
-public struct TokenApp: Decodable, Equatable, Identifiable, Sendable {
-  public let id: String
-  public let name: String
-  public let createdAt: String
-  public let lastUsedAt: String?
-  /// Il token di questo telefono (AUTH-006). Un backend più vecchio non lo
-  /// manda: vale false.
-  public let current: Bool
-
-  public init(
-    id: String, name: String, createdAt: String, lastUsedAt: String? = nil, current: Bool = false
-  ) {
-    self.id = id
-    self.name = name
-    self.createdAt = createdAt
-    self.lastUsedAt = lastUsedAt
-    self.current = current
-  }
-
-  enum CodingKeys: String, CodingKey { case id, name, createdAt, lastUsedAt, current }
-
-  public init(from decoder: Decoder) throws {
-    let c = try decoder.container(keyedBy: CodingKeys.self)
-    id = try c.decode(String.self, forKey: .id)
-    name = try c.decode(String.self, forKey: .name)
-    createdAt = try c.decode(String.self, forKey: .createdAt)
-    lastUsedAt = try c.decodeIfPresent(String.self, forKey: .lastUsedAt)
-    current = try c.decodeIfPresent(Bool.self, forKey: .current) ?? false
-  }
-}
-
 /// Un servizio esterno (SET-009): Postgres, YAZIO, qBittorrent, Glances,
 /// Home Assistant.
 public struct Integrazione: Decodable, Equatable, Identifiable, Sendable {
@@ -230,13 +192,6 @@ extension APIClient {
     struct Risposta: Decodable { let sessions: [SessioneWeb] }
     let risposta: Risposta = try await get("auth/sessions")
     return risposta.sessions
-  }
-
-  /// `GET /auth/tokens`.
-  public func tokenApp() async throws(APIError) -> [TokenApp] {
-    struct Risposta: Decodable { let tokens: [TokenApp] }
-    let risposta: Risposta = try await get("auth/tokens")
-    return risposta.tokens
   }
 
   /// `GET /integrations`.

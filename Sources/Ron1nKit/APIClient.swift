@@ -14,13 +14,33 @@ public protocol HTTPTransport: Sendable {
 public struct URLSessionTransport: HTTPTransport {
   let session: URLSession
 
-  public init(timeout: TimeInterval = 10) {
+  /// Una sola sessione per tutta l'app: `sessione.client` crea un client a
+  /// ogni uso, e una sessione nuova a ogni richiesta rifaceva la
+  /// connessione TLS e non si chiudeva mai.
+  private static let condivisa = creaSessione(timeout: 10)
+
+  private static func creaSessione(timeout: TimeInterval) -> URLSession {
     let config = URLSessionConfiguration.ephemeral
     config.timeoutIntervalForRequest = timeout
-    session = URLSession(configuration: config)
+    return URLSession(configuration: config)
   }
 
+  public init(timeout: TimeInterval = 10) {
+    session = timeout == 10 ? URLSessionTransport.condivisa : URLSessionTransport.creaSessione(timeout: timeout)
+  }
+
+  /// La richiesta gira in un task suo: se la pagina che l'ha chiesta si
+  /// chiude o il pull to refresh finisce, il task di SwiftUI viene annullato
+  /// ma la richiesta no, e non torna più "URLError -999". Il timeout la
+  /// limita comunque.
   public func send(_ request: URLRequest) async throws -> (Data, URLResponse) {
+    let session = session
+    return try await Task { try await URLSessionTransport.invia(request, con: session) }.value
+  }
+
+  private static func invia(_ request: URLRequest, con session: URLSession) async throws -> (
+    Data, URLResponse
+  ) {
     #if canImport(Security)
       // Un delegato per richiesta: valuta lui il certificato e, se iOS lo
       // rifiuta, ne ricorda il motivo da mostrare (IOS-002).
@@ -176,17 +196,40 @@ public struct APIClient: Sendable {
       request.setValue(valore, forHTTPHeaderField: nome)
     }
 
-    let data: Data
-    let response: URLResponse
-    do {
-      (data, response) = try await transport.send(request)
-    } catch {
-      throw APIError(error)
+    var (data, http) = try await invio(request)
+    // Un 401 con il token in mano è quasi sempre un intoppo passeggero del
+    // backend (riavvio, database che parte): si riprova una volta. Con il
+    // token davvero revocato costa mezzo secondo.
+    if http.statusCode == 401, token != nil, !Task.isCancelled {
+      try? await Task.sleep(nanoseconds: 500_000_000)
+      (data, http) = try await invio(request)
     }
-    guard let http = response as? HTTPURLResponse else { throw .rispostaInattesa(codice: nil) }
     if APIClient.versoAccess(http) { throw .accesso(conToken: credenziali != nil) }
     if http.statusCode == 401 { throw .login(conToken: token != nil) }
     return (data, http)
+  }
+
+  /// Una richiesta al trasporto. Una connessione annullata da iOS senza che
+  /// sia colpa del certificato (-999) si ripete una volta.
+  private func invio(_ request: URLRequest) async throws(APIError) -> (Data, HTTPURLResponse) {
+    var riprovata = false
+    while true {
+      do {
+        let (data, response) = try await transport.send(request)
+        guard let http = response as? HTTPURLResponse else { throw APIError.rispostaInattesa(codice: nil) }
+        return (data, http)
+      } catch {
+        if let errore = error as? APIError { throw errore }
+        let annullata = (error as? URLError).map {
+          $0.code == .cancelled && $0.userInfo[APIError.chiaveMotivoTLS] == nil
+        }
+        if annullata == true, !riprovata, !Task.isCancelled {
+          riprovata = true
+          continue
+        }
+        throw APIError(error)
+      }
+    }
   }
 
   /// Un nome dentro un percorso, come `workout/exercises/{name}`: la barra

@@ -10,6 +10,12 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.63 · 2026-11-09
+
+- Meno errori "URLError -999" cambiando pagina o aggiornando: la richiesta non si interrompe più a metà, e se iOS la annulla si riprova da sola.
+- Se il server risponde un 401 passeggero, l'app riprova una volta prima di dire "Token ron1nOS rifiutato".
+- Le richieste riusano la stessa connessione: pagine più veloci.
+
 ## 0.1.62 · 2026-10-28
 
 - Le novità di ogni versione si leggono in SideStore, sotto l'aggiornamento (IOS-016, [#111](https://github.com/1r0n51uv/ron1nos-ios/pull/111)).

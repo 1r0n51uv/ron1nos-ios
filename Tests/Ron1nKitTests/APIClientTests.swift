@@ -12,15 +12,21 @@ final class TransportFinto: HTTPTransport, @unchecked Sendable {
   enum Esito {
     case risposta(Int, String, header: [String: String] = [:])
     case errore(Error)
+    /// Un esito per invio; l'ultimo si ripete.
+    indirect case sequenza([Esito])
   }
 
   let esito: Esito
   private(set) var richiesta: URLRequest?
+  private(set) var invii = 0
 
   init(_ esito: Esito) { self.esito = esito }
 
   func send(_ request: URLRequest) async throws -> (Data, URLResponse) {
     richiesta = request
+    invii += 1
+    var esito = esito
+    if case .sequenza(let elenco) = esito { esito = elenco[min(invii, elenco.count) - 1] }
     switch esito {
     case .risposta(let codice, let corpo, let header):
       let response = HTTPURLResponse(
@@ -28,6 +34,8 @@ final class TransportFinto: HTTPTransport, @unchecked Sendable {
       return (Data(corpo.utf8), response)
     case .errore(let errore):
       throw errore
+    case .sequenza:
+      throw URLError(.unknown)
     }
   }
 }
@@ -115,6 +123,46 @@ final class TransportFinto: HTTPTransport, @unchecked Sendable {
     await #expect(throws: APIError.nonRaggiungibile(codice: -999)) {
       try await APIClient(transport: transport).health()
     }
+    // Una volta sola: la seconda annullata è quella che si mostra.
+    #expect(transport.invii == 2)
+  }
+
+  @Test func annullataUnaVoltaSiRiprova() async throws {
+    let transport = TransportFinto(
+      .sequenza([.errore(URLError(.cancelled)), .risposta(200, #"{"ok":true,"database":"ok"}"#)]))
+    let health = try await APIClient(transport: transport).health()
+    #expect(health.ok)
+    #expect(transport.invii == 2)
+  }
+
+  @Test func certificatoRifiutatoNonSiRiprova() async {
+    let errore = URLError(.cancelled, userInfo: [APIError.chiaveMotivoTLS: "non attendibile"])
+    let transport = TransportFinto(.errore(errore))
+    _ = try? await APIClient(transport: transport).health()
+    #expect(transport.invii == 1)
+  }
+
+  @Test func loginPassegueroSiRiprova() async throws {
+    let transport = TransportFinto(
+      .sequenza([.risposta(401, "{}"), .risposta(200, #"{"ok":true,"database":"ok"}"#)]))
+    let client = APIClient(token: TokenRon1n("r1n_abcdefghijklmnopqrstu"), transport: transport)
+    #expect(try await client.health().ok)
+    #expect(transport.invii == 2)
+  }
+
+  @Test func loginRifiutatoDueVolte() async {
+    let transport = TransportFinto(.risposta(401, "{}"))
+    let client = APIClient(token: TokenRon1n("r1n_abcdefghijklmnopqrstu"), transport: transport)
+    await #expect(throws: APIError.login(conToken: true)) { try await client.health() }
+    #expect(transport.invii == 2)
+  }
+
+  @Test func senzaTokenIl401NonSiRiprova() async {
+    let transport = TransportFinto(.risposta(401, "{}"))
+    await #expect(throws: APIError.login(conToken: false)) {
+      try await APIClient(transport: transport).health()
+    }
+    #expect(transport.invii == 1)
   }
 
   @Test func erroreCheNonEDiRete() async {

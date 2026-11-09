@@ -1,5 +1,10 @@
 #if canImport(SwiftUI)
   import PhotosUI
+  // Il cross-import con SwiftUI, scritto a mano: la build con xtool usa i
+  // moduli espliciti e non lo carica da sola (IOS-018).
+  #if canImport(_PhotosUI_SwiftUI)
+    import _PhotosUI_SwiftUI
+  #endif
   import Ron1nKit
   import SwiftUI
   import UIKit

@@ -1,5 +1,10 @@
 #if canImport(SwiftUI)
   import QuickLook
+  // Il cross-import con SwiftUI, scritto a mano: la build con xtool usa i
+  // moduli espliciti e non lo carica da sola (IOS-018).
+  #if canImport(_QuickLook_SwiftUI)
+    import _QuickLook_SwiftUI
+  #endif
   import Ron1nKit
   import SwiftUI
   import UniformTypeIdentifiers

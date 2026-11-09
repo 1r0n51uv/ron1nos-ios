@@ -26,7 +26,8 @@ public struct URLSessionTransport: HTTPTransport {
   }
 
   public init(timeout: TimeInterval = 10) {
-    session = timeout == 10 ? URLSessionTransport.condivisa : URLSessionTransport.creaSessione(timeout: timeout)
+    session =
+      timeout == 10 ? URLSessionTransport.condivisa : URLSessionTransport.creaSessione(timeout: timeout)
   }
 
   /// La richiesta gira in un task suo: se la pagina che l'ha chiesta si

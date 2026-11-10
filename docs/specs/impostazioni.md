@@ -1,81 +1,27 @@
 # Impostazioni
 
-ID: `IOS-090`…`099` · Label: `mod:impostazioni` · Parità: `SET-001`…`012`, `AUTH-001`…`005`
+ID: `IOS-090`…`099` · Label: `mod:impostazioni` · Parità: `AUTH-001`
 
-Le impostazioni del sito, dentro `Altro › Impostazioni`, nella forma di
-un elenco raggruppato come le Impostazioni di iOS. Le preferenze sono le
-stesse del sito (`/preferences`); in più ci sono le voci che riguardano
-solo il telefono: Accesso, Notifiche e Salute.
-
-Mockup: [canvas ron1nOS iOS · App completa](https://claude.ai/artifact/QoqDRszV34UMYaHGBJ8bFd).
+Le Impostazioni hanno solo l'accesso. Le sezioni di prima (Aspetto,
+Dashboard, Moduli, Navigazione, Formati, Notifiche, Salute, Integrazioni,
+Backup, Account) sono uscite con la riscrittura (IOS-100).
 
 ## Requisiti
 
-### IOS-090 · Elenco delle sezioni e Accesso
+### IOS-090 · Accesso e informazioni
 
-Stato: fatto (#100) · Parità: SET-001 · Mockup: tavole 26, 29
-
-Accettazione:
-
-- [x] Gruppi: **Questo iPhone** (Accesso, Notifiche e Salute), **ron1nOS**
-      (Aspetto, Dashboard, Moduli, Navigazione, Formati), **Account**
-      (Account), **Sistema** (Integrazioni, Backup
-      configurazione, Informazioni).
-- [x] Ogni riga mostra a destra lo stato in breve (`collegato`, `medio`,
-      `5 accesi`…).
-- [x] Accesso è la schermata di IOS-004 e IOS-005 (service token di
-      Cloudflare, token ron1nOS), con lo stato di ognuno.
-- [x] Ogni modifica si salva da sola; l'errore accanto al campo.
-
-### IOS-091 · Aspetto, Dashboard, Moduli, Navigazione, Formati
-
-Stato: fatto (#101) · Parità: SET-003…SET-006, SET-010
+Stato: in corso
 
 Accettazione:
 
-- [x] Aspetto: sfondo (sfumature o immagine dalla libreria Foto), vetro,
-      densità, con l'anteprima di una card.
-- [x] Dashboard: forma della testata, widget presenti con `Rimuovi` e
-      `Opzioni`, `Ripristina layout predefinito` (layout `iphone`).
-- [x] Moduli: interruttori e link alle impostazioni di Dieta e Documenti.
-- [x] Navigazione: elenco riordinabile con le maniglie di iOS; mostra
-      quali moduli finiscono nella TabBar e quali in `Altro` (IOS-009).
-- [x] Formati: fuso, peso, energia; lingua mostrata e non modificabile.
-
-### IOS-092 · Account
-
-Stato: fatto (#102) · Parità: SET-007, SET-008, AUTH-002, AUTH-005
-
-Accettazione:
-
-- [x] Account: sessioni web attive con `Chiudi` e `Chiudi le altre`;
-      come cambiare la password (spiegazione, come sul sito).
-- [x] App iOS (token, `Esci da questo iPhone`): sostituita dal login con
-      la password, vedi IOS-019 in `app.md`.
-
-### IOS-093 · Integrazioni, Backup, Informazioni
-
-Stato: fatto (#103) · Parità: SET-009, SET-011, SET-012
-
-Accettazione:
-
-- [x] Integrazioni: una riga per servizio con stato e ora del controllo;
-      `Verifica`; per i servizi non configurati, le variabili da
-      impostare.
-- [x] Backup: `Esporta` passa il JSON al foglio di condivisione;
-      `Importa` lo legge da File, mostra cosa cambia e chiede conferma.
-- [x] Informazioni: versione dell'app (`0.1.N` del builder) e del
-      backend, stato di backend e database, uptime, link al repository.
-
-### IOS-094 · Notifiche e Salute
-
-Stato: fatto (#88) · Solo iOS · Mockup: tavola 27
-
-Accettazione:
-
-- [x] Interruttori `Pasti`, `Acqua`, `Scadenze documenti` (IOS-011) con
-      gli orari dei pasti e dell'acqua (IOS-041).
-- [ ] Interruttore `Apple Salute` (IOS-040) con i dati letti e scritti.
-      Per ora è disattivato: aspetta IOS-040, cioè la verifica che
-      HealthKit funzioni con SideStore.
-- [x] Stato del permesso di iOS e link alle impostazioni di sistema.
+- [ ] In cima l'indirizzo del server e la versione dell'app, scritta dal
+      builder nell'`Info.plist` (`0.1.N (N)`).
+- [ ] Il service token di Cloudflare Access si incolla e si salva nel
+      Portachiavi (IOS-004); si elimina con `Elimina`.
+- [ ] Il login di ron1nOS (IOS-019) si fa con la password: `Entra`,
+      `Ricorda con Face ID` e `Esci`, come descritto in IOS-019.
+- [ ] La riga Login dice: sessione valida, spento, da accedere, sessione
+      scaduta.
+- [ ] I segreti non si rileggono mai a schermo.
+- [ ] Chi era già entrato prima della riscrittura resta entrato: le voci
+      del Portachiavi non cambiano.

@@ -20,26 +20,6 @@
     }
   }
 
-  /// La pagina di un modulo spento nelle Impostazioni (IOS-012), con il
-  /// link per riaccenderlo.
-  struct ModuloSpento: View {
-    var body: some View {
-      VStack(alignment: .leading, spacing: 10) {
-        Text("Modulo spento")
-          .font(.headline)
-          .foregroundStyle(Stile.testo)
-        Text("Si riaccende in Impostazioni › Moduli.")
-          .font(.subheadline)
-          .foregroundStyle(Stile.testoTenue)
-        NavigationLink(value: Pagina.modulo(.impostazioni)) {
-          Text("Apri Impostazioni")
-        }
-        .glassChip()
-      }
-      .glassPanel()
-    }
-  }
-
   /// Un errore dentro una sezione (IOS-002, IOS-012): titolo e codice in
   /// monospazio, senza bloccare il resto della pagina.
   struct SezioneErrore: View {
@@ -56,31 +36,6 @@
             .foregroundStyle(Stile.testoTenue)
         }
       }
-    }
-  }
-
-  /// Il toast sopra la TabBar (IOS-012).
-  struct VistaAvviso: View {
-    let avviso: Avviso
-    let azione: () -> Void
-
-    var body: some View {
-      HStack(spacing: 14) {
-        Text(avviso.testo)
-          .font(.subheadline)
-          .foregroundStyle(Stile.testo)
-        if let titolo = avviso.azione {
-          Button(titolo, action: azione)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(Stile.brandTesto)
-        }
-      }
-      .padding(.horizontal, 18)
-      .padding(.vertical, 12)
-      .background(Color.black.opacity(0.7), in: Capsule())
-      .overlay(Capsule().strokeBorder(Stile.bordo))
-      .accessibilityElement(children: .combine)
-      .accessibilityLabel(avviso.etichetta)
     }
   }
 

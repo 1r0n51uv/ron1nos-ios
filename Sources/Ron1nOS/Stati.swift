@@ -39,6 +39,31 @@
     }
   }
 
+  /// Il toast sopra la barra (IOS-012): l'esito di un'azione.
+  struct VistaAvviso: View {
+    let avviso: Avviso
+    let azione: () -> Void
+
+    var body: some View {
+      HStack(spacing: 14) {
+        Text(avviso.testo)
+          .font(.subheadline)
+          .foregroundStyle(Stile.testo)
+        if let titolo = avviso.azione {
+          Button(titolo, action: azione)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(Stile.brandTesto)
+        }
+      }
+      .padding(.horizontal, 18)
+      .padding(.vertical, 12)
+      .background(Color.black.opacity(0.7), in: Capsule())
+      .overlay(Capsule().strokeBorder(Stile.bordo))
+      .accessibilityElement(children: .combine)
+      .accessibilityLabel(avviso.etichetta)
+    }
+  }
+
   /// Ripete `azione` ogni `secondi` finché la vista è visibile e l'app è in
   /// primo piano (IOS-012: Torrent e Server ogni 5 secondi).
   struct AggiornaOgni: ViewModifier {

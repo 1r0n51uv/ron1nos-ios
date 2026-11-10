@@ -17,7 +17,12 @@
             invito
           } else {
             CardServer(carico: server)
-            CardTorrent(carico: download)
+            Button {
+              sessione.scheda = .torrent
+            } label: {
+              CardTorrent(carico: download)
+            }
+            .buttonStyle(.plain)
           }
         }
         .padding(.horizontal, 16)
@@ -83,6 +88,7 @@
       async let nuoviDownload = Carico.da { try await client.download() }
       server = await nuovoServer
       download = await nuoviDownload
+      if let letti = download.valore { sessione.letti(letti) }
     }
   }
 #endif

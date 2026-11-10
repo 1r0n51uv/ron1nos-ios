@@ -10,6 +10,14 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.69 · 2026-11-10
+
+- Torna la pagina Torrent, nella barra in basso: i torrent in sezioni (In download, In coda, In seed, Fermi, Errori) con la velocità totale.
+- Si può mettere in pausa, riprendere o eliminare un torrent: tieni premuta una riga, oppure tocca Scegli per farlo su più torrent insieme. Eliminando si sceglie se tenere i file.
+- Un tocco su un torrent apre il dettaglio, con dimensione, rapporto, cartella e i file con l'avanzamento.
+- Un avviso quando un download finisce, anche con l'app chiusa (iOS decide ogni quanto controllare).
+- Si aggiunge un torrent col wizard, da un file .torrent o un link magnet aperto da fuori, o dal magnet che hai copiato.
+
 ## 0.1.68 · 2026-11-10
 
 - L'app è stata riscritta da zero, più semplice: una Home con lo stato del server e dei download, e le Impostazioni con il solo accesso.

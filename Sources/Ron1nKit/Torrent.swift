@@ -40,10 +40,12 @@ public struct Torrent: Decodable, Equatable, Sendable {
   public let state: StatoTorrent
   public let etaSeconds: Int?
   public let downloadSpeed: Double
+  /// Byte selezionati per il download.
+  public let size: Double
 
   public init(
     hash: String, name: String, progress: Double, state: StatoTorrent, etaSeconds: Int? = nil,
-    downloadSpeed: Double = 0
+    downloadSpeed: Double = 0, size: Double = 0
   ) {
     self.hash = hash
     self.name = name
@@ -51,6 +53,7 @@ public struct Torrent: Decodable, Equatable, Sendable {
     self.state = state
     self.etaSeconds = etaSeconds
     self.downloadSpeed = downloadSpeed
+    self.size = size
   }
 
   /// "42% · 2,4 MB/s · 10 min".

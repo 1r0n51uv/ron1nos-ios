@@ -36,7 +36,7 @@
       let luce = tinta ?? Color.white
       return
         content
-        .padding(16)
+        .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.white.opacity(0.06), in: forma)
         .overlay(
@@ -75,8 +75,8 @@
     func glassChip() -> some View {
       font(.subheadline.weight(.medium))
         .foregroundStyle(Stile.testo)
-        .padding(.horizontal, 14)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .frame(minHeight: 44)
         .background(Color.white.opacity(0.06), in: Capsule())
         .overlay(Capsule().strokeBorder(Stile.bordo))
     }

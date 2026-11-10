@@ -12,10 +12,12 @@
     @State private var stato = Carico<DettaglioTorrent>.inCorso
     @State private var eliminando = false
     @State private var inCorso = false
+    /// Cresce a ogni azione riuscita: dà la vibrazione di conferma.
+    @State private var riuscite = 0
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 24) {
           switch stato {
           case .inCorso:
             Scheletro(righe: 5).glassPanel()
@@ -48,6 +50,7 @@
         Button("Elimina anche i file", role: .destructive) { elimina(conFile: true) }
         Button("Annulla", role: .cancel) {}
       }
+      .sensoryFeedback(.success, trigger: riuscite)
       .task(id: sessione.versione) { await carica() }
       .aggiornaOgni(5) { await carica() }
     }
@@ -55,7 +58,7 @@
     private func intestazione(_ dettaglio: DettaglioTorrent) -> some View {
       VStack(alignment: .leading, spacing: 10) {
         Text(dettaglio.name)
-          .font(.headline)
+          .font(.subheadline.weight(.semibold))
           .foregroundStyle(Stile.testo)
         Barra(valore: dettaglio.progress)
         Text("\(dettaglio.statoTesto) · \(Formato.percento(dettaglio.progress * 100))")
@@ -114,7 +117,7 @@
                   ? "\(Formato.percento(file.progress * 100)) · \(Formato.dimensione(file.size))"
                   : "escluso · \(Formato.dimensione(file.size))"
               )
-              .font(.system(.caption, design: .monospaced))
+              .font(.system(.footnote, design: .monospaced))
               .foregroundStyle(Stile.testoTenue)
             }
             .accessibilityElement(children: .combine)
@@ -139,6 +142,7 @@
         defer { inCorso = false }
         do {
           try await sessione.client.azione(azione, hashes: [hash])
+          riuscite += 1
           sessione.mostra(Avviso(azione == .pause ? "Messo in pausa" : "Ripreso"))
           await carica()
         } catch let errore as APIError {
@@ -155,6 +159,7 @@
         defer { inCorso = false }
         do {
           try await sessione.client.azione(.delete, hashes: [hash], eliminaFile: conFile)
+          riuscite += 1
           sessione.mostra(Avviso("Eliminato"))
           chiudi()
         } catch let errore as APIError {

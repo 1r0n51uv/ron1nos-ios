@@ -9,7 +9,7 @@
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 24) {
           VStack(alignment: .leading, spacing: 12) {
             RigaValore(nome: "Server", valore: sessione.autenticazione.indirizzo.host() ?? "·")
             RigaValore(nome: "Versione", valore: versione)

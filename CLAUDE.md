@@ -33,3 +33,8 @@ italiano.
   in `.claude/skills/`. Dove non concorda con lo stile ron1nOS (per esempio
   il tema solo scuro) vince lo stile. Si aggiorna con
   `npx skills update -p`.
+- Per disegnare o rifinire una schermata c'è anche `mobile-app-ui-design`
+  (`.agents/skills/`, griglia da 8, zona del pollice, stati vuoti, bersagli
+  da 44pt, gerarchia dei valori). Dove non concorda con lo stile ron1nOS
+  vince lo stile: tema scuro, un solo rosso come segnale, numeri in
+  monospazio, testi calmi.

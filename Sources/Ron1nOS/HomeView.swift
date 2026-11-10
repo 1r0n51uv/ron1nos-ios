@@ -11,7 +11,7 @@
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 24) {
           testata
           if daAccedere {
             invito
@@ -73,7 +73,7 @@
     private var invito: some View {
       VStack(alignment: .leading, spacing: 10) {
         Text("Manca l'accesso")
-          .font(.headline)
+          .font(.subheadline.weight(.semibold))
           .foregroundStyle(Stile.testo)
         Text("Entra con la password di ron1nOS in Impostazioni.")
           .font(.subheadline)

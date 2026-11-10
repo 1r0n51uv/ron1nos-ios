@@ -24,7 +24,7 @@
     private var autenticazione: Autenticazione { sessione.autenticazione }
 
     var body: some View {
-      VStack(alignment: .leading, spacing: 20) {
+      VStack(alignment: .leading, spacing: 24) {
         Text(
           "Il service token di Cloudflare Access fa entrare l'app senza il codice via email. "
             + "Sul server è in ~/.cf-home/ron1nos-ios.json: copialo tutto e tocca Incolla."

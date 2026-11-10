@@ -16,6 +16,7 @@ dei commit.
 - Si può mettere in pausa, riprendere o eliminare un torrent: tieni premuta una riga, oppure tocca Scegli per farlo su più torrent insieme. Eliminando si sceglie se tenere i file.
 - Un tocco su un torrent apre il dettaglio, con dimensione, rapporto, cartella e i file con l'avanzamento.
 - Un avviso quando un download finisce, anche con l'app chiusa (iOS decide ogni quanto controllare).
+- `Aggiungi` sta in basso, dove arriva il pollice; i pulsanti sono più grandi e le azioni riuscite danno una vibrazione. Con zero torrent la pagina dice cosa fare.
 - Si aggiunge un torrent col wizard, da un file .torrent o un link magnet aperto da fuori, o dal magnet che hai copiato.
 
 ## 0.1.68 · 2026-11-10

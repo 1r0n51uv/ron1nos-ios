@@ -18,12 +18,14 @@
     @State private var daEliminare: [String] = []
     @State private var eliminando = false
     @State private var inCorso = false
+    /// Cresce a ogni azione riuscita: dà la vibrazione di conferma.
+    @State private var riuscite = 0
     @State private var magnet: String?
     @State private var magnetIgnorato: String?
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 24) {
           switch stato {
           case .inCorso:
             Scheletro(righe: 5).glassPanel()
@@ -38,11 +40,7 @@
             if offline { Pillola(testo: "offline", tono: .offline) }
             if let magnet { propostaMagnet(magnet) }
             velocita(download)
-            if download.torrents.isEmpty {
-              Text("Nessun torrent")
-                .font(.subheadline)
-                .foregroundStyle(Stile.testoTenue)
-            }
+            if download.torrents.isEmpty { vuoto }
             ForEach(download.sezioni) { sezione in
               self.sezione(sezione)
             }
@@ -58,15 +56,15 @@
             Button(selezionando ? "Fine" : "Scegli") { alternaSelezione() }
           }
         }
-        ToolbarItem(placement: .topBarTrailing) {
-          // Senza qBittorrent il wizard non può leggere nulla (IOS-071).
-          Button("Aggiungi", systemImage: "plus") { sessione.torrentInArrivo = .nuovo }
-            .disabled(offline || stato.valore == nil || selezionando)
-        }
       }
       .safeAreaInset(edge: .bottom) {
-        if selezionando { barraAzioni }
+        if selezionando {
+          barraAzioni
+        } else if stato.valore != nil, !offline {
+          aggiungi
+        }
       }
+      .sensoryFeedback(.success, trigger: riuscite)
       .confirmationDialog(
         daEliminare.count == 1 ? "Eliminare il torrent?" : "Eliminare \(daEliminare.count) torrent?",
         isPresented: $eliminando, titleVisibility: .visible
@@ -91,11 +89,11 @@
     private func velocita(_ download: Download) -> some View {
       VStack(alignment: .leading, spacing: 2) {
         Text(Formato.velocita(download.downloadSpeed))
-          .font(.system(size: 44, weight: .semibold, design: .monospaced))
+          .font(.system(.largeTitle, design: .monospaced).weight(.semibold))
           .foregroundStyle(Stile.testo)
           .contentTransition(.numericText())
         Text("DOWNLOAD")
-          .font(.system(.caption, design: .monospaced))
+          .font(.system(.footnote, design: .monospaced))
           .tracking(1.6)
           .foregroundStyle(Stile.testoTenue)
       }
@@ -170,6 +168,39 @@
       }
     }
 
+    // MARK: - Aggiungere
+
+    /// Lo stato vuoto non è un vicolo cieco: dice cosa fare.
+    private var vuoto: some View {
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Nessun torrent")
+          .font(.subheadline.weight(.semibold))
+          .foregroundStyle(Stile.testo)
+        Text("Aggiungi un file .torrent o un link magnet, oppure aprine uno da Safari o da File.")
+          .font(.subheadline)
+          .foregroundStyle(Stile.testoTenue)
+      }
+      .glassPanel()
+    }
+
+    /// L'azione principale sta in basso, dove arriva il pollice (senza
+    /// qBittorrent il wizard non può leggere nulla, IOS-071).
+    private var aggiungi: some View {
+      Button {
+        sessione.torrentInArrivo = .nuovo
+      } label: {
+        Label("Aggiungi", systemImage: "plus")
+          .font(.subheadline.weight(.semibold))
+          .foregroundStyle(Stile.testo)
+          .padding(.horizontal, 24)
+          .frame(minHeight: 48)
+          .background(Stile.brand.opacity(0.2), in: Capsule())
+          .overlay(Capsule().strokeBorder(Stile.brand.opacity(0.6)))
+      }
+      .padding(.bottom, 8)
+      .frame(maxWidth: .infinity)
+    }
+
     // MARK: - Selezione e azioni
 
     private var barraAzioni: some View {
@@ -218,6 +249,7 @@
           try await sessione.client.azione(azione, hashes: hashes, eliminaFile: eliminaFile)
           selezione.svuota()
           selezionando = false
+          riuscite += 1
           switch azione {
           case .pause: sessione.mostra(Avviso("Messo in pausa"))
           case .resume: sessione.mostra(Avviso("Ripreso"))
@@ -267,7 +299,7 @@
     private func propostaMagnet(_ link: String) -> some View {
       VStack(alignment: .leading, spacing: 12) {
         Text("Magnet negli appunti")
-          .font(.headline)
+          .font(.subheadline.weight(.semibold))
           .foregroundStyle(Stile.testo)
         Text(link)
           .font(.system(.footnote, design: .monospaced))

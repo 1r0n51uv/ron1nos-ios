@@ -421,3 +421,28 @@ Accettazione:
       salvataggio nel Portachiavi.
 - [ ] Test unitari su Linux per il cookie, l'accesso (200, 401, 409, 429),
       il rinnovo sul 401 e la pausa dopo un tentativo fallito.
+
+### IOS-100 · Riscrittura: Home, barra e accesso
+
+Stato: in corso
+
+L'app si riscrive da zero con tre cose: la Home (IOS-025), la barra con le
+icone di Home e Impostazioni, e le Impostazioni con il solo accesso
+(IOS-090). Stessa app: bundle, nome e source di SideStore non cambiano.
+
+Accettazione:
+
+- [x] Il ciclo di vita del login sta in un solo modulo di Ron1nKit,
+      `Autenticazione` (`entra`, `esci`, `stato`, `client`), con test su
+      Linux: login, logout, Face ID sì o no, uscita senza rinnovo e
+      rinnovo sul 401.
+- [ ] La barra ha due voci, Home e Impostazioni. Niente schede di moduli,
+      niente `Altro`.
+- [ ] Escono dall'app i modelli, le viste e i test di Dieta, Palestra,
+      Documenti, Torrent (wizard, `.torrent` e magnet), notifiche, Salute,
+      preferenze del sito e layout della Home.
+- [ ] `Info.plist` perde i tipi di documento, lo schema `magnet`, la
+      fotocamera e i task in background.
+- [ ] L'app ha l'icona del sigillo con la katana (`Icon.png`, `iconPath`
+      in `xtool.yml`).
+- [ ] Prima di togliere il codice, il tag `pre-riscrittura` su `main`.

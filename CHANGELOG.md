@@ -10,6 +10,14 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.68 · 2026-11-10
+
+- L'app è stata riscritta da zero, più semplice: una Home con lo stato del server e dei download, e le Impostazioni con il solo accesso.
+- La barra in basso ha due icone, Home e Impostazioni. Dieta, Palestra, Documenti e Torrent escono dall'app, per ora.
+- Aprire un file torrent o un link magnet dall'app non c'è più, per ora.
+- Chi era già entrato resta entrato: la password e Face ID non cambiano.
+- L'app ha la sua icona: il sigillo con la katana, lo stesso della dashboard.
+
 ## 0.1.67 · 2026-11-09
 
 - Si entra in ron1nOS con la password della dashboard, come sul sito: niente più token da creare e incollare (IOS-019).

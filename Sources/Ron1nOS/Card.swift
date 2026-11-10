@@ -8,8 +8,6 @@
   struct Card<Valore: Equatable & Sendable, Contenuto: View>: View {
     let titolo: String
     let carico: Carico<Valore>
-    /// Nella griglia della Home la card riempie la cella.
-    var riempi = false
     @ViewBuilder let contenuto: (Valore) -> Contenuto
 
     var body: some View {
@@ -27,8 +25,6 @@
             SezioneErrore(errore: errore)
           }
         }
-        .frame(maxHeight: riempi ? .infinity : nil, alignment: .top)
-        .clipped()
         .glassPanel()
       }
     }

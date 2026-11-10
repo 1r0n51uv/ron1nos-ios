@@ -1,11 +1,17 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
     "apple-design": {
       "source": "dickwu/apple-design-skill",
       "sourceType": "github",
       "skillPath": "SKILL.md",
-      "computedHash": "9581a1eeeb588b5e56a95ed12e2a2a65d8127b6d5ff1a4b7356ff6c4ca66731d"
+      "computedHash": ""
+    },
+    "mobile-app-ui-design": {
+      "source": "ceorkm/mobile-app-ui-design",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "a7f5257845f24d24195d41dd2be378dc30843e5a50536ad0e96ebd2c65021341"
     }
   }
 }

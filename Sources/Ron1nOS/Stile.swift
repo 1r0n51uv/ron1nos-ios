@@ -25,6 +25,18 @@
     }
   }
 
+  private struct ChiaveFormati: EnvironmentKey {
+    static let defaultValue = Formati()
+  }
+
+  extension EnvironmentValues {
+    /// Unità e fuso orario scelti nelle preferenze (SET-010).
+    var formati: Formati {
+      get { self[ChiaveFormati.self] }
+      set { self[ChiaveFormati.self] = newValue }
+    }
+  }
+
   /// Pannello quasi trasparente (IOS-003): un velo bianco, senza sfocatura, e
   /// il bordo di luce del vetro, più chiaro in alto a sinistra. `tinta`
   /// colora il bordo: solo il rosso, come segnale.

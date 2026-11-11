@@ -104,8 +104,9 @@
     }
   }
 
-  /// Riceve le notifiche con l'app aperta e i tocchi su di esse. Senza
-  /// questo iOS non mostra nulla mentre l'app è in primo piano.
+  /// Riceve le notifiche con l'app aperta e i tocchi su di esse, anche con
+  /// l'app chiusa. Senza questo iOS non mostra nulla mentre l'app è in
+  /// primo piano.
   final class RispostaNotifiche: NSObject, UNUserNotificationCenterDelegate, @unchecked Sendable {
     static let condivisa = RispostaNotifiche()
 
@@ -116,11 +117,26 @@
       [.banner, .sound]
     }
 
-    /// Un tocco su una notifica apre la pagina Torrent.
+    /// `Mangiato` segna il pasto, `Rimanda` ripropone l'avviso fra 30 minuti,
+    /// un tocco apre la pagina del pasto o dei torrent.
     func userNotificationCenter(
       _ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse
     ) async {
-      await MainActor.run { Sessione.condivisa.scheda = .torrent }
+      let richiesta = response.notification.request
+      switch response.actionIdentifier {
+      case AzioniPasto.si:
+        guard let piano = richiesta.content.userInfo["piano"] as? String else { return }
+        _ = await Sessione.condivisa.conferma(piano: piano)
+      case AzioniPasto.rimanda:
+        guard let copia = richiesta.content.mutableCopy() as? UNMutableNotificationContent else { return }
+        let fra = UNTimeIntervalNotificationTrigger(timeInterval: PromemoriaPasti.rinvio, repeats: false)
+        let rimandata = UNNotificationRequest(
+          identifier: "\(richiesta.identifier)-rimandata", content: copia, trigger: fra)
+        try? await center.add(rimandata)
+      default:
+        let pasto = richiesta.identifier.hasPrefix("pasto-")
+        await MainActor.run { Sessione.condivisa.scheda = pasto ? .nutrizione : .torrent }
+      }
     }
   }
 #endif

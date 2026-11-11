@@ -1,15 +1,20 @@
 #if canImport(SwiftUI)
   import SwiftUI
 
-  /// L'app ha tre pagine nella barra in basso: Home, Torrent e Impostazioni.
+  /// L'app ha quattro pagine nella barra in basso: Home, Nutrizione, Torrent e
+  /// Impostazioni.
   struct RadiceView: View {
     @StateObject private var sessione = Sessione.condivisa
+    @Environment(\.scenePhase) private var fase
 
     var body: some View {
       TabView(selection: $sessione.scheda) {
         NavigationStack { HomeView() }
           .tabItem { Label("Home", systemImage: "square.grid.2x2") }
           .tag(Scheda.home)
+        NavigationStack { NutrizioneView() }
+          .tabItem { Label("Nutrizione", systemImage: "fork.knife") }
+          .tag(Scheda.nutrizione)
         NavigationStack { TorrentView() }
           .tabItem { Label("Torrent", systemImage: "arrow.down.circle") }
           .tag(Scheda.torrent)
@@ -31,6 +36,12 @@
           .environmentObject(sessione)
       }
       .environmentObject(sessione)
+      .environment(\.formati, sessione.formati)
+      .task { await sessione.aggiornaPreferenze() }
+      .onChange(of: fase) { _, nuova in
+        // A ogni apertura i promemoria dei pasti si rifanno.
+        if nuova == .active { Task { await sessione.ricalcolaPromemoria() } }
+      }
     }
   }
 #endif

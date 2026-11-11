@@ -5,7 +5,7 @@
 
   /// Le pagine dell'app, nella barra in basso.
   enum Scheda: Hashable {
-    case home, torrent, impostazioni
+    case home, nutrizione, torrent, impostazioni
   }
 
   /// Lo stato condiviso dell'app: l'accesso, la pagina aperta, il toast e un
@@ -26,6 +26,8 @@
 
     /// Le notifiche locali dei download (IOS-075).
     let notifiche = NotificheTorrent()
+    /// I promemoria dei pasti programmati (IOS-035).
+    let promemoriaPasti = PromemoriaNutrizione()
 
     /// Cresce a ogni cambio dei segreti: le pagine ricaricano.
     @Published private(set) var versione = 0
@@ -37,7 +39,18 @@
     @Published private(set) var avviso: Avviso?
     private var azioneAvviso: (@MainActor () -> Void)?
 
+    /// Le preferenze del sito: gli orari dei pasti e le unità. Finché non
+    /// arrivano valgono i predefiniti.
+    @Published private(set) var preferenze: Preferenze?
+
+    var promemoria: Promemoria { preferenze?.reminders ?? .predefiniti }
+    var formati: Formati { preferenze?.formats ?? Formati() }
+
     var client: APIClient { autenticazione.client() }
+
+    init() {
+      promemoriaPasti.registraCategorie()
+    }
 
     func cambiato() { versione += 1 }
 
@@ -77,11 +90,47 @@
       Task { await notifiche.aggiorna(con: download, chiediPermesso: chiediPermesso) }
     }
 
-    /// L'aggiornamento in background di iOS: rilegge i download e ricalcola
-    /// le notifiche.
+    /// L'aggiornamento in background di iOS: rilegge i download e i pasti e
+    /// ricalcola le notifiche.
     func controllaTorrent() async {
       if let download = try? await client.download() {
         await notifiche.aggiorna(con: download, chiediPermesso: false)
+      }
+      await aggiornaPreferenze()
+      await ricalcolaPromemoria()
+    }
+
+    func aggiornaPreferenze() async {
+      if let lette = try? await client.preferenze() { preferenze = lette }
+    }
+
+    /// Salva gli orari dei pasti nelle preferenze e rifà i promemoria.
+    func salvaOrari(_ orari: Promemoria) async -> Bool {
+      do {
+        preferenze = try await client.salvaPromemoria(orari)
+        await ricalcolaPromemoria()
+        return true
+      } catch {
+        return false
+      }
+    }
+
+    /// Rifà i promemoria dei pasti; con `chiediPermesso`, la prima volta,
+    /// compare la richiesta di iOS.
+    func ricalcolaPromemoria(chiediPermesso: Bool = false) async {
+      await promemoriaPasti.ricalcola(
+        client: client, promemoria: promemoria, chiediPermesso: chiediPermesso)
+    }
+
+    /// Segna un pasto programmato mangiato; ricarica le pagine.
+    func conferma(piano: String, mangiato: Bool = true) async -> Bool {
+      do {
+        try await client.statoPiano(piano, mangiato ? "eaten" : "planned")
+        cambiato()
+        await ricalcolaPromemoria()
+        return true
+      } catch {
+        return false
       }
     }
   }

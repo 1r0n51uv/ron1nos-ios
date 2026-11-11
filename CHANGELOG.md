@@ -10,6 +10,14 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.71 · 2026-11-11
+
+- Torna la Nutrizione, ora per programmare: scegli un piano (una settimana tipo di ricette) e programmalo da un giorno fino a una data. Aggiungi pasti solo dal piano, niente registrazione libera.
+- Dalla Home spunti il pasto dell'ora (Mangiato), con l'obiettivo del giorno e quanto manca. La pagina Nutrizione mostra la settimana, il giorno e la ricetta con ingredienti, procedimento e note.
+- Ricette da YAZIO (preferiti) o create nell'app, con ingredienti del catalogo YAZIO e procedimento a passi. C'è anche la lista della spesa dai pasti in programma.
+- Un promemoria all'ora di ogni pasto, con Mangiato e Rimanda; gli orari si scelgono in Impostazioni.
+- Serve l'API di ron1nOS aggiornata (procedimento, programmazione e settimana).
+
 ## 0.1.70 · 2026-11-11
 
 - Gli avvisi dei download si vedono anche con l'app aperta, e toccandoli si apre la pagina Torrent. Prima iOS li nascondeva finché l'app era in primo piano.

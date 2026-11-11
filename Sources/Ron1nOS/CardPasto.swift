@@ -55,13 +55,16 @@
       let vista = pasto?.vista(giorno: giorno.date, oggi: giorno.date) ?? .vuoto
       VStack(alignment: .leading, spacing: 14) {
         if let pasto, vista != .vuoto, let nome = nomePasto(pasto) {
-          VStack(alignment: .leading, spacing: 4) {
-            Text(nome)
-              .font(.subheadline)
-              .foregroundStyle(Stile.testo)
-            Text(formati.energia(pasto.kcal ?? 0))
-              .font(.system(.footnote, design: .monospaced))
-              .foregroundStyle(Stile.testoTenue)
+          HStack(spacing: 14) {
+            FotoRicetta(indirizzo: pasto.planned?.recipeImage)
+            VStack(alignment: .leading, spacing: 4) {
+              Text(nome)
+                .font(.subheadline)
+                .foregroundStyle(Stile.testo)
+              Text(formati.energia(pasto.kcal ?? 0))
+                .font(.system(.footnote, design: .monospaced))
+                .foregroundStyle(Stile.testoTenue)
+            }
           }
           if vista == .mangiato {
             Label("Mangiato", systemImage: "checkmark.circle.fill")

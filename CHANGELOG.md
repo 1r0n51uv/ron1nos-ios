@@ -10,6 +10,11 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.72 · 2026-11-11
+
+- Le ricette dei preferiti di YAZIO hanno la loro foto: si vede in cima alla ricetta e in miniatura nell'elenco, nella scelta della ricetta di un piano, nel giorno e nella card del pasto in Home.
+- Il procedimento delle ricette di YAZIO arriva già scritto, e l'import porta anche i preferiti (non solo le ricette create da te). Serve l'API di ron1nOS aggiornata.
+
 ## 0.1.71 · 2026-11-11
 
 - Torna la Nutrizione, ora per programmare: scegli un piano (una settimana tipo di ricette) e programmalo da un giorno fino a una data. Aggiungi pasti solo dal piano, niente registrazione libera.

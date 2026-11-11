@@ -110,14 +110,17 @@
     @ViewBuilder
     private func cosa(_ slot: SlotGiorno, piano: SlotGiorno.Pianificato) -> some View {
       let nome = piano.recipeName ?? piano.items.map(\.name).joined(separator: " · ")
-      let riga = VStack(alignment: .leading, spacing: 4) {
-        Text(nome)
-          .font(.subheadline)
-          .foregroundStyle(Stile.testo)
-          .multilineTextAlignment(.leading)
-        Text(formati.energia(slot.kcal ?? piano.kcal))
-          .font(.system(.footnote, design: .monospaced))
-          .foregroundStyle(Stile.testoTenue)
+      let riga = HStack(spacing: 14) {
+        FotoRicetta(indirizzo: piano.recipeImage)
+        VStack(alignment: .leading, spacing: 4) {
+          Text(nome)
+            .font(.subheadline)
+            .foregroundStyle(Stile.testo)
+            .multilineTextAlignment(.leading)
+          Text(formati.energia(slot.kcal ?? piano.kcal))
+            .font(.system(.footnote, design: .monospaced))
+            .foregroundStyle(Stile.testoTenue)
+        }
       }
       if let ricetta = piano.recipeId {
         NavigationLink {

@@ -217,17 +217,20 @@ public struct SlotGiorno: Decodable, Equatable, Identifiable, Sendable {
     public let recipeId: String?
     public let kcal: Double
     public let recipeName: String?
+    /// La foto della ricetta, se ce n'è una (NUT-034).
+    public let recipeImage: String?
     public let items: [Voce]
 
     public init(
       id: String? = nil, status: String? = nil, recipeId: String? = nil, kcal: Double,
-      recipeName: String? = nil, items: [Voce] = []
+      recipeName: String? = nil, recipeImage: String? = nil, items: [Voce] = []
     ) {
       self.id = id
       self.status = status
       self.recipeId = recipeId
       self.kcal = kcal
       self.recipeName = recipeName
+      self.recipeImage = recipeImage
       self.items = items
     }
   }

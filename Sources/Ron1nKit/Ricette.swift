@@ -7,6 +7,8 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
   public let notes: String?
   /// Il procedimento, un passo per elemento (NUT-030).
   public let steps: [String]
+  /// La foto, per le ricette di YAZIO che ne hanno una (NUT-034).
+  public let imageUrl: String?
   /// Il peso totale degli alimenti.
   public let grams: Double
   public let kcal: Double
@@ -16,13 +18,15 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
   public let items: [RigaRicetta]
 
   public init(
-    id: String, name: String, notes: String? = nil, steps: [String] = [], grams: Double, kcal: Double,
-    protein: Double = 0, carbs: Double = 0, fat: Double = 0, items: [RigaRicetta] = []
+    id: String, name: String, notes: String? = nil, steps: [String] = [], imageUrl: String? = nil,
+    grams: Double, kcal: Double, protein: Double = 0, carbs: Double = 0, fat: Double = 0,
+    items: [RigaRicetta] = []
   ) {
     self.id = id
     self.name = name
     self.notes = notes
     self.steps = steps
+    self.imageUrl = imageUrl
     self.grams = grams
     self.kcal = kcal
     self.protein = protein
@@ -32,7 +36,7 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
   }
 
   enum CodingKeys: String, CodingKey {
-    case id, name, notes, steps, grams, kcal, protein, carbs, fat, items
+    case id, name, notes, steps, imageUrl, grams, kcal, protein, carbs, fat, items
   }
 
   /// Un backend senza procedimento (prima di NUT-030) vale nessun passo.
@@ -42,6 +46,7 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
     name = try c.decode(String.self, forKey: .name)
     notes = try c.decodeIfPresent(String.self, forKey: .notes)
     steps = try c.decodeIfPresent([String].self, forKey: .steps) ?? []
+    imageUrl = try c.decodeIfPresent(String.self, forKey: .imageUrl)
     grams = try c.decode(Double.self, forKey: .grams)
     kcal = try c.decode(Double.self, forKey: .kcal)
     protein = try c.decode(Double.self, forKey: .protein)

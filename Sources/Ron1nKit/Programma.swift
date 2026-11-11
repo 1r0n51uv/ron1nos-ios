@@ -54,12 +54,18 @@ public struct PastoSettimana: Decodable, Equatable, Identifiable, Sendable {
     public let status: String
     public let recipeId: String?
     public let name: String
+    /// La foto della ricetta, se ce n'è una (NUT-034).
+    public let imageUrl: String?
 
-    public init(id: String, status: String = "planned", recipeId: String? = nil, name: String) {
+    public init(
+      id: String, status: String = "planned", recipeId: String? = nil, name: String,
+      imageUrl: String? = nil
+    ) {
       self.id = id
       self.status = status
       self.recipeId = recipeId
       self.name = name
+      self.imageUrl = imageUrl
     }
   }
 }

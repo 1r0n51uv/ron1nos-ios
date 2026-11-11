@@ -123,3 +123,20 @@ Accettazione:
 
 - [ ] In Impostazioni, un selettore d'ora per ognuno dei 5 pasti; si salva
       da solo nelle preferenze di ron1nOS e rifà i promemoria.
+
+### IOS-038 · Foto delle ricette
+
+Stato: in corso · Parità: NUT-034
+
+Le ricette dei preferiti di YAZIO hanno una foto; quelle create qui no, e
+allora non si mostra niente.
+
+Accettazione:
+
+- [ ] La foto è in cima alla ricetta, a tutta larghezza, e in miniatura
+      accanto al nome nell'elenco delle ricette, nella scelta della ricetta di
+      un piano, nel dettaglio del giorno e nella card del pasto della Home.
+- [ ] Il caricamento mostra un riquadro tenue; se la foto non arriva, un
+      simbolo. Una foto che manca non lascia un buco.
+- [ ] La foto è quella ridimensionata dell'API (684×558, circa 30 KB), non
+      l'originale.

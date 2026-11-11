@@ -312,14 +312,18 @@
               Button {
                 scegli(ricetta.id)
               } label: {
-                VStack(alignment: .leading, spacing: 4) {
-                  Text(ricetta.name)
-                    .font(.subheadline)
-                    .foregroundStyle(Stile.testo)
-                    .multilineTextAlignment(.leading)
-                  Text(ricetta.sottotitolo(formati))
-                    .font(.system(.footnote, design: .monospaced))
-                    .foregroundStyle(Stile.testoTenue)
+                HStack(spacing: 14) {
+                  FotoRicetta(indirizzo: ricetta.imageUrl)
+                  VStack(alignment: .leading, spacing: 4) {
+                    Text(ricetta.name)
+                      .font(.subheadline)
+                      .foregroundStyle(Stile.testo)
+                      .multilineTextAlignment(.leading)
+                    Text(ricetta.sottotitolo(formati))
+                      .font(.system(.footnote, design: .monospaced))
+                      .foregroundStyle(Stile.testoTenue)
+                  }
+                  Spacer(minLength: 0)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .glassPanel()

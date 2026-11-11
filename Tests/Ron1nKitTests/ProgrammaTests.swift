@@ -323,3 +323,46 @@ import Testing
     #expect(EsitoImportRicette(created: 1, updated: 0).testo == "1 ricetta nuova · 0 aggiornate")
   }
 }
+
+@Suite struct FotoRicetteTests {
+  @Test func laRicettaLeggeLaFoto() throws {
+    let con = #"""
+      {"id":"r1","name":"Pasta","notes":null,"steps":[],"imageUrl":"https://images.yazio-cdn.com/x.webp",
+       "grams":300,"kcal":620,"protein":20,"carbs":90,"fat":15,"items":[]}
+      """#
+    let ricetta = try JSONDecoder().decode(Ricetta.self, from: Data(con.utf8))
+    #expect(ricetta.imageUrl == "https://images.yazio-cdn.com/x.webp")
+    let senza = #"""
+      {"id":"r1","name":"Pasta","notes":null,"imageUrl":null,"grams":300,"kcal":620,"protein":20,
+       "carbs":90,"fat":15,"items":[]}
+      """#
+    #expect(try JSONDecoder().decode(Ricetta.self, from: Data(senza.utf8)).imageUrl == nil)
+    let vecchio = #"""
+      {"id":"r1","name":"Pasta","notes":null,"grams":300,"kcal":620,"protein":20,"carbs":90,"fat":15,"items":[]}
+      """#
+    #expect(try JSONDecoder().decode(Ricetta.self, from: Data(vecchio.utf8)).imageUrl == nil)
+  }
+
+  @Test func ilPastoProgrammatoPortaLaFoto() throws {
+    let settimana = #"""
+      {"from":"2026-10-26","days":[{"date":"2026-10-26","plannedKcal":620,"slots":[
+        {"slot":"lunch","state":"planned","kcal":620,
+         "plan":{"id":"p1","status":"planned","recipeId":"r1","name":"Pasta","imageUrl":"https://x.test/a.webp"}},
+        {"slot":"dinner","state":"planned","kcal":300,
+         "plan":{"id":"p2","status":"planned","recipeId":null,"name":"Mela","imageUrl":null}}]}]}
+      """#
+    let letta = try JSONDecoder().decode(SettimanaNutrizione.self, from: Data(settimana.utf8))
+    #expect(letta.days[0].slots[0].plan?.imageUrl == "https://x.test/a.webp")
+    #expect(letta.days[0].slots[1].plan?.imageUrl == nil)
+  }
+
+  @Test func ilGiornoPortaLaFotoDellaRicetta() throws {
+    let giorno = #"""
+      {"date":"2026-10-27","totals":{"kcal":0,"protein":0,"carbs":0,"fat":0},"slots":[
+        {"slot":"lunch","state":"planned","planned":{"id":"p1","status":"planned","recipeId":"r1",
+         "kcal":620,"recipeName":"Pasta","recipeImage":"https://x.test/a.webp","items":[]}}]}
+      """#
+    let letto = try JSONDecoder().decode(GiornoDieta.self, from: Data(giorno.utf8))
+    #expect(letto.slotInOrdine[2].planned?.recipeImage == "https://x.test/a.webp")
+  }
+}

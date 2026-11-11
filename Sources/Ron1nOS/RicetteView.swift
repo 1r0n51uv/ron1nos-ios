@@ -77,7 +77,8 @@
     }
 
     private func riga(_ ricetta: Ricetta) -> some View {
-      HStack {
+      HStack(spacing: 14) {
+        FotoRicetta(indirizzo: ricetta.imageUrl)
         VStack(alignment: .leading, spacing: 4) {
           Text(ricetta.name)
             .font(.subheadline)
@@ -144,6 +145,7 @@
               SezioneErrore(errore: errore).glassPanel()
             }
           case .pronto(let ricetta):
+            FotoRicetta(indirizzo: ricetta.imageUrl, forma: .copertina)
             totali(ricetta)
             ingredienti(ricetta)
             if !ricetta.steps.isEmpty { procedimento(ricetta) }

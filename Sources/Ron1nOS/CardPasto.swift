@@ -25,7 +25,7 @@
             Spacer()
             Button(action: apri) {
               HStack(spacing: 4) {
-                Text("Settimana")
+                Text("Nutrizione")
                 Image(systemName: "chevron.right")
               }
               .font(.footnote)

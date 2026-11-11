@@ -10,6 +10,12 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.73 · 2026-11-11
+
+- La pagina Nutrizione mostra un giorno alla volta, oggi all'apertura: con uno swipe a sinistra vai al giorno dopo, a destra a quello prima.
+- In alto una barra con i giorni della settimana, con un puntino dove c'è qualcosa in programma, e un calendario per scegliere una data qualsiasi. `Oggi` ti riporta al giorno corrente.
+- Nelle Ricette c'è una barra di ricerca: cerchi per nome o per ingrediente.
+
 ## 0.1.72 · 2026-11-11
 
 - Le ricette dei preferiti di YAZIO hanno la loro foto: si vede in cima alla ricetta e in miniatura nell'elenco, nella scelta della ricetta di un piano, nel giorno e nella card del pasto in Home.

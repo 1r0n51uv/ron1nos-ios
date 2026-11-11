@@ -7,47 +7,56 @@
     case piani, ricette, spesa
   }
 
-  /// La pagina Nutrizione (IOS-032): la settimana programmata, un pannello
-  /// per giorno con i suoi cinque pasti. Un tocco su un giorno apre il
-  /// dettaglio; da qui si arriva ai piani, alle ricette e alla spesa.
+  /// La pagina Nutrizione (IOS-032): un giorno alla volta, oggi all'apertura.
+  /// Uno swipe a sinistra porta al giorno dopo, a destra a quello prima; in
+  /// alto una barra per scegliere un giorno della settimana o, dal
+  /// calendario, una data qualsiasi. Da qui si arriva ai piani, alle ricette
+  /// e alla spesa.
   struct NutrizioneView: View {
     @EnvironmentObject private var sessione: Sessione
-    @State private var lunedi = Settimana.lunedi(di: Date())
-    @State private var stato = Carico<SettimanaNutrizione>.inCorso
+    @Environment(\.formati) private var formati
+    @State private var giorno = Settimana.oggi()
+    /// Verso dell'ultimo spostamento, per la direzione dell'animazione.
+    @State private var avanti = true
+    @State private var settimana = Carico<SettimanaNutrizione>.inCorso
+    @State private var calendario = false
     @State private var destinazione: DestinazioneNutrizione?
 
     var body: some View {
-      ScrollView {
-        VStack(alignment: .leading, spacing: 24) {
-          navigazione
-          switch stato {
-          case .inCorso:
-            Scheletro(righe: 6).glassPanel()
-          case .spento:
-            Text("Il modulo Nutrizione è spento.")
-              .font(.subheadline)
-              .foregroundStyle(Stile.testoTenue)
-          case .fallito(let errore):
-            SezioneErrore(errore: errore).glassPanel()
-          case .pronto(let settimana):
-            if settimana.days.allSatisfy({ $0.slots.allSatisfy { $0.state == "empty" } }) {
-              vuota
-            }
-            ForEach(settimana.days) { giorno in
-              NavigationLink {
-                GiornoNutrizioneView(giorno: giorno.date)
-              } label: {
-                PannelloGiorno(giorno: giorno, oggi: Settimana.oggi())
-              }
-              .buttonStyle(.plain)
-            }
+      VStack(spacing: 0) {
+        BarraGiorni(
+          giorno: giorno, oggi: oggi, settimana: settimana.valore, scegli: vai,
+          calendario: { calendario = true }
+        )
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        GiornoNutrizioneView(giorno: giorno)
+          .id(giorno)
+          .transition(
+            .asymmetric(
+              insertion: .move(edge: avanti ? .trailing : .leading),
+              removal: .move(edge: avanti ? .leading : .trailing)))
+      }
+      .clipped()
+      .background(SfondoConAlone().ignoresSafeArea())
+      .contentShape(Rectangle())
+      .simultaneousGesture(
+        DragGesture(minimumDistance: 40).onEnded { spostamento in
+          // Solo i gesti più orizzontali che verticali: lo scorrimento della pagina resta libero.
+          guard abs(spostamento.translation.width) > abs(spostamento.translation.height) * 1.5 else {
+            return
+          }
+          vai(Settimana.piu(spostamento.translation.width < 0 ? 1 : -1, a: giorno, fuso: formati.fuso))
+        }
+      )
+      .navigationTitle("Nutrizione")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .topBarLeading) {
+          if giorno != oggi {
+            Button("Oggi") { vai(oggi) }
           }
         }
-        .padding(16)
-      }
-      .background(SfondoConAlone().ignoresSafeArea())
-      .navigationTitle("Nutrizione")
-      .toolbar {
         ToolbarItem(placement: .topBarTrailing) {
           Menu {
             Button("Piani", systemImage: "calendar") { destinazione = .piani }
@@ -66,153 +75,154 @@
         case .spesa: SpesaView()
         }
       }
-      .refreshable { await carica() }
-      .task(id: Carica(lunedi: lunedi, versione: sessione.versione)) {
-        await carica()
+      .sheet(isPresented: $calendario) {
+        ScegliData(giorno: giorno) { scelto in
+          calendario = false
+          vai(scelto)
+        }
+        .environment(\.formati, formati)
+      }
+      .task(
+        id: Carica(lunedi: Settimana.lunedi(del: giorno, fuso: formati.fuso), versione: sessione.versione)
+      ) {
+        await caricaSettimana()
         await sessione.ricalcolaPromemoria(chiediPermesso: true)
       }
     }
+
+    private var oggi: String { Settimana.oggi(fuso: formati.fuso) }
 
     private struct Carica: Equatable {
       let lunedi: String
       let versione: Int
     }
 
-    /// Prima, dopo e `Oggi`, con la settimana al centro.
-    private var navigazione: some View {
-      HStack(spacing: 12) {
-        Button {
-          lunedi = Settimana.piu(-7, a: lunedi)
-        } label: {
-          Image(systemName: "chevron.left").frame(width: 44, height: 44)
-        }
-        .accessibilityLabel("Settimana prima")
-        Spacer()
-        VStack(spacing: 2) {
-          Text(intervallo)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(Stile.testo)
-          if lunedi != Settimana.lunedi(di: Date()) {
-            Button("Oggi") { lunedi = Settimana.lunedi(di: Date()) }
-              .font(.footnote)
-              .tint(Stile.brandTesto)
-          }
-        }
-        Spacer()
-        Button {
-          lunedi = Settimana.piu(7, a: lunedi)
-        } label: {
-          Image(systemName: "chevron.right").frame(width: 44, height: 44)
-        }
-        .accessibilityLabel("Settimana dopo")
-      }
-      .foregroundStyle(Stile.testo)
+    /// Passa a un altro giorno, con l'animazione nel verso giusto.
+    private func vai(_ nuovo: String) {
+      guard nuovo != giorno else { return }
+      avanti = nuovo > giorno
+      withAnimation(.easeInOut(duration: 0.25)) { giorno = nuovo }
     }
 
-    /// "26 ott – 1 nov".
-    private var intervallo: String {
-      let stile = Date.FormatStyle().day().month(.abbreviated).locale(Locale(identifier: "it_IT"))
-      guard let primo = Settimana.data(lunedi), let ultimo = Settimana.data(Settimana.piu(6, a: lunedi))
-      else { return lunedi }
-      return "\(primo.formatted(stile)) – \(ultimo.formatted(stile))"
-    }
-
-    private var vuota: some View {
-      VStack(alignment: .leading, spacing: 8) {
-        Text("Niente in programma")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
-        Text("Scegli un piano dal menu e programmalo: da oggi fino a una data o per questa settimana.")
-          .font(.subheadline)
-          .foregroundStyle(Stile.testoTenue)
-        Button("Piani") { destinazione = .piani }
-          .glassChip()
-      }
-      .glassPanel()
-    }
-
-    private func carica() async {
+    /// La settimana del giorno scelto, per i puntini sulla barra.
+    private func caricaSettimana() async {
       let client = sessione.client
-      let da = lunedi
-      stato = await Carico.da { try await client.settimana(da: da) }
+      let lunedi = Settimana.lunedi(del: giorno, fuso: formati.fuso)
+      let nuova = await Carico.da { try await client.settimana(da: lunedi) }
+      // Un errore non cancella i puntini già mostrati.
+      if case .fallito = nuova, settimana.valore != nil { return }
+      settimana = nuova
     }
   }
 
-  /// Un giorno della settimana: titolo, kcal e i pasti con lo stato.
-  struct PannelloGiorno: View {
-    let giorno: GiornoSettimana
+  /// La barra in alto: i sette giorni della settimana del giorno scelto, con
+  /// un puntino dove c'è qualcosa in programma, e il calendario.
+  struct BarraGiorni: View {
+    let giorno: String
     let oggi: String
+    let settimana: SettimanaNutrizione?
+    let scegli: (String) -> Void
+    let calendario: () -> Void
     @Environment(\.formati) private var formati
 
     var body: some View {
-      VStack(alignment: .leading, spacing: 12) {
-        HStack {
-          Text(titolo)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(giorno.date == oggi ? Stile.brandTesto : Stile.testo)
-          Spacer()
-          if giorno.kcal > 0 {
-            Text(formati.energia(giorno.kcal))
-              .font(.system(.footnote, design: .monospaced))
-              .foregroundStyle(Stile.testoTenue)
-          }
+      HStack(spacing: 4) {
+        ForEach(
+          Settimana.giorni(dalLunedi: Settimana.lunedi(del: giorno, fuso: formati.fuso), fuso: formati.fuso),
+          id: \.self
+        ) { data in
+          cella(data)
         }
-        VStack(alignment: .leading, spacing: 8) {
-          ForEach(giorno.slots) { pasto in
-            RigaPastoSettimana(pasto: pasto, vista: pasto.vista(giorno: giorno.date, oggi: oggi))
-          }
+        Button(action: calendario) {
+          Image(systemName: "calendar")
+            .font(.title3)
+            .foregroundStyle(Stile.testo)
+            .frame(width: 44, height: 56)
         }
+        .accessibilityLabel("Scegli una data")
       }
-      .glassPanel(tinta: giorno.date == oggi ? Stile.brand : nil)
     }
 
-    /// "Lunedì 26".
-    private var titolo: String {
-      guard let data = Settimana.data(giorno.date) else { return giorno.date }
-      return data.formatted(.dateTime.weekday(.wide).day().locale(Locale(identifier: "it_IT"))).capitalized
+    private func cella(_ data: String) -> some View {
+      let scelto = data == giorno
+      return Button {
+        scegli(data)
+      } label: {
+        VStack(spacing: 4) {
+          Text(lettera(data))
+            .font(.system(.footnote, design: .monospaced))
+            .foregroundStyle(Stile.testoTenue)
+          Text(numero(data))
+            .font(.system(.subheadline, design: .monospaced).weight(.semibold))
+            .foregroundStyle(data == oggi ? Stile.brandTesto : Stile.testo)
+          Circle()
+            .fill(haQualcosa(data) ? Stile.brand : Color.clear)
+            .frame(width: 5, height: 5)
+        }
+        .frame(maxWidth: .infinity, minHeight: 56)
+        .background(
+          Color.white.opacity(scelto ? 0.14 : 0.04),
+          in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+      }
+      .buttonStyle(.plain)
+      .accessibilityLabel(etichetta(data))
+      .accessibilityAddTraits(scelto ? .isSelected : [])
+    }
+
+    private func haQualcosa(_ data: String) -> Bool {
+      settimana?.days.first { $0.date == data }?.slots.contains { $0.state != "empty" } ?? false
+    }
+
+    private func lettera(_ data: String) -> String {
+      let giorni = Settimana.giorni(
+        dalLunedi: Settimana.lunedi(del: giorno, fuso: formati.fuso), fuso: formati.fuso)
+      return TemplateSettimana.lettere[giorni.firstIndex(of: data) ?? 0]
+    }
+
+    private func numero(_ data: String) -> String {
+      String(data.suffix(2).drop { $0 == "0" })
+    }
+
+    private func etichetta(_ data: String) -> String {
+      guard let d = Settimana.data(data, fuso: formati.fuso) else { return data }
+      return d.formatted(
+        .dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "it_IT")))
     }
   }
 
-  /// Un pasto in una riga: simbolo dello stato, pasto e ricetta.
-  struct RigaPastoSettimana: View {
-    let pasto: PastoSettimana
-    let vista: VistaPasto
+  /// Il calendario per scegliere una data qualsiasi.
+  struct ScegliData: View {
+    let giorno: String
+    let scelta: (String) -> Void
+    @Environment(\.formati) private var formati
+    @Environment(\.dismiss) private var chiudi
+    @State private var data = Date()
 
     var body: some View {
-      HStack(spacing: 10) {
-        Image(systemName: simbolo)
-          .font(.footnote)
-          .foregroundStyle(colore)
-          .frame(width: 18)
-        Text(pasto.titolo)
-          .font(.footnote)
-          .foregroundStyle(Stile.testoTenue)
-          .frame(width: 72, alignment: .leading)
-        Text(pasto.plan?.name ?? "·")
-          .font(.footnote)
-          .foregroundStyle(vista == .saltato ? Stile.testoTenue : Stile.testo)
-          .strikethrough(vista == .saltato)
-          .lineLimit(1)
-          .truncationMode(.tail)
-        Spacer(minLength: 0)
+      NavigationStack {
+        DatePicker("Data", selection: $data, displayedComponents: .date)
+          .datePickerStyle(.graphical)
+          .environment(\.timeZone, formati.fuso)
+          .environment(\.locale, Locale(identifier: "it_IT"))
+          .padding(16)
+          .frame(maxHeight: .infinity, alignment: .top)
+          .background(SfondoConAlone().ignoresSafeArea())
+          .navigationTitle("Scegli una data")
+          .navigationBarTitleDisplayMode(.inline)
+          .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+              Button("Annulla") { chiudi() }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+              Button("Vai") { scelta(Settimana.testo(data, fuso: formati.fuso)) }
+                .fontWeight(.semibold)
+            }
+          }
       }
-      .accessibilityElement(children: .combine)
-      .accessibilityLabel("\(pasto.titolo), \(pasto.plan?.name ?? "niente"), \(vista.testo)")
-    }
-
-    private var simbolo: String {
-      switch vista {
-      case .mangiato: "checkmark.circle.fill"
-      case .saltato: "xmark.circle"
-      case .pianificato: "circle"
-      case .vuoto: "minus"
-      }
-    }
-
-    private var colore: Color {
-      switch vista {
-      case .mangiato: Stile.testo
-      default: Stile.testoTenue
+      .tint(Stile.brand)
+      .presentationDetents([.medium, .large])
+      .onAppear {
+        if let attuale = Settimana.data(giorno, fuso: formati.fuso) { data = attuale }
       }
     }
   }

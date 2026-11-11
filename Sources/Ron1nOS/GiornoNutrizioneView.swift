@@ -2,9 +2,9 @@
   import Ron1nKit
   import SwiftUI
 
-  /// Il dettaglio di un giorno (IOS-033): obiettivo e quota rimasta, poi i
-  /// cinque pasti con la ricetta e la spunta. Si spunta fino a oggi; un
-  /// pasto futuro resta in programma.
+  /// Il contenuto di un giorno (IOS-033), dentro la pagina Nutrizione: la
+  /// data, obiettivo e quota rimasta, poi i cinque pasti con la ricetta e la
+  /// spunta. Si spunta fino a oggi; un pasto futuro resta in programma.
   struct GiornoNutrizioneView: View {
     let giorno: String
     @EnvironmentObject private var sessione: Sessione
@@ -17,6 +17,9 @@
     var body: some View {
       ScrollView {
         VStack(alignment: .leading, spacing: 24) {
+          Text(titolo)
+            .font(.title2.weight(.semibold))
+            .foregroundStyle(Stile.testo)
           switch stato {
           case .inCorso:
             Scheletro(righe: 6).glassPanel()
@@ -35,9 +38,6 @@
         }
         .padding(16)
       }
-      .background(SfondoConAlone().ignoresSafeArea())
-      .navigationTitle(titolo)
-      .navigationBarTitleDisplayMode(.inline)
       .sensoryFeedback(.success, trigger: riuscite)
       .refreshable { await carica() }
       .task(id: sessione.versione) { await carica() }
@@ -50,7 +50,7 @@
         .dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "it_IT")))
     }
 
-    private var oggi: String { Settimana.oggi() }
+    private var oggi: String { Settimana.oggi(fuso: formati.fuso) }
 
     // MARK: - Quota
 

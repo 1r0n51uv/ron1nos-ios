@@ -10,6 +10,10 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.70 · 2026-11-11
+
+- Gli avvisi dei download si vedono anche con l'app aperta, e toccandoli si apre la pagina Torrent. Prima iOS li nascondeva finché l'app era in primo piano.
+
 ## 0.1.69 · 2026-11-10
 
 - Torna la pagina Torrent, nella barra in basso: i torrent in sezioni (In download, In coda, In seed, Fermi, Errori) con la velocità totale.

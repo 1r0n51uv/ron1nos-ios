@@ -107,6 +107,8 @@ Accettazione:
 - [ ] Finché c'è un download in corso, l'app chiede a iOS un aggiornamento
       in background ogni 15 minuti (non garantito da iOS) per rileggere i
       download.
+- [ ] Con l'app aperta la notifica si vede lo stesso, come banner in alto;
+      un tocco su una notifica apre la pagina Torrent.
 - [ ] Test unitari su Linux del piano: fine prevista con margine, finito,
       fermo a metà, eliminato, già in seed.
 

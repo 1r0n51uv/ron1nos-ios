@@ -15,6 +15,7 @@
             RigaValore(nome: "Versione", valore: versione)
           }
           .glassPanel()
+          OrariPastiView()
           AvvisiView()
           AccessoView()
         }

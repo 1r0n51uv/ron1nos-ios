@@ -8,6 +8,7 @@
     @EnvironmentObject private var sessione: Sessione
     @State private var server = Carico<StatoServer>.inCorso
     @State private var download = Carico<Download>.inCorso
+    @State private var giornoNutrizione = Carico<GiornoDieta>.inCorso
 
     var body: some View {
       ScrollView {
@@ -16,6 +17,9 @@
           if daAccedere {
             invito
           } else {
+            CardPasto(
+              carico: giornoNutrizione, slot: slotCorrente, conferma: { id in Task { await mangiato(id) } },
+              apri: { sessione.scheda = .nutrizione })
             CardServer(carico: server)
             Button {
               sessione.scheda = .torrent
@@ -59,7 +63,7 @@
 
     /// Senza sessione le rotte rispondono 401: la Home invita ad accedere.
     private var daAccedere: Bool {
-      for errore in [erroreDi(server), erroreDi(download)] {
+      for errore in [erroreDi(server), erroreDi(download), erroreDi(giornoNutrizione)] {
         if let errore, case .login = errore { return true }
       }
       return false
@@ -82,12 +86,29 @@
       .glassPanel(tinta: Stile.brand)
     }
 
+    /// Lo slot che corrisponde all'ora, secondo gli orari dei pasti.
+    private var slotCorrente: String {
+      sessione.promemoria.slotCorrente(
+        minuti: Promemoria.minutiDi(Date(), fuso: sessione.formati.fuso))
+    }
+
+    private func mangiato(_ piano: String) async {
+      if await sessione.conferma(piano: piano) {
+        sessione.mostra(Avviso("Mangiato"))
+        await carica()
+      } else {
+        sessione.mostra(.nonSalvato)
+      }
+    }
+
     private func carica() async {
       let client = sessione.autenticazione.client()
       async let nuovoServer = Carico.da { try await client.statoServer() }
       async let nuoviDownload = Carico.da { try await client.download() }
+      async let nuovoGiorno = Carico.da { try await client.dieta() }
       server = await nuovoServer
       download = await nuoviDownload
+      giornoNutrizione = await nuovoGiorno
       if let letti = download.valore { sessione.letti(letti) }
     }
   }

@@ -1,0 +1,429 @@
+#if canImport(SwiftUI)
+  import Ron1nKit
+  import SwiftUI
+
+  /// I piani (IOS-031): le settimane tipo. Un piano si programma da oggi
+  /// fino a una data, o per la sola settimana; si crea e si corregge qui.
+  struct PianiView: View {
+    @EnvironmentObject private var sessione: Sessione
+    @State private var stato = Carico<[TemplateSettimana]>.inCorso
+    @State private var nuovo = false
+    @State private var daModificare: TemplateSettimana?
+    @State private var daProgrammare: TemplateSettimana?
+    @State private var daEliminare: TemplateSettimana?
+
+    var body: some View {
+      ScrollView {
+        VStack(alignment: .leading, spacing: 16) {
+          switch stato {
+          case .inCorso:
+            Scheletro(righe: 4).glassPanel()
+          case .spento:
+            Text("Il modulo Nutrizione è spento.")
+              .font(.subheadline)
+              .foregroundStyle(Stile.testoTenue)
+          case .fallito(let errore):
+            SezioneErrore(errore: errore).glassPanel()
+          case .pronto(let piani):
+            if piani.isEmpty { vuoto }
+            ForEach(piani) { piano in
+              scheda(piano)
+            }
+          }
+        }
+        .padding(16)
+      }
+      .background(SfondoConAlone().ignoresSafeArea())
+      .navigationTitle("Piani")
+      .toolbar {
+        ToolbarItem(placement: .topBarTrailing) {
+          Button("Nuovo piano", systemImage: "plus") { nuovo = true }
+        }
+      }
+      .sheet(isPresented: $nuovo) {
+        PianoFormView(piano: nil) { await carica() }
+          .environmentObject(sessione)
+      }
+      .sheet(item: $daModificare) { piano in
+        PianoFormView(piano: piano) { await carica() }
+          .environmentObject(sessione)
+      }
+      .sheet(item: $daProgrammare) { piano in
+        ProgrammaView(piano: piano)
+          .environmentObject(sessione)
+      }
+      .confirmationDialog(
+        "Eliminare il piano?", isPresented: eliminando, titleVisibility: .visible, presenting: daEliminare
+      ) { piano in
+        Button("Elimina", role: .destructive) { Task { await elimina(piano) } }
+        Button("Annulla", role: .cancel) {}
+      } message: { _ in
+        Text("I pasti già programmati restano.")
+      }
+      .refreshable { await carica() }
+      .task(id: sessione.versione) { await carica() }
+    }
+
+    private var eliminando: Binding<Bool> {
+      Binding(get: { daEliminare != nil }, set: { if !$0 { daEliminare = nil } })
+    }
+
+    private var vuoto: some View {
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Nessun piano")
+          .font(.subheadline.weight(.semibold))
+          .foregroundStyle(Stile.testo)
+        Text("Un piano è una settimana tipo: per ogni giorno scegli la ricetta di ogni pasto.")
+          .font(.subheadline)
+          .foregroundStyle(Stile.testoTenue)
+      }
+      .glassPanel()
+    }
+
+    private func scheda(_ piano: TemplateSettimana) -> some View {
+      VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 4) {
+          Text(piano.name)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(Stile.testo)
+          Text(piano.sottotitolo)
+            .font(.system(.footnote, design: .monospaced))
+            .foregroundStyle(Stile.testoTenue)
+        }
+        HStack(spacing: 12) {
+          Button("Programma") { daProgrammare = piano }
+            .glassChip()
+          Button("Modifica") { daModificare = piano }
+            .glassChip()
+          Spacer()
+          Button {
+            daEliminare = piano
+          } label: {
+            Image(systemName: "trash")
+              .foregroundStyle(Stile.testoTenue)
+              .frame(width: 44, height: 44)
+          }
+          .buttonStyle(.plain)
+          .accessibilityLabel("Elimina \(piano.name)")
+        }
+      }
+      .glassPanel()
+    }
+
+    private func carica() async {
+      let client = sessione.client
+      stato = await Carico.da { try await client.template() }
+    }
+
+    private func elimina(_ piano: TemplateSettimana) async {
+      do {
+        try await sessione.client.eliminaTemplate(piano.id)
+        await carica()
+        sessione.mostra(Avviso("Eliminato"))
+      } catch let errore as APIError {
+        sessione.mostra(Avviso(errore.titolo))
+      } catch {
+        sessione.mostra(Avviso("Non riuscito"))
+      }
+    }
+  }
+
+  /// Il pasto di cui si sceglie la ricetta, per aprire il foglio.
+  struct SlotScelto: Identifiable {
+    let id: String
+  }
+
+  /// Creare o correggere un piano (IOS-031): il nome e, giorno per giorno, la
+  /// ricetta di ogni pasto.
+  struct PianoFormView: View {
+    /// nil per un piano nuovo.
+    let piano: TemplateSettimana?
+    let salvato: () async -> Void
+    @EnvironmentObject private var sessione: Sessione
+    @Environment(\.dismiss) private var chiudi
+    @State private var modulo = ModuloPiano()
+    @State private var giorno = 1
+    @State private var ricette: [Ricetta] = []
+    @State private var sceltaSlot: SlotScelto?
+    @State private var errore: String?
+    @State private var salvando = false
+
+    var body: some View {
+      NavigationStack {
+        ScrollView {
+          VStack(alignment: .leading, spacing: 24) {
+            TextField("Nome del piano", text: $modulo.nome)
+              .foregroundStyle(Stile.testo)
+              .glassChip()
+            giorni
+            VStack(alignment: .leading, spacing: 16) {
+              ForEach(GiornoDieta.ordineSlot, id: \.self) { slot in
+                casella(slot)
+              }
+            }
+            .glassPanel()
+            if let errore {
+              Text(errore)
+                .font(.subheadline)
+                .foregroundStyle(Stile.brandTesto)
+            }
+          }
+          .padding(16)
+        }
+        .background(SfondoConAlone().ignoresSafeArea())
+        .navigationTitle(piano == nil ? "Nuovo piano" : "Modifica piano")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+          ToolbarItem(placement: .cancellationAction) {
+            Button("Annulla") { chiudi() }
+          }
+          ToolbarItem(placement: .confirmationAction) {
+            Button("Salva") { Task { await salva() } }
+              .fontWeight(.semibold)
+              .disabled(salvando)
+          }
+        }
+      }
+      .tint(Stile.brand)
+      .sheet(item: $sceltaSlot) { scelto in
+        SceltaRicettaView(ricette: ricette) { id in
+          modulo.ricette[.init(giorno: giorno, slot: scelto.id)] = id
+          sceltaSlot = nil
+        }
+        .environment(\.formati, sessione.formati)
+      }
+      .onAppear {
+        if let piano { modulo = ModuloPiano(piano) }
+      }
+      .task { ricette = (try? await sessione.client.ricette()) ?? [] }
+    }
+
+    /// Le sette lettere dei giorni, con un puntino dove il giorno ha pasti.
+    private var giorni: some View {
+      HStack(spacing: 8) {
+        ForEach(1...7, id: \.self) { numero in
+          Button {
+            giorno = numero
+          } label: {
+            VStack(spacing: 4) {
+              Text(TemplateSettimana.lettere[numero - 1])
+                .font(.system(.subheadline, design: .monospaced).weight(.semibold))
+              Circle()
+                .fill(haPasti(numero) ? Stile.brand : Color.clear)
+                .frame(width: 5, height: 5)
+            }
+            .foregroundStyle(giorno == numero ? Stile.testo : Stile.testoTenue)
+            .frame(maxWidth: .infinity, minHeight: 48)
+            .background(
+              Color.white.opacity(giorno == numero ? 0.14 : 0.04),
+              in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+          }
+          .buttonStyle(.plain)
+          .accessibilityLabel(nomeGiorno(numero))
+          .accessibilityAddTraits(giorno == numero ? .isSelected : [])
+        }
+      }
+    }
+
+    private func haPasti(_ numero: Int) -> Bool {
+      modulo.ricette.keys.contains { $0.giorno == numero }
+    }
+
+    private func nomeGiorno(_ numero: Int) -> String {
+      ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"][numero - 1]
+    }
+
+    private func casella(_ slot: String) -> some View {
+      let chiave = ModuloPiano.Casella(giorno: giorno, slot: slot)
+      let scelta = modulo.ricette[chiave].flatMap { id in ricette.first { $0.id == id } }
+      return HStack {
+        VStack(alignment: .leading, spacing: 4) {
+          Text(GiornoDieta.nomiSlot[slot] ?? slot)
+            .font(.footnote)
+            .foregroundStyle(Stile.testoTenue)
+          Button {
+            sceltaSlot = SlotScelto(id: slot)
+          } label: {
+            Text(scelta?.name ?? (modulo.ricette[chiave] == nil ? "Scegli una ricetta" : "Ricetta"))
+              .font(.subheadline)
+              .foregroundStyle(modulo.ricette[chiave] == nil ? Stile.testoTenue : Stile.testo)
+              .multilineTextAlignment(.leading)
+              .frame(minHeight: 44, alignment: .leading)
+          }
+          .buttonStyle(.plain)
+        }
+        Spacer()
+        if modulo.ricette[chiave] != nil {
+          Button {
+            modulo.ricette[chiave] = nil
+          } label: {
+            Image(systemName: "minus.circle")
+              .foregroundStyle(Stile.testoTenue)
+              .frame(width: 44, height: 44)
+          }
+          .buttonStyle(.plain)
+          .accessibilityLabel("Togli la ricetta")
+        }
+      }
+    }
+
+    private func salva() async {
+      if let problema = modulo.problema {
+        errore = problema
+        return
+      }
+      salvando = true
+      defer { salvando = false }
+      do {
+        if let id = piano?.id {
+          _ = try await sessione.client.correggiPiano(id, modulo)
+        } else {
+          _ = try await sessione.client.creaPiano(modulo)
+        }
+        await salvato()
+        sessione.mostra(.salvato)
+        chiudi()
+      } catch let problema as APIError {
+        errore = problema.titolo
+      } catch {
+        errore = "Non salvato."
+      }
+    }
+  }
+
+  /// Il foglio per scegliere la ricetta di un pasto.
+  struct SceltaRicettaView: View {
+    let ricette: [Ricetta]
+    let scegli: (String) -> Void
+    @Environment(\.dismiss) private var chiudi
+    @Environment(\.formati) private var formati
+
+    var body: some View {
+      NavigationStack {
+        ScrollView {
+          VStack(alignment: .leading, spacing: 12) {
+            if ricette.isEmpty {
+              Text("Nessuna ricetta: importa i preferiti di YAZIO o creane una dalla pagina Ricette.")
+                .font(.subheadline)
+                .foregroundStyle(Stile.testoTenue)
+                .glassPanel()
+            }
+            ForEach(ricette) { ricetta in
+              Button {
+                scegli(ricetta.id)
+              } label: {
+                VStack(alignment: .leading, spacing: 4) {
+                  Text(ricetta.name)
+                    .font(.subheadline)
+                    .foregroundStyle(Stile.testo)
+                    .multilineTextAlignment(.leading)
+                  Text(ricetta.sottotitolo(formati))
+                    .font(.system(.footnote, design: .monospaced))
+                    .foregroundStyle(Stile.testoTenue)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .glassPanel()
+              }
+              .buttonStyle(.plain)
+            }
+          }
+          .padding(16)
+        }
+        .background(SfondoConAlone().ignoresSafeArea())
+        .navigationTitle("Ricetta")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+          ToolbarItem(placement: .cancellationAction) {
+            Button("Annulla") { chiudi() }
+          }
+        }
+      }
+      .tint(Stile.brand)
+    }
+  }
+
+  /// `Programma` (IOS-031): da che giorno e fino a quando ripetere la
+  /// settimana tipo.
+  struct ProgrammaView: View {
+    let piano: TemplateSettimana
+    @EnvironmentObject private var sessione: Sessione
+    @Environment(\.formati) private var formati
+    @Environment(\.dismiss) private var chiudi
+    @State private var da = Date()
+    @State private var finoAUnaData = false
+    @State private var fino = Date().addingTimeInterval(27 * 86_400)
+    @State private var inCorso = false
+    @State private var errore: String?
+
+    var body: some View {
+      NavigationStack {
+        Form {
+          Section {
+            DatePicker("Da", selection: $da, displayedComponents: .date)
+            Toggle("Fino a una data", isOn: $finoAUnaData)
+              .tint(Stile.brand)
+            if finoAUnaData {
+              DatePicker("Fino al", selection: $fino, in: da..., displayedComponents: .date)
+            }
+          } footer: {
+            Text(
+              finoAUnaData
+                ? "La settimana tipo si ripete ogni settimana fino a quel giorno, al massimo un anno."
+                : "Vale fino a domenica della settimana scelta."
+            )
+          }
+          .listRowBackground(Color.white.opacity(0.06))
+          Section {
+            Text(
+              "I pasti ancora in programma di quei giorni si rifanno con questo piano. Quelli mangiati e saltati restano."
+            )
+            .font(.footnote)
+            .foregroundStyle(Stile.testoTenue)
+          }
+          .listRowBackground(Color.clear)
+          if let errore {
+            Section {
+              Text(errore)
+                .font(.footnote)
+                .foregroundStyle(Stile.brandTesto)
+            }
+            .listRowBackground(Color.clear)
+          }
+        }
+        .environment(\.timeZone, formati.fuso)
+        .scrollContentBackground(.hidden)
+        .background(SfondoConAlone().ignoresSafeArea())
+        .navigationTitle(piano.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+          ToolbarItem(placement: .cancellationAction) {
+            Button("Annulla") { chiudi() }
+          }
+          ToolbarItem(placement: .confirmationAction) {
+            Button("Programma") { Task { await programma() } }
+              .fontWeight(.semibold)
+              .disabled(inCorso)
+          }
+        }
+      }
+      .tint(Stile.brand)
+    }
+
+    private func programma() async {
+      inCorso = true
+      defer { inCorso = false }
+      let inizio = Settimana.testo(da, fuso: formati.fuso)
+      let fine = finoAUnaData ? Settimana.testo(fino, fuso: formati.fuso) : nil
+      do {
+        let esito = try await sessione.client.programma(piano.id, da: inizio, fino: fine)
+        sessione.cambiato()
+        sessione.mostra(Avviso(esito.testo))
+        chiudi()
+      } catch let problema as APIError {
+        errore = problema.titolo
+      } catch {
+        errore = "Non programmato."
+      }
+    }
+  }
+#endif

@@ -51,28 +51,34 @@ Accettazione:
       mangiati e saltati restano. Un toast dice quanti pasti sono stati
       programmati.
 
-### IOS-032 · La settimana
+### IOS-032 · Il giorno
 
 Stato: in corso · Parità: NUT-032
 
 Accettazione:
 
-- [ ] Nutrizione è la seconda voce della barra. Mostra la settimana da lunedì
-      con le frecce per cambiarla e `Oggi` per tornare; un pannello per giorno
-      coi 5 pasti, ricetta e stato (mangiato, saltato, in programma), e le
-      kcal del giorno.
-- [ ] Il giorno di oggi è segnato; senza niente in programma la pagina invita
-      a scegliere un piano.
+- [ ] Nutrizione è la seconda voce della barra. Si apre su oggi e mostra un
+      giorno solo: la data, poi i 5 pasti (IOS-033).
+- [ ] Uno swipe a sinistra porta al giorno dopo, uno a destra a quello
+      prima, con un'animazione nel verso dello swipe. Contano solo i gesti
+      più orizzontali che verticali: lo scorrimento della pagina resta libero.
+- [ ] In alto una barra mostra i sette giorni della settimana del giorno
+      scelto, lettera e numero, con oggi in rosso e un puntino dove c'è
+      qualcosa in programma o mangiato (`GET /nutrition/week`). Un tocco sceglie
+      quel giorno; la settimana cambia da sola se si swipa oltre domenica o
+      prima di lunedì.
+- [ ] Il pulsante calendario apre una data qualsiasi; `Vai` la sceglie.
+- [ ] `Oggi`, in alto a sinistra, compare quando non si è su oggi e riporta
+      a oggi.
 - [ ] Il menu apre Piani, Ricette e Spesa.
 
-### IOS-033 · Dettaglio del giorno e conferma
+### IOS-033 · Il giorno e la conferma
 
 Stato: in corso · Parità: NUT-001, NUT-016
 
 Accettazione:
 
-- [ ] Un tocco su un giorno apre i suoi pasti: in cima kcal mangiate su
-      obiettivo, barra, quanto manca e i macro.
+- [ ] In cima kcal mangiate su obiettivo, barra, quanto manca e i macro.
 - [ ] Ogni pasto mostra ricetta e kcal; un tocco apre la ricetta.
 - [ ] `Mangiato` segna il pasto, `Annulla` lo rimette in programma; si spunta
       fino a oggi, un giorno futuro resta in programma.
@@ -140,3 +146,17 @@ Accettazione:
       simbolo. Una foto che manca non lascia un buco.
 - [ ] La foto è quella ridimensionata dell'API (684×558, circa 30 KB), non
       l'originale.
+
+### IOS-039 · Cercare tra le ricette
+
+Stato: in corso
+
+Accettazione:
+
+- [ ] La pagina Ricette ha una barra di ricerca sempre visibile, "Cerca per
+      nome o ingrediente". Nella pagina Nutrizione non c'è una ricerca: sta solo
+      nelle Ricette.
+- [ ] Una ricetta compare se ogni parola scritta sta nel nome o in un
+      ingrediente, senza badare a maiuscole e accenti.
+- [ ] Senza risultati la pagina lo dice, con il testo cercato; con il campo
+      vuoto compaiono tutte le ricette.

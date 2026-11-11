@@ -366,3 +366,75 @@ import Testing
     #expect(letto.slotInOrdine[2].planned?.recipeImage == "https://x.test/a.webp")
   }
 }
+
+@Suite struct GiornoERicercaTests {
+  let fuso = TimeZone(identifier: "Europe/Rome") ?? .gmt
+
+  @Test func lunediDiUnGiorno() {
+    // Il 11 novembre 2026 è un mercoledì.
+    #expect(Settimana.lunedi(del: "2026-11-11", fuso: fuso) == "2026-11-09")
+    #expect(Settimana.lunedi(del: "2026-11-09", fuso: fuso) == "2026-11-09")
+    #expect(Settimana.lunedi(del: "2026-11-15", fuso: fuso) == "2026-11-09")
+    #expect(Settimana.lunedi(del: "2026-11-16", fuso: fuso) == "2026-11-16")
+    #expect(Settimana.lunedi(del: "ciao", fuso: fuso) == "ciao")
+  }
+
+  @Test func iSetteGiorni() {
+    let giorni = Settimana.giorni(dalLunedi: "2026-10-26", fuso: fuso)
+    #expect(giorni.count == 7)
+    #expect(giorni.first == "2026-10-26")
+    // Attraversa il cambio dell'ora (25 ottobre) e il cambio di mese senza saltare giorni.
+    #expect(giorni.last == "2026-11-01")
+    #expect(
+      giorni == [
+        "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30", "2026-10-31", "2026-11-01",
+      ])
+  }
+
+  func ricetta(_ nome: String, _ ingredienti: [String]) -> Ricetta {
+    Ricetta(
+      id: nome, name: nome, grams: 100, kcal: 100,
+      items: ingredienti.enumerated().map {
+        RigaRicetta(id: "\(nome)\($0.offset)", name: $0.element, grams: 10, kcal: 10)
+      })
+  }
+
+  var ricette: [Ricetta] {
+    [
+      ricetta("Riso con zucchine e robiola", ["Riso bianco crudo", "Robiola", "Zucchine crude"]),
+      ricetta("Pollo con carote", ["Petto di pollo crudo", "Carote crude"]),
+      ricetta("Frittata di zucchine", ["Frittata di uova", "Zucchine"]),
+      ricetta("Crème caramel", ["Latte", "Zucchero"]),
+    ]
+  }
+
+  @Test func cercaNelNome() {
+    #expect(RicercaRicette.filtra(ricette, testo: "pollo").map(\.name) == ["Pollo con carote"])
+    #expect(RicercaRicette.filtra(ricette, testo: "RISO").map(\.name) == ["Riso con zucchine e robiola"])
+  }
+
+  @Test func cercaNegliIngredienti() {
+    #expect(
+      RicercaRicette.filtra(ricette, testo: "zucchine").map(\.name)
+        == ["Riso con zucchine e robiola", "Frittata di zucchine"])
+    #expect(RicercaRicette.filtra(ricette, testo: "zucchero").map(\.name) == ["Crème caramel"])
+  }
+
+  @Test func ogniParolaDeveCombaciare() {
+    #expect(
+      RicercaRicette.filtra(ricette, testo: "zucchine robiola").map(\.name) == ["Riso con zucchine e robiola"]
+    )
+    #expect(RicercaRicette.filtra(ricette, testo: "zucchine pollo").isEmpty)
+  }
+
+  @Test func senzaBadareAgliAccenti() {
+    #expect(RicercaRicette.filtra(ricette, testo: "creme").map(\.name) == ["Crème caramel"])
+    #expect(RicercaRicette.filtra(ricette, testo: "crème").map(\.name) == ["Crème caramel"])
+  }
+
+  @Test func campoVuotoNonCercaNiente() {
+    #expect(RicercaRicette.filtra(ricette, testo: "").isEmpty)
+    #expect(RicercaRicette.filtra(ricette, testo: "   ").isEmpty)
+    #expect(RicercaRicette.filtra(ricette, testo: "xyz").isEmpty)
+  }
+}

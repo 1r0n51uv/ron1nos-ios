@@ -10,6 +10,7 @@
     @State private var stato = Carico<[Ricetta]>.inCorso
     @State private var nuova = false
     @State private var importando = false
+    @State private var cerca = ""
 
     var body: some View {
       ScrollView {
@@ -24,8 +25,13 @@
           case .fallito(let errore):
             SezioneErrore(errore: errore).glassPanel()
           case .pronto(let ricette):
-            if ricette.isEmpty { vuote }
-            ForEach(ricette) { ricetta in
+            let mostrate = cercando ? RicercaRicette.filtra(ricette, testo: cerca) : ricette
+            if ricette.isEmpty {
+              vuote
+            } else if mostrate.isEmpty {
+              nessunRisultato
+            }
+            ForEach(mostrate) { ricetta in
               NavigationLink {
                 RicettaView(id: ricetta.id)
               } label: {
@@ -39,6 +45,10 @@
       }
       .background(SfondoConAlone().ignoresSafeArea())
       .navigationTitle("Ricette")
+      .searchable(
+        text: $cerca, placement: .navigationBarDrawer(displayMode: .always),
+        prompt: "Cerca per nome o ingrediente"
+      )
       .toolbar {
         ToolbarItem(placement: .topBarTrailing) {
           Button("Nuova ricetta", systemImage: "plus") { nuova = true }
@@ -62,6 +72,21 @@
       }
       .refreshable { await carica() }
       .task(id: sessione.versione) { await carica() }
+    }
+
+    /// C'è del testo da cercare.
+    private var cercando: Bool { !cerca.trimmingCharacters(in: .whitespaces).isEmpty }
+
+    private var nessunRisultato: some View {
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Nessuna ricetta")
+          .font(.subheadline.weight(.semibold))
+          .foregroundStyle(Stile.testo)
+        Text("Non ne trovo con \"\(cerca)\" nel nome o tra gli ingredienti.")
+          .font(.subheadline)
+          .foregroundStyle(Stile.testoTenue)
+      }
+      .glassPanel()
     }
 
     private var vuote: some View {

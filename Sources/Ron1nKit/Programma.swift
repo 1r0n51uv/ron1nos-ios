@@ -372,3 +372,37 @@ extension APIClient {
     try await invia("POST", "nutrition/recipes/yazio/import")
   }
 }
+
+extension Settimana {
+  /// Il lunedì della settimana che contiene `giorno`.
+  public static func lunedi(
+    del giorno: String, fuso: TimeZone = TimeZone(identifier: "Europe/Rome") ?? .gmt
+  ) -> String {
+    guard let data = data(giorno, fuso: fuso) else { return giorno }
+    return lunedi(di: data, fuso: fuso)
+  }
+
+  /// I sette giorni della settimana che parte dal lunedì dato, da lunedì a domenica.
+  public static func giorni(
+    dalLunedi lunedi: String, fuso: TimeZone = TimeZone(identifier: "Europe/Rome") ?? .gmt
+  ) -> [String] {
+    (0..<7).map { piu($0, a: lunedi, fuso: fuso) }
+  }
+}
+
+/// La ricerca tra le ricette (IOS-039): per nome o per ingrediente.
+public enum RicercaRicette {
+  /// Le ricette che contengono ogni parola scritta, nel nome o in un
+  /// ingrediente, senza badare a maiuscole e accenti. Da un carattere in su;
+  /// con il campo vuoto non c'è niente da cercare.
+  public static func filtra(_ ricette: [Ricetta], testo: String) -> [Ricetta] {
+    let parole = testo.split(whereSeparator: \.isWhitespace).map(String.init)
+    guard !parole.isEmpty else { return [] }
+    return ricette.filter { ricetta in
+      let pagliaio = ([ricetta.name] + ricetta.items.map(\.name)).joined(separator: " ")
+      return parole.allSatisfy {
+        pagliaio.range(of: $0, options: [.caseInsensitive, .diacriticInsensitive]) != nil
+      }
+    }
+  }
+}

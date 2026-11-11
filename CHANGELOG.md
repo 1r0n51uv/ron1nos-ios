@@ -13,6 +13,7 @@ dei commit.
 ## 0.1.70 · 2026-11-11
 
 - Gli avvisi dei download si vedono anche con l'app aperta, e toccandoli si apre la pagina Torrent. Prima iOS li nascondeva finché l'app era in primo piano.
+- In Impostazioni c'è il pannello Avvisi: permesso di iOS, avvisi programmati e un pulsante Prova che ne manda uno fra 10 secondi.
 
 ## 0.1.69 · 2026-11-10
 

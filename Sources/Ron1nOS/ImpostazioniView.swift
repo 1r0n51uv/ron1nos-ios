@@ -15,6 +15,7 @@
             RigaValore(nome: "Versione", valore: versione)
           }
           .glassPanel()
+          AvvisiView()
           AccessoView()
         }
         .padding(.horizontal, 16)

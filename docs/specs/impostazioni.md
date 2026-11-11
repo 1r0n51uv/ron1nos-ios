@@ -25,3 +25,8 @@ Accettazione:
 - [ ] I segreti non si rileggono mai a schermo.
 - [ ] Chi era già entrato prima della riscrittura resta entrato: le voci
       del Portachiavi non cambiano.
+- [ ] Un pannello Avvisi mostra il permesso di iOS (`consentite`, `negate`,
+      `da chiedere`), quanti avvisi dei download sono programmati e fra
+      quanto parte il prossimo. `Prova` chiede il permesso se serve e manda
+      un avviso fra 10 secondi, per provare gli avvisi in background
+      (IOS-075).

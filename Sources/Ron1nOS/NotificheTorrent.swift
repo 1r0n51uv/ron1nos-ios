@@ -37,6 +37,44 @@
       if !piano.inDownload.isEmpty { pianificaAggiornamento() }
     }
 
+    /// Com'è messo il telefono: il permesso di iOS e gli avvisi in attesa.
+    struct Stato: Equatable {
+      let permesso: String
+      let programmati: Int
+      /// Fra quanti secondi parte il prossimo, se ce n'è uno.
+      let prossimo: TimeInterval?
+    }
+
+    func stato() async -> Stato {
+      let impostazioni = await centro.notificationSettings()
+      let permesso =
+        switch impostazioni.authorizationStatus {
+        case .authorized, .provisional, .ephemeral: "consentite"
+        case .denied: "negate"
+        default: "da chiedere"
+        }
+      let attesa = await centro.pendingNotificationRequests().filter { $0.identifier.hasPrefix("torrent-") }
+      let date = attesa.compactMap { ($0.trigger as? UNTimeIntervalNotificationTrigger)?.nextTriggerDate() }
+      return Stato(
+        permesso: permesso, programmati: attesa.count,
+        prossimo: date.min().map { $0.timeIntervalSinceNow })
+    }
+
+    /// Chiede il permesso e manda un avviso di prova fra 10 secondi: per
+    /// vederlo in background basta uscire dall'app.
+    func prova() async -> Bool {
+      guard await permesso(chiedi: true) else { return false }
+      let contenuto = UNMutableNotificationContent()
+      contenuto.title = "Prova degli avvisi"
+      contenuto.body = "Gli avvisi dei download arrivano così."
+      contenuto.sound = .default
+      let richiesta = UNNotificationRequest(
+        identifier: "prova-avvisi", content: contenuto,
+        trigger: UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false))
+      try? await centro.add(richiesta)
+      return true
+    }
+
     private func permesso(chiedi: Bool) async -> Bool {
       var stato = await centro.notificationSettings().authorizationStatus
       if stato == .notDetermined, chiedi {

@@ -7,22 +7,27 @@ public struct Promemoria: Codable, Equatable, Sendable {
   public var meals: [String: String]
   /// Gli avvisi dell'acqua, in ordine.
   public var water: [String]
+  /// Di quanti minuti `Rimanda` sposta il promemoria di un pasto.
+  public var snooze: Int
 
   public static let predefiniti = Promemoria(
     meals: [
       "breakfast": "07:30", "morning_snack": "10:30", "lunch": "13:00", "afternoon_snack": "16:30",
       "dinner": "20:00",
     ],
-    water: ["10:00", "13:00", "16:00", "19:00"])
+    water: ["10:00", "13:00", "16:00", "19:00"], snooze: 15)
 
   public static let massimoAcqua = 12
+  /// Il rinvio va da 5 minuti a 2 ore.
+  public static let rinvii = 5...120
 
-  public init(meals: [String: String], water: [String]) {
+  public init(meals: [String: String], water: [String], snooze: Int = 15) {
     self.meals = meals
     self.water = water
+    self.snooze = snooze
   }
 
-  enum CodingKeys: String, CodingKey { case meals, water }
+  enum CodingKeys: String, CodingKey { case meals, water, snooze }
 
   /// Un orario che manca o non si capisce vale il predefinito.
   public init(from decoder: Decoder) throws {
@@ -31,6 +36,7 @@ public struct Promemoria: Codable, Equatable, Sendable {
     let letti = c.leggi([String: String].self, .meals) ?? [:]
     meals = base.meals.merging(letti.filter { Promemoria.minuti($0.value) != nil }) { _, letto in letto }
     water = (c.leggi([String].self, .water) ?? base.water).filter { Promemoria.minuti($0) != nil }
+    snooze = c.leggi(Int.self, .snooze).flatMap { Promemoria.rinvii.contains($0) ? $0 : nil } ?? base.snooze
   }
 
   /// L'orario di uno slot.

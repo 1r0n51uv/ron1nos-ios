@@ -23,6 +23,12 @@
           .foregroundStyle(Stile.testo)
           .frame(minHeight: 44)
         }
+        Stepper(value: rinvio, in: Promemoria.rinvii, step: 5) {
+          Text("Rimanda di \(orari.snooze) min")
+            .font(.subheadline)
+            .foregroundStyle(Stile.testo)
+        }
+        .frame(minHeight: 44)
         Text("Il promemoria arriva a quell'ora, con Mangiato e Rimanda.")
           .font(.footnote)
           .foregroundStyle(Stile.testoTenue)
@@ -35,6 +41,20 @@
         orari = nuovi
         letti = true
       }
+    }
+
+    /// Di quanti minuti `Rimanda` sposta il promemoria; scrivendo si salva.
+    private var rinvio: Binding<Int> {
+      Binding(
+        get: { orari.snooze },
+        set: { minuti in
+          orari.snooze = minuti
+          let nuovi = orari
+          Task {
+            let salvato = await sessione.salvaOrari(nuovi)
+            if !salvato { sessione.mostra(.nonSalvato) }
+          }
+        })
     }
 
     /// L'orario di uno slot come data di oggi, per il selettore; scrivendo si salva.

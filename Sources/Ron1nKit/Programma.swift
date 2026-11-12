@@ -56,16 +56,32 @@ public struct PastoSettimana: Decodable, Equatable, Identifiable, Sendable {
     public let name: String
     /// La foto della ricetta, se ce n'è una (NUT-034).
     public let imageUrl: String?
+    /// Le azioni attive della ricetta (NUT-035).
+    public let actions: [AzioneRicetta]
 
     public init(
       id: String, status: String = "planned", recipeId: String? = nil, name: String,
-      imageUrl: String? = nil
+      imageUrl: String? = nil, actions: [AzioneRicetta] = []
     ) {
       self.id = id
       self.status = status
       self.recipeId = recipeId
       self.name = name
       self.imageUrl = imageUrl
+      self.actions = actions
+    }
+
+    enum CodingKeys: String, CodingKey { case id, status, recipeId, name, imageUrl, actions }
+
+    /// Un backend senza azioni (prima di NUT-035) vale nessuna azione.
+    public init(from decoder: Decoder) throws {
+      let c = try decoder.container(keyedBy: CodingKeys.self)
+      id = try c.decode(String.self, forKey: .id)
+      status = try c.decode(String.self, forKey: .status)
+      recipeId = try c.decodeIfPresent(String.self, forKey: .recipeId)
+      name = try c.decode(String.self, forKey: .name)
+      imageUrl = try c.decodeIfPresent(String.self, forKey: .imageUrl)
+      actions = try c.decodeIfPresent([AzioneRicetta].self, forKey: .actions) ?? []
     }
   }
 }
@@ -136,23 +152,27 @@ public struct NotificaPasto: Equatable, Sendable {
   public let titolo: String
   public let corpo: String
   public let quando: Date
-  /// Giorno, slot e id del piano, per `Mangiato` e per aprire la pagina.
+  /// Giorno, slot, id del piano e minuti di rinvio, per `Mangiato`, per
+  /// `Rimanda` e per aprire la pagina.
   public let dati: [String: String]
+  /// Il promemoria del pasto ha `Mangiato` e `Rimanda`; l'azione di una
+  /// ricetta (scongelare, comprare) è un avviso e basta.
+  public let conPulsanti: Bool
 }
 
 /// I promemoria dei pasti programmati (IOS-035): un avviso all'orario di
-/// ogni pasto ancora da spuntare, con `Mangiato` e `Rimanda`.
+/// ogni pasto ancora da spuntare, con `Mangiato` e `Rimanda`, e quelli delle
+/// azioni collegate alle ricette (NUT-035).
 public enum PromemoriaPasti {
   /// La categoria con `Mangiato` e `Rimanda`.
   public static let categoria = "pasto"
-  /// Quanto rimanda `Rimanda`.
-  public static let rinvio: TimeInterval = 30 * 60
   /// iOS tiene al massimo 64 notifiche programmate: queste sono le più
   /// vicine, e restano posto per quelle dei download.
   public static let massimo = 40
 
   /// Un avviso per ogni pasto programmato e non spuntato, con l'orario nel
-  /// futuro, i più vicini per primi.
+  /// futuro, più quelli delle azioni attive delle sue ricette, i più vicini
+  /// per primi.
   public static func notifiche(
     settimane: [SettimanaNutrizione], promemoria: Promemoria, adesso: Date,
     fuso: TimeZone = TimeZone(identifier: "Europe/Rome") ?? .gmt
@@ -162,15 +182,32 @@ public enum PromemoriaPasti {
     var risultato: [NotificaPasto] = []
     for giorno in settimane.flatMap(\.days) {
       for pasto in giorno.slots where pasto.state == "planned" {
-        guard let piano = pasto.plan,
-          let quando = istante(giorno.date, promemoria.orario(pasto.slot), calendario: calendario),
+        guard let piano = pasto.plan else { continue }
+        let dati = [
+          "giorno": giorno.date, "slot": pasto.slot, "piano": piano.id,
+          "rinvio": String(promemoria.snooze),
+        ]
+        if let quando = istante(giorno.date, promemoria.orario(pasto.slot), calendario: calendario),
           quando > adesso
-        else { continue }
-        risultato.append(
-          NotificaPasto(
-            id: "pasto-\(giorno.date)-\(pasto.slot)", titolo: "\(pasto.titolo)?",
-            corpo: "In programma \(piano.name)", quando: quando,
-            dati: ["giorno": giorno.date, "slot": pasto.slot, "piano": piano.id]))
+        {
+          let id = "pasto-\(giorno.date)-\(pasto.slot)"
+          let messaggio = MessaggiPasto.promemoria(slot: pasto.slot, nome: piano.name, seme: id)
+          risultato.append(
+            NotificaPasto(
+              id: id, titolo: messaggio.titolo, corpo: messaggio.corpo, quando: quando, dati: dati,
+              conPulsanti: true))
+        }
+        for azione in piano.actions where azione.enabled {
+          let prima = Settimana.piu(-azione.daysBefore, a: giorno.date, fuso: fuso)
+          guard let quando = istante(prima, azione.time, calendario: calendario), quando > adesso
+          else { continue }
+          let id = "pasto-azione-\(giorno.date)-\(pasto.slot)-\(azione.id)"
+          let messaggio = MessaggiPasto.azione(azione.title, nome: piano.name, seme: id)
+          risultato.append(
+            NotificaPasto(
+              id: id, titolo: messaggio.titolo, corpo: messaggio.corpo, quando: quando, dati: dati,
+              conPulsanti: false))
+        }
       }
     }
     return Array(risultato.sorted { $0.quando < $1.quando }.prefix(massimo))

@@ -92,5 +92,14 @@
         .background(Color.white.opacity(0.06), in: Capsule())
         .overlay(Capsule().strokeBorder(Stile.bordo))
     }
+
+    /// Un pulsante di sola icona, tondo, grande quanto basta per il dito.
+    func glassIcona() -> some View {
+      font(.body.weight(.medium))
+        .foregroundStyle(Stile.testo)
+        .frame(width: 44, height: 44)
+        .background(Color.white.opacity(0.06), in: Circle())
+        .overlay(Circle().strokeBorder(Stile.bordo))
+    }
   }
 #endif

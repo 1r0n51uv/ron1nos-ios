@@ -10,6 +10,13 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.74 · 2026-11-12
+
+- I promemoria dei pasti hanno `Rimanda` di 15 minuti, e il tempo lo scegli nelle Impostazioni, sotto gli orari dei pasti.
+- I messaggi dei promemoria cambiano da un giorno all'altro, con il nome del piatto.
+- Ogni ricetta può avere delle azioni collegate, per esempio «scongela il pesce» il giorno prima alle 21:00: le aggiungi, le spegni o le togli dalla ricetta e arrivano come avviso.
+- Nelle card dei pasti il pulsante `Mangiato` è un'icona a destra: le card sono più basse e la foto del piatto resta accanto al nome.
+
 ## 0.1.73 · 2026-11-11
 
 - La pagina Nutrizione mostra un giorno alla volta, oggi all'apertura: con uno swipe a sinistra vai al giorno dopo, a destra a quello prima.

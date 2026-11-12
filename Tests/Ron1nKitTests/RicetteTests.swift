@@ -86,4 +86,22 @@ import Testing
     try await APIClient(transport: delete).eliminaRicetta("r1")
     #expect(delete.richiesta?.httpMethod == "DELETE")
   }
+
+  @Test func leAzioniViaggiano() async throws {
+    var modulo = ModuloRicetta(nome: "Branzino")
+    modulo.righe = [Bozza(Alimento(id: "f1", name: "Branzino", kcal: 100), testoGrammi: "200")]
+    modulo.azioni = [AzioneRicetta(id: "a1", title: " Scongela ", daysBefore: 1, time: "21:00")]
+    #expect(modulo.valido)
+    let post = TransportFinto(.risposta(201, RicetteTests.dettaglio))
+    _ = try await APIClient(transport: post).creaRicetta(modulo)
+    let corpo = try #require(post.richiesta?.httpBody)
+    let json = try #require(try JSONSerialization.jsonObject(with: corpo) as? [String: Any])
+    let azioni = try #require(json["actions"] as? [[String: Any]])
+    #expect(azioni.first?["title"] as? String == "Scongela")
+    #expect(azioni.first?["daysBefore"] as? Int == 1)
+    #expect(azioni.first?["enabled"] as? Bool == true)
+
+    modulo.azioni[0].time = "sera"
+    #expect(modulo.problema == "Controlla le azioni: servono un titolo e un orario.")
+  }
 }

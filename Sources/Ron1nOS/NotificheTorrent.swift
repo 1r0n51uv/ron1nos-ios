@@ -117,7 +117,8 @@
       [.banner, .sound]
     }
 
-    /// `Mangiato` segna il pasto, `Rimanda` ripropone l'avviso fra 30 minuti,
+    /// `Mangiato` segna il pasto, `Rimanda` ripropone l'avviso fra i minuti
+    /// scelti nelle Impostazioni (15 se mancano),
     /// un tocco apre la pagina del pasto o dei torrent.
     func userNotificationCenter(
       _ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse
@@ -129,7 +130,9 @@
         _ = await Sessione.condivisa.conferma(piano: piano)
       case AzioniPasto.rimanda:
         guard let copia = richiesta.content.mutableCopy() as? UNMutableNotificationContent else { return }
-        let fra = UNTimeIntervalNotificationTrigger(timeInterval: PromemoriaPasti.rinvio, repeats: false)
+        let minuti =
+          Int(richiesta.content.userInfo["rinvio"] as? String ?? "") ?? Promemoria.predefiniti.snooze
+        let fra = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(minuti * 60), repeats: false)
         let rimandata = UNNotificationRequest(
           identifier: "\(richiesta.identifier)-rimandata", content: copia, trigger: fra)
         try? await center.add(rimandata)

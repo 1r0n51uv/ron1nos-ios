@@ -11,17 +11,18 @@
   }
 
   /// I promemoria dei pasti programmati (IOS-035): una notifica locale
-  /// all'orario di ogni pasto ancora da spuntare, con `Mangiato` e `Rimanda`.
+  /// all'orario di ogni pasto ancora da spuntare, con `Mangiato` e `Rimanda`,
+  /// e un avviso per ogni azione collegata alla ricetta.
   /// Quali sono lo decide `PromemoriaPasti` di Ron1nKit.
   @MainActor
   final class PromemoriaNutrizione {
     private var centro: UNUserNotificationCenter { .current() }
 
-    /// I pulsanti `Mangiato` e `Rimanda 30 min` sotto la notifica.
-    func registraCategorie() {
+    /// I pulsanti `Mangiato` e `Rimanda N min` sotto la notifica.
+    func registraCategorie(rinvio: Int = Promemoria.predefiniti.snooze) {
       let mangiato = UNNotificationAction(identifier: AzioniPasto.si, title: "Mangiato", options: [])
       let rimanda = UNNotificationAction(
-        identifier: AzioniPasto.rimanda, title: "Rimanda 30 min", options: [])
+        identifier: AzioniPasto.rimanda, title: "Rimanda \(rinvio) min", options: [])
       let categoria = UNNotificationCategory(
         identifier: PromemoriaPasti.categoria, actions: [mangiato, rimanda], intentIdentifiers: [],
         options: [])
@@ -34,6 +35,7 @@
     /// fa niente.
     func ricalcola(client: APIClient, promemoria: Promemoria, chiediPermesso: Bool) async {
       guard await permesso(chiedi: chiediPermesso) else { return }
+      registraCategorie(rinvio: promemoria.snooze)
       let adesso = Date()
       let questa = Settimana.lunedi(di: adesso)
       let prossima = Settimana.lunedi(di: adesso, piu: 1)
@@ -46,7 +48,8 @@
       let nuovi = PromemoriaPasti.notifiche(
         settimane: settimane, promemoria: promemoria, adesso: adesso)
       let attese = await centro.pendingNotificationRequests().map(\.identifier)
-      centro.removePendingNotificationRequests(withIdentifiers: attese.filter { $0.hasPrefix("pasto-") })
+      centro.removePendingNotificationRequests(
+        withIdentifiers: attese.filter { $0.hasPrefix("pasto-") && !$0.hasSuffix("-rimandata") })
       for notifica in nuovi {
         try? await centro.add(richiesta(notifica))
       }
@@ -66,7 +69,7 @@
       contenuto.title = notifica.titolo
       contenuto.body = notifica.corpo
       contenuto.sound = .default
-      contenuto.categoryIdentifier = PromemoriaPasti.categoria
+      if notifica.conPulsanti { contenuto.categoryIdentifier = PromemoriaPasti.categoria }
       contenuto.userInfo = notifica.dati
       let fra = UNTimeIntervalNotificationTrigger(
         timeInterval: max(1, notifica.quando.timeIntervalSinceNow), repeats: false)

@@ -130,7 +130,8 @@
         _ = await Sessione.condivisa.conferma(piano: piano)
       case AzioniPasto.rimanda:
         guard let copia = richiesta.content.mutableCopy() as? UNMutableNotificationContent else { return }
-        let minuti = Int(richiesta.content.userInfo["rinvio"] as? String ?? "") ?? Promemoria.predefiniti.snooze
+        let minuti =
+          Int(richiesta.content.userInfo["rinvio"] as? String ?? "") ?? Promemoria.predefiniti.snooze
         let fra = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(minuti * 60), repeats: false)
         let rimandata = UNNotificationRequest(
           identifier: "\(richiesta.identifier)-rimandata", content: copia, trigger: fra)

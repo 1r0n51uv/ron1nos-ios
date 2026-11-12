@@ -62,7 +62,8 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
 
   public init(
     id: String, name: String, notes: String? = nil, steps: [String] = [], imageUrl: String? = nil,
-    actions: [AzioneRicetta] = [], grams: Double, kcal: Double, protein: Double = 0, carbs: Double = 0, fat: Double = 0,
+    actions: [AzioneRicetta] = [], grams: Double, kcal: Double, protein: Double = 0, carbs: Double = 0,
+    fat: Double = 0,
     items: [RigaRicetta] = []
   ) {
     self.id = id
@@ -204,7 +205,8 @@ public struct ModuloRicetta: Equatable, Sendable {
     let note = note.trimmingCharacters(in: .whitespaces)
     return Corpo(
       name: nome.trimmingCharacters(in: .whitespaces), notes: note.isEmpty ? nil : note,
-      steps: passiPuliti, actions: azioni.map { azione in
+      steps: passiPuliti,
+      actions: azioni.map { azione in
         var pulita = azione
         pulita.title = azione.title.trimmingCharacters(in: .whitespaces)
         return pulita

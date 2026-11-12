@@ -48,7 +48,8 @@
       let nuovi = PromemoriaPasti.notifiche(
         settimane: settimane, promemoria: promemoria, adesso: adesso)
       let attese = await centro.pendingNotificationRequests().map(\.identifier)
-      centro.removePendingNotificationRequests(withIdentifiers: attese.filter { $0.hasPrefix("pasto-") && !$0.hasSuffix("-rimandata") })
+      centro.removePendingNotificationRequests(
+        withIdentifiers: attese.filter { $0.hasPrefix("pasto-") && !$0.hasSuffix("-rimandata") })
       for notifica in nuovi {
         try? await centro.add(richiesta(notifica))
       }

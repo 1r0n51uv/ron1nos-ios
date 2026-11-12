@@ -72,56 +72,6 @@
       }
       .refreshable { await carica() }
       .task(id: sessione.versione) { await carica() }
-      // Mentre image-chef lavora la ricetta si rilegge ogni 4 secondi.
-      .task(id: stato.valore?.photo?.inCorso) {
-        while stato.valore?.photo?.inCorso == true, !Task.isCancelled {
-          try? await Task.sleep(nanoseconds: 4_000_000_000)
-          await carica()
-        }
-      }
-    }
-
-    /// La ricetta senza foto: la si chiede all'agente del dojo (NUT-036).
-    private func generaFoto(_ ricetta: Ricetta) -> some View {
-      let inCorso = ricetta.photo?.inCorso == true || avviando
-      return VStack(alignment: .leading, spacing: 10) {
-        Button {
-          Task { await avvia(ricetta.id) }
-        } label: {
-          if inCorso {
-            HStack(spacing: 8) {
-              ProgressView().controlSize(.small)
-              Text("Foto in preparazione")
-            }
-          } else {
-            Label("Genera foto", systemImage: "camera")
-          }
-        }
-        .glassChip()
-        .disabled(inCorso)
-        if let errore = ricetta.photo?.error, ricetta.photo?.state == "failed" {
-          Text("Non è riuscita: \(errore)")
-            .font(.footnote)
-            .foregroundStyle(Stile.brandTesto)
-        } else if inCorso {
-          Text("Ci vuole circa un minuto. Puoi uscire: la foto arriva da sola.")
-            .font(.footnote)
-            .foregroundStyle(Stile.testoTenue)
-        }
-      }
-    }
-
-    private func avvia(_ id: String) async {
-      avviando = true
-      defer { avviando = false }
-      do {
-        let ricetta = try await sessione.client.generaFoto(id)
-        stato = .pronto(ricetta)
-      } catch let errore as APIError {
-        sessione.mostra(Avviso(errore == .stato(503) ? "Le foto non sono attive sul server" : errore.titolo))
-      } catch {
-        sessione.mostra(Avviso("Non avviata"))
-      }
     }
 
     /// C'è del testo da cercare.
@@ -263,6 +213,56 @@
       }
       .refreshable { await carica() }
       .task(id: sessione.versione) { await carica() }
+      // Mentre image-chef lavora la ricetta si rilegge ogni 4 secondi.
+      .task(id: stato.valore?.photo?.inCorso) {
+        while stato.valore?.photo?.inCorso == true, !Task.isCancelled {
+          try? await Task.sleep(nanoseconds: 4_000_000_000)
+          await carica()
+        }
+      }
+    }
+
+    /// La ricetta senza foto: la si chiede all'agente del dojo (NUT-036).
+    private func generaFoto(_ ricetta: Ricetta) -> some View {
+      let inCorso = ricetta.photo?.inCorso == true || avviando
+      return VStack(alignment: .leading, spacing: 10) {
+        Button {
+          Task { await avvia(ricetta.id) }
+        } label: {
+          if inCorso {
+            HStack(spacing: 8) {
+              ProgressView().controlSize(.small)
+              Text("Foto in preparazione")
+            }
+          } else {
+            Label("Genera foto", systemImage: "camera")
+          }
+        }
+        .glassChip()
+        .disabled(inCorso)
+        if let errore = ricetta.photo?.error, ricetta.photo?.state == "failed" {
+          Text("Non è riuscita: \(errore)")
+            .font(.footnote)
+            .foregroundStyle(Stile.brandTesto)
+        } else if inCorso {
+          Text("Ci vuole circa un minuto. Puoi uscire: la foto arriva da sola.")
+            .font(.footnote)
+            .foregroundStyle(Stile.testoTenue)
+        }
+      }
+    }
+
+    private func avvia(_ id: String) async {
+      avviando = true
+      defer { avviando = false }
+      do {
+        let ricetta = try await sessione.client.generaFoto(id)
+        stato = .pronto(ricetta)
+      } catch let errore as APIError {
+        sessione.mostra(Avviso(errore == .stato(503) ? "Le foto non sono attive sul server" : errore.titolo))
+      } catch {
+        sessione.mostra(Avviso("Non avviata"))
+      }
     }
 
     private func totali(_ ricetta: Ricetta) -> some View {

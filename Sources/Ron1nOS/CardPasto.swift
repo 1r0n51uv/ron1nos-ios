@@ -17,7 +17,7 @@
 
     var body: some View {
       if carico != .spento {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 10) {
           HStack {
             Text(titolo)
               .font(.footnote.weight(.medium))
@@ -30,7 +30,7 @@
               }
               .font(.footnote)
               .foregroundStyle(Stile.testoTenue)
-              .frame(minHeight: 44)
+              .frame(minHeight: 32)
             }
             .buttonStyle(.plain)
           }
@@ -53,30 +53,34 @@
     private func contenuto(_ giorno: GiornoDieta) -> some View {
       let pasto = giorno.slotInOrdine.first { $0.slot == slot }
       let vista = pasto?.vista(giorno: giorno.date, oggi: giorno.date) ?? .vuoto
-      VStack(alignment: .leading, spacing: 14) {
+      VStack(alignment: .leading, spacing: 10) {
         if let pasto, vista != .vuoto, let nome = nomePasto(pasto) {
-          HStack(spacing: 14) {
+          HStack(spacing: 12) {
             FotoRicetta(indirizzo: pasto.planned?.recipeImage)
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 2) {
               Text(nome)
                 .font(.subheadline)
                 .foregroundStyle(Stile.testo)
+                .lineLimit(2)
               Text(formati.energia(pasto.kcal ?? 0))
                 .font(.system(.footnote, design: .monospaced))
                 .foregroundStyle(Stile.testoTenue)
             }
-          }
-          if vista == .mangiato {
-            Label("Mangiato", systemImage: "checkmark.circle.fill")
-              .font(.subheadline)
-              .foregroundStyle(Stile.testo)
-          } else if vista == .pianificato, let id = pasto.planned?.id {
-            Button {
-              conferma(id)
-            } label: {
-              Label("Mangiato", systemImage: "checkmark")
+            Spacer(minLength: 8)
+            if vista == .mangiato {
+              Image(systemName: "checkmark.circle.fill")
+                .font(.title2)
+                .foregroundStyle(Stile.testo)
+                .accessibilityLabel("Mangiato")
+            } else if vista == .pianificato, let id = pasto.planned?.id {
+              Button {
+                conferma(id)
+              } label: {
+                Image(systemName: "checkmark").glassIcona()
+              }
+              .buttonStyle(.plain)
+              .accessibilityLabel("Mangiato")
             }
-            .glassChip()
           }
         } else {
           Text("Niente in programma")

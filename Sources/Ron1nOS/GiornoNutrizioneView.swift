@@ -79,7 +79,7 @@
 
     private func pasto(_ slot: SlotGiorno) -> some View {
       let vista = slot.vista(giorno: giorno, oggi: oggi)
-      return VStack(alignment: .leading, spacing: 12) {
+      return VStack(alignment: .leading, spacing: 10) {
         HStack {
           Text(slot.titolo)
             .font(.subheadline.weight(.semibold))
@@ -90,9 +90,11 @@
             .foregroundStyle(Stile.testoTenue)
         }
         if let piano = slot.planned {
-          cosa(slot, piano: piano)
-          if let id = piano.id, giorno <= oggi, vista != .vuoto {
-            spunta(id: id, mangiato: slot.mangiato)
+          HStack(spacing: 8) {
+            cosa(slot, piano: piano)
+            if let id = piano.id, giorno <= oggi, vista != .vuoto {
+              spunta(id: id, mangiato: slot.mangiato)
+            }
           }
         } else if slot.mangiato, let elenco = slot.elenco {
           Text(elenco)
@@ -136,7 +138,10 @@
         }
         .buttonStyle(.plain)
       } else {
-        riga
+        HStack {
+          riga
+          Spacer(minLength: 0)
+        }
       }
     }
 
@@ -144,9 +149,10 @@
       Button {
         Task { await conferma(id: id, mangiato: !mangiato) }
       } label: {
-        Label(mangiato ? "Annulla" : "Mangiato", systemImage: mangiato ? "arrow.uturn.backward" : "checkmark")
+        Image(systemName: mangiato ? "arrow.uturn.backward" : "checkmark").glassIcona()
       }
-      .glassChip()
+      .buttonStyle(.plain)
+      .accessibilityLabel(mangiato ? "Annulla" : "Mangiato")
       .disabled(inCorso)
     }
 

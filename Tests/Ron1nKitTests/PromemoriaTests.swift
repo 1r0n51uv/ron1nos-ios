@@ -20,6 +20,17 @@ import Testing
     #expect(senza.reminders == .predefiniti)
   }
 
+  @Test func ilRinvioParteDaQuindiciEControllaIlLimite() throws {
+    let senza = try JSONDecoder().decode(Preferenze.self, from: Data("{}".utf8))
+    #expect(senza.reminders.snooze == 15)
+    let scelto = try JSONDecoder().decode(
+      Preferenze.self, from: Data(#"{"reminders":{"snooze":45}}"#.utf8))
+    #expect(scelto.reminders.snooze == 45)
+    let fuori = try JSONDecoder().decode(
+      Preferenze.self, from: Data(#"{"reminders":{"snooze":2}}"#.utf8))
+    #expect(fuori.reminders.snooze == 15)
+  }
+
   @Test func orariValidi() {
     #expect(Promemoria.minuti("07:30") == 450)
     #expect(Promemoria.minuti("7:30") == nil)

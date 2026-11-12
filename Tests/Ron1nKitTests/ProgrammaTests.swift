@@ -121,9 +121,10 @@ import Testing
     let avvisi = PromemoriaPasti.notifiche(
       settimane: [settimana], promemoria: .predefiniti, adesso: adesso, fuso: fuso)
     #expect(avvisi.map(\.id) == ["pasto-2026-10-26-lunch"])
-    #expect(avvisi[0].titolo == "Pranzo?")
-    #expect(avvisi[0].corpo == "In programma Pasta al pomodoro")
-    #expect(avvisi[0].dati == ["giorno": "2026-10-26", "slot": "lunch", "piano": "p1"])
+    #expect(avvisi[0].corpo.contains("Pasta al pomodoro"))
+    #expect(avvisi[0].conPulsanti)
+    #expect(
+      avvisi[0].dati == ["giorno": "2026-10-26", "slot": "lunch", "piano": "p1", "rinvio": "15"])
     let alle = calendario.dateComponents([.hour, .minute], from: avvisi[0].quando)
     #expect(alle.hour == 13 && alle.minute == 0)
   }
@@ -140,6 +141,80 @@ import Testing
       PromemoriaPasti.notifiche(
         settimane: [settimana], promemoria: .predefiniti, adesso: dopoPranzo, fuso: fuso
       ).isEmpty)
+  }
+
+  @Test func ilRinvioSegueLePreferenze() throws {
+    let fuso = try #require(TimeZone(identifier: "Europe/Rome"))
+    var calendario = Calendar(identifier: .gregorian)
+    calendario.timeZone = fuso
+    let settimana = try JSONDecoder().decode(
+      SettimanaNutrizione.self, from: Data(ProgrammaTests.settimana.utf8))
+    let adesso = try #require(
+      calendario.date(from: DateComponents(year: 2026, month: 10, day: 26, hour: 6)))
+    var promemoria = Promemoria.predefiniti
+    promemoria.snooze = 20
+    let avvisi = PromemoriaPasti.notifiche(
+      settimane: [settimana], promemoria: promemoria, adesso: adesso, fuso: fuso)
+    #expect(avvisi[0].dati["rinvio"] == "20")
+  }
+
+  @Test func leAzioniAttiveDiventanoAvvisiAnticipati() throws {
+    let fuso = try #require(TimeZone(identifier: "Europe/Rome"))
+    var calendario = Calendar(identifier: .gregorian)
+    calendario.timeZone = fuso
+    let scongela = AzioneRicetta(id: "a1", title: "Scongela il pesce", daysBefore: 1, time: "21:00")
+    let spenta = AzioneRicetta(id: "a2", title: "Spesa", daysBefore: 2, time: "18:00", enabled: false)
+    let giorno = GiornoSettimana(
+      date: "2026-10-28",
+      slots: [
+        PastoSettimana(
+          slot: "dinner", state: "planned", kcal: 400,
+          plan: .init(id: "p9", name: "Branzino", actions: [scongela, spenta]))
+      ])
+    let adesso = try #require(
+      calendario.date(from: DateComponents(year: 2026, month: 10, day: 26, hour: 6)))
+    let avvisi = PromemoriaPasti.notifiche(
+      settimane: [SettimanaNutrizione(from: "2026-10-26", days: [giorno])], promemoria: .predefiniti,
+      adesso: adesso, fuso: fuso)
+    #expect(avvisi.map(\.id) == ["pasto-azione-2026-10-28-dinner-a1", "pasto-2026-10-28-dinner"])
+    let azione = avvisi[0]
+    #expect(azione.titolo == "Scongela il pesce")
+    #expect(azione.corpo.contains("Branzino"))
+    #expect(!azione.conPulsanti)
+    let alle = calendario.dateComponents([.month, .day, .hour], from: azione.quando)
+    #expect(alle.day == 27 && alle.hour == 21)
+  }
+
+  @Test func leAzioniPassateSiSaltano() throws {
+    let fuso = try #require(TimeZone(identifier: "Europe/Rome"))
+    var calendario = Calendar(identifier: .gregorian)
+    calendario.timeZone = fuso
+    let scongela = AzioneRicetta(id: "a1", title: "Scongela", daysBefore: 1, time: "21:00")
+    let giorno = GiornoSettimana(
+      date: "2026-10-27",
+      slots: [
+        PastoSettimana(
+          slot: "lunch", state: "planned", plan: .init(id: "p1", name: "Pesce", actions: [scongela]))
+      ])
+    let adesso = try #require(
+      calendario.date(from: DateComponents(year: 2026, month: 10, day: 26, hour: 22)))
+    let avvisi = PromemoriaPasti.notifiche(
+      settimane: [SettimanaNutrizione(from: "2026-10-26", days: [giorno])], promemoria: .predefiniti,
+      adesso: adesso, fuso: fuso)
+    #expect(avvisi.map(\.id) == ["pasto-2026-10-27-lunch"])
+  }
+
+  @Test func iMessaggiVarianoMaRestanoStabili() {
+    let a = MessaggiPasto.promemoria(slot: "dinner", nome: "Branzino", seme: "pasto-2026-10-26-dinner")
+    #expect(a == MessaggiPasto.promemoria(slot: "dinner", nome: "Branzino", seme: "pasto-2026-10-26-dinner"))
+    #expect(a.corpo.contains("Branzino") && !a.corpo.contains("%@"))
+    let titoli = Set(
+      (1...20).map {
+        MessaggiPasto.promemoria(slot: "lunch", nome: "X", seme: "pasto-2026-10-\($0)-lunch").titolo
+      })
+    #expect(titoli.count > 1)
+    // Uno slot sconosciuto ha comunque una frase.
+    #expect(MessaggiPasto.promemoria(slot: "boh", nome: "X", seme: "s").corpo.contains("X"))
   }
 
   @Test func alMassimoQuaranta() throws {

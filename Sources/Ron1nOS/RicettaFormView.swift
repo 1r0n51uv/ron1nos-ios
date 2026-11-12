@@ -27,6 +27,7 @@
               .glassChip()
             ingredienti
             passi
+            azioni
             TextField("Note", text: $modulo.note, axis: .vertical)
               .foregroundStyle(Stile.testo)
               .lineLimit(2...6)
@@ -136,6 +137,79 @@
       .glassPanel()
     }
 
+    /// Le azioni collegate (NUT-035): un promemoria prima del pasto, per
+    /// esempio scongelare il pesce la sera prima. Ognuna si può spegnere.
+    private var azioni: some View {
+      VStack(alignment: .leading, spacing: 12) {
+        Text("Azioni")
+          .font(.subheadline.weight(.semibold))
+          .foregroundStyle(Stile.testo)
+        Text("Ti avvisano prima del pasto, quando la ricetta è in programma.")
+          .font(.footnote)
+          .foregroundStyle(Stile.testoTenue)
+        ForEach($modulo.azioni) { $azione in
+          VStack(alignment: .leading, spacing: 6) {
+            HStack {
+              TextField("Per esempio: scongela il pesce", text: $azione.title)
+                .foregroundStyle(Stile.testo)
+              Button {
+                modulo.azioni.removeAll { $0.id == azione.id }
+              } label: {
+                Image(systemName: "minus.circle")
+                  .foregroundStyle(Stile.testoTenue)
+                  .frame(width: 44, height: 44)
+              }
+              .buttonStyle(.plain)
+              .accessibilityLabel("Togli questa azione")
+            }
+            Stepper(value: $azione.daysBefore, in: AzioneRicetta.giorniPrima) {
+              Text(giorniPrima(azione.daysBefore))
+                .font(.subheadline)
+                .foregroundStyle(Stile.testo)
+            }
+            DatePicker("Alle", selection: orario($azione), displayedComponents: .hourAndMinute)
+              .font(.subheadline)
+              .foregroundStyle(Stile.testo)
+            Toggle("Attiva", isOn: $azione.enabled)
+              .font(.subheadline)
+              .foregroundStyle(Stile.testo)
+          }
+          .padding(.vertical, 6)
+        }
+        Button {
+          modulo.azioni.append(AzioneRicetta())
+        } label: {
+          Label("Aggiungi un'azione", systemImage: "plus")
+        }
+        .glassChip()
+      }
+      .glassPanel()
+    }
+
+    private func giorniPrima(_ n: Int) -> String {
+      switch n {
+      case 0: "Lo stesso giorno"
+      case 1: "Il giorno prima"
+      default: "\(n) giorni prima"
+      }
+    }
+
+    /// L'orario di un'azione come data di oggi, per il selettore.
+    private func orario(_ azione: Binding<AzioneRicetta>) -> Binding<Date> {
+      Binding(
+        get: {
+          let minuti = Promemoria.minuti(azione.wrappedValue.time) ?? 21 * 60
+          var calendario = Calendar(identifier: .gregorian)
+          calendario.timeZone = sessione.formati.fuso
+          let inizio = calendario.startOfDay(for: Date())
+          return calendario.date(byAdding: .minute, value: minuti, to: inizio) ?? inizio
+        },
+        set: { data in
+          let minuti = Promemoria.minutiDi(data, fuso: sessione.formati.fuso)
+          azione.wrappedValue.time = Promemoria.testo(ore: minuti / 60, minuti: minuti % 60)
+        })
+    }
+
     private func salva() async {
       modulo.passi = voci.map(\.testo)
       if let problema = modulo.problema {
@@ -152,6 +226,7 @@
         }
         await salvato()
         sessione.cambiato()
+        await sessione.ricalcolaPromemoria()
         sessione.mostra(.salvato)
         chiudi()
       } catch let problema as APIError {

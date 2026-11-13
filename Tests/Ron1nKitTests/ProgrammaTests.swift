@@ -204,6 +204,26 @@ import Testing
     #expect(avvisi.map(\.id) == ["pasto-2026-10-27-lunch"])
   }
 
+  @Test func ilRinvioDiUnaNotificaSiLeggeDaiSuoiDati() {
+    #expect(PromemoriaPasti.rinvio(dati: ["rinvio": "20"]) == 20 * 60)
+    #expect(PromemoriaPasti.rinvio(dati: [:]) == 15 * 60)
+    #expect(PromemoriaPasti.rinvio(dati: ["rinvio": "9999"]) == 15 * 60)
+    #expect(PromemoriaPasti.rinvio(dati: ["rinvio": "boh"]) == 15 * 60)
+  }
+
+  @Test func avvisoDiProvaHaIPulsantiENonToccaUnPasto() {
+    let adesso = Date(timeIntervalSince1970: 1_792_578_600)
+    var promemoria = Promemoria.predefiniti
+    promemoria.snooze = 25
+    let prova = PromemoriaPasti.prova(promemoria: promemoria, adesso: adesso)
+    #expect(prova.conPulsanti)
+    #expect(prova.quando == adesso.addingTimeInterval(10))
+    #expect(prova.dati["prova"] == "1" && prova.dati["rinvio"] == "25")
+    #expect(prova.dati["piano"] == nil)
+    // Il ricalcolo dei promemoria toglie solo gli id `pasto-…`.
+    #expect(!prova.id.hasPrefix("pasto-"))
+  }
+
   @Test func iMessaggiVarianoMaRestanoStabili() {
     let a = MessaggiPasto.promemoria(slot: "dinner", nome: "Branzino", seme: "pasto-2026-10-26-dinner")
     #expect(a == MessaggiPasto.promemoria(slot: "dinner", nome: "Branzino", seme: "pasto-2026-10-26-dinner"))

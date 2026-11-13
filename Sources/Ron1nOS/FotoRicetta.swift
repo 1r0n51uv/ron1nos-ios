@@ -12,6 +12,8 @@
       case miniatura
       /// A tutta larghezza, in cima alla ricetta.
       case copertina
+      /// Una fascia larga e bassa, in cima a una card.
+      case fascia
     }
 
     let indirizzo: String?
@@ -57,6 +59,11 @@
             .frame(maxWidth: .infinity)
             .aspectRatio(684.0 / 558.0, contentMode: .fit)
             .clipShape(RoundedRectangle(cornerRadius: Stile.raggio, style: .continuous))
+        case .fascia:
+          content
+            .frame(maxWidth: .infinity)
+            .frame(height: 132)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
       }
     }

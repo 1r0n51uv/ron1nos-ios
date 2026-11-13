@@ -10,6 +10,13 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.76 · 2026-11-13
+
+- In Impostazioni › Notifiche, sotto gli avvisi dei download, c'è «Prova Mangiato e Rimanda»: dopo 10 secondi arriva un promemoria di prova con i due pulsanti (esci dall'app e tienilo premuto). «Mangiato» e «Rimanda» rispondono con un avviso, senza toccare nessun pasto vero.
+- I pulsanti dei promemoria sono pronti già all'avvio dell'app, anche quando iOS la apre solo per un pulsante.
+- La foto del pasto sta in cima alla card della Home, in una fascia larga.
+- Le Impostazioni sono divise per categoria: Accesso, Pasti, Notifiche e Informazioni, ognuna con la sua pagina.
+
 ## 0.1.75 · 2026-11-12
 
 - Una ricetta senza foto ha il pulsante «Genera foto»: l'agente Image Chef del dojo prepara un'immagine del piatto in circa un minuto, e puoi uscire dalla ricetta mentre lavora. Se non riesce, vedi il motivo e puoi riprovare.

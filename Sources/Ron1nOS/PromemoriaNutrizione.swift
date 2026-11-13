@@ -55,6 +55,17 @@
       }
     }
 
+    /// Manda l'avviso di prova fra 10 secondi, con `Mangiato` e `Rimanda`:
+    /// per vedere i pulsanti basta uscire dall'app e tenere premuta la
+    /// notifica. False se iOS non lo permette.
+    func prova(promemoria: Promemoria) async -> Bool {
+      guard await permesso(chiedi: true) else { return false }
+      registraCategorie(rinvio: promemoria.snooze)
+      let notifica = PromemoriaPasti.prova(promemoria: promemoria, adesso: Date())
+      try? await centro.add(richiesta(notifica))
+      return true
+    }
+
     private func permesso(chiedi: Bool) async -> Bool {
       var stato = await centro.notificationSettings().authorizationStatus
       if stato == .notDetermined, chiedi {

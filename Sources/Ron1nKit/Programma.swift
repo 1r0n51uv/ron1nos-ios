@@ -213,6 +213,28 @@ public enum PromemoriaPasti {
     return Array(risultato.sorted { $0.quando < $1.quando }.prefix(massimo))
   }
 
+  /// Fra quanto `Rimanda` ripropone l'avviso: i minuti scelti, scritti nei
+  /// dati della notifica; se mancano o non valgono, il predefinito.
+  public static func rinvio(dati: [AnyHashable: Any]) -> TimeInterval {
+    let minuti = (dati["rinvio"] as? String).flatMap { Int($0) }
+    let validi = minuti.flatMap { Promemoria.rinvii.contains($0) ? $0 : nil }
+    return TimeInterval((validi ?? Promemoria.predefiniti.snooze) * 60)
+  }
+
+  /// L'avviso di prova dei promemoria: una notifica come quelle dei pasti,
+  /// con `Mangiato` e `Rimanda`, che non tocca nessun pasto vero.
+  public static func prova(promemoria: Promemoria, adesso: Date, tra: TimeInterval = 10) -> NotificaPasto {
+    let messaggio = MessaggiPasto.promemoria(slot: "lunch", nome: "Pasta al pomodoro", seme: "prova")
+    return NotificaPasto(
+      id: idProva, titolo: messaggio.titolo, corpo: messaggio.corpo,
+      quando: adesso.addingTimeInterval(tra),
+      dati: ["prova": "1", "rinvio": String(promemoria.snooze)], conPulsanti: true)
+  }
+
+  /// L'id dell'avviso di prova: non comincia con `pasto-`, quindi il
+  /// ricalcolo dei promemoria non lo toglie.
+  public static let idProva = "prova-pasto"
+
   static func istante(_ giorno: String, _ orario: String, calendario: Calendar) -> Date? {
     let parti = giorno.split(separator: "-").compactMap { Int($0) }
     guard parti.count == 3, let minuti = Promemoria.minuti(orario) else { return nil }

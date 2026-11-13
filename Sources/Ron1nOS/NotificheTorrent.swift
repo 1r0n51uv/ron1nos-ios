@@ -118,28 +118,48 @@
     }
 
     /// `Mangiato` segna il pasto, `Rimanda` ripropone l'avviso fra i minuti
-    /// scelti nelle Impostazioni (15 se mancano),
-    /// un tocco apre la pagina del pasto o dei torrent.
+    /// scelti nelle Impostazioni (15 se mancano), un tocco apre la pagina del
+    /// pasto o dei torrent. L'avviso di prova non tocca nessun pasto: risponde
+    /// con un avviso che dice quale pulsante è stato premuto.
     func userNotificationCenter(
       _ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse
     ) async {
       let richiesta = response.notification.request
+      let prova = richiesta.content.userInfo["prova"] != nil
       switch response.actionIdentifier {
       case AzioniPasto.si:
+        if prova {
+          await avvisa(center, "Mangiato", "Il pulsante funziona: in un promemoria vero segna il pasto.")
+          return
+        }
         guard let piano = richiesta.content.userInfo["piano"] as? String else { return }
         _ = await Sessione.condivisa.conferma(piano: piano)
       case AzioniPasto.rimanda:
         guard let copia = richiesta.content.mutableCopy() as? UNMutableNotificationContent else { return }
-        let minuti =
-          Int(richiesta.content.userInfo["rinvio"] as? String ?? "") ?? Promemoria.predefiniti.snooze
-        let fra = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(minuti * 60), repeats: false)
+        let secondi = PromemoriaPasti.rinvio(dati: richiesta.content.userInfo)
+        let fra = UNTimeIntervalNotificationTrigger(timeInterval: secondi, repeats: false)
         let rimandata = UNNotificationRequest(
           identifier: "\(richiesta.identifier)-rimandata", content: copia, trigger: fra)
         try? await center.add(rimandata)
+        if prova {
+          await avvisa(center, "Rimandato", "Lo stesso avviso torna fra \(Int(secondi / 60)) minuti.")
+        }
       default:
         let pasto = richiesta.identifier.hasPrefix("pasto-")
         await MainActor.run { Sessione.condivisa.scheda = pasto ? .nutrizione : .torrent }
       }
+    }
+
+    /// Un avviso subito, come conferma di un pulsante di prova.
+    private func avvisa(_ center: UNUserNotificationCenter, _ titolo: String, _ corpo: String) async {
+      let contenuto = UNMutableNotificationContent()
+      contenuto.title = titolo
+      contenuto.body = corpo
+      contenuto.sound = .default
+      let richiesta = UNNotificationRequest(
+        identifier: "prova-pasto-esito", content: contenuto,
+        trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false))
+      try? await center.add(richiesta)
     }
   }
 #endif

@@ -55,8 +55,9 @@
       let vista = pasto?.vista(giorno: giorno.date, oggi: giorno.date) ?? .vuoto
       VStack(alignment: .leading, spacing: 10) {
         if let pasto, vista != .vuoto, let nome = nomePasto(pasto) {
+          // La foto del piatto, ben visibile, in cima alla card.
+          FotoRicetta(indirizzo: pasto.planned?.recipeImage, forma: .fascia)
           HStack(spacing: 12) {
-            FotoRicetta(indirizzo: pasto.planned?.recipeImage)
             VStack(alignment: .leading, spacing: 2) {
               Text(nome)
                 .font(.subheadline)

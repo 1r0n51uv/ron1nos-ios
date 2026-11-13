@@ -41,6 +41,20 @@ public struct AzioneRicetta: Codable, Equatable, Identifiable, Sendable {
   }
 }
 
+/// La foto generata di una ricetta, finché non è pronta (NUT-036).
+public struct FotoInPreparazione: Decodable, Equatable, Sendable {
+  /// `generating` o `failed`.
+  public let state: String
+  public let error: String?
+
+  public init(state: String, error: String? = nil) {
+    self.state = state
+    self.error = error
+  }
+
+  public var inCorso: Bool { state == "generating" }
+}
+
 /// Una ricetta (NUT-008): kcal e macro dagli alimenti di oggi.
 public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
   public let id: String
@@ -50,6 +64,8 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
   public let steps: [String]
   /// La foto, per le ricette di YAZIO che ne hanno una (NUT-034).
   public let imageUrl: String?
+  /// La foto in preparazione o non riuscita (NUT-036); nil altrimenti.
+  public let photo: FotoInPreparazione?
   /// Le azioni collegate (NUT-035).
   public let actions: [AzioneRicetta]
   /// Il peso totale degli alimenti.
@@ -62,7 +78,8 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
 
   public init(
     id: String, name: String, notes: String? = nil, steps: [String] = [], imageUrl: String? = nil,
-    actions: [AzioneRicetta] = [], grams: Double, kcal: Double, protein: Double = 0, carbs: Double = 0,
+    photo: FotoInPreparazione? = nil, actions: [AzioneRicetta] = [], grams: Double, kcal: Double,
+    protein: Double = 0, carbs: Double = 0,
     fat: Double = 0,
     items: [RigaRicetta] = []
   ) {
@@ -71,6 +88,7 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
     self.notes = notes
     self.steps = steps
     self.imageUrl = imageUrl
+    self.photo = photo
     self.actions = actions
     self.grams = grams
     self.kcal = kcal
@@ -81,7 +99,7 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
   }
 
   enum CodingKeys: String, CodingKey {
-    case id, name, notes, steps, imageUrl, actions, grams, kcal, protein, carbs, fat, items
+    case id, name, notes, steps, imageUrl, photo, actions, grams, kcal, protein, carbs, fat, items
   }
 
   /// Un backend senza procedimento (prima di NUT-030) vale nessun passo.
@@ -92,6 +110,7 @@ public struct Ricetta: Decodable, Equatable, Identifiable, Sendable {
     notes = try c.decodeIfPresent(String.self, forKey: .notes)
     steps = try c.decodeIfPresent([String].self, forKey: .steps) ?? []
     imageUrl = try c.decodeIfPresent(String.self, forKey: .imageUrl)
+    photo = try c.decodeIfPresent(FotoInPreparazione.self, forKey: .photo)
     actions = try c.decodeIfPresent([AzioneRicetta].self, forKey: .actions) ?? []
     grams = try c.decode(Double.self, forKey: .grams)
     kcal = try c.decode(Double.self, forKey: .kcal)
@@ -261,8 +280,32 @@ extension APIClient {
     try await invia("PUT", "nutrition/recipes/\(id)", corpo: modulo.corpo)
   }
 
+  /// `POST /nutrition/recipes/{id}/photo/generate`: avvia la foto con l'agente
+  /// del dojo e torna subito; la ricetta dice `photo.state` (NUT-036).
+  public func generaFoto(_ id: String) async throws(APIError) -> Ricetta {
+    try await invia("POST", "nutrition/recipes/\(id)/photo/generate")
+  }
+
+  /// Una foto che sta sul server di ron1nOS, come `/api/v1/nutrition/recipes/{id}/photo?v=…`:
+  /// ha bisogno dell'accesso, quindi non la si carica con un indirizzo qualunque.
+  public func foto(_ indirizzo: String) async throws(APIError) -> Data {
+    guard let (percorso, query) = APIClient.percorsoProprio(indirizzo) else {
+      throw .rispostaInattesa(codice: nil)
+    }
+    return try await dati(percorso, query: query)
+  }
+
   /// `DELETE /nutrition/recipes/{id}`.
   public func eliminaRicetta(_ id: String) async throws(APIError) {
     _ = try await dati("nutrition/recipes/\(id)", metodo: "DELETE")
+  }
+}
+
+extension APIClient {
+  /// L'indirizzo di una foto di ron1nOS (comincia con `/api/v1/`) diviso in
+  /// percorso e query; nil per un indirizzo di un altro sito.
+  public static func percorsoProprio(_ indirizzo: String) -> (String, [URLQueryItem])? {
+    guard indirizzo.hasPrefix("/api/v1/"), let parti = URLComponents(string: indirizzo) else { return nil }
+    return (String(parti.path.dropFirst("/api/v1/".count)), parti.queryItems ?? [])
   }
 }

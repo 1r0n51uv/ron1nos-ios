@@ -104,4 +104,35 @@ import Testing
     modulo.azioni[0].time = "sera"
     #expect(modulo.problema == "Controlla le azioni: servono un titolo e un orario.")
   }
+
+  @Test func laFotoGenerataSiAvviaESiLegge() async throws {
+    let json = RicetteTests.dettaglio.replacingOccurrences(
+      of: #""id":"r1""#,
+      with: #""id":"r1","photo":{"state":"failed","error":"Il dojo non risponde"}"#)
+    let transport = TransportFinto(.risposta(202, json))
+    let ricetta = try await APIClient(transport: transport).generaFoto("r1")
+    #expect(transport.richiesta?.httpMethod == "POST")
+    #expect(transport.richiesta?.url?.path == "/api/v1/nutrition/recipes/r1/photo/generate")
+    #expect(ricetta.photo == FotoInPreparazione(state: "failed", error: "Il dojo non risponde"))
+    #expect(ricetta.photo?.inCorso == false)
+  }
+
+  @Test func unaRicettaSenzaFotoInPreparazioneNonLaHa() throws {
+    let ricetta = try JSONDecoder().decode(Ricetta.self, from: Data(RicetteTests.dettaglio.utf8))
+    #expect(ricetta.photo == nil)
+  }
+
+  @Test func soloLeFotoDelServerSiCaricanoConAccesso() async throws {
+    let (percorso, query) = try #require(
+      APIClient.percorsoProprio("/api/v1/nutrition/recipes/r1/photo?v=1792578600"))
+    #expect(percorso == "nutrition/recipes/r1/photo")
+    #expect(query == [URLQueryItem(name: "v", value: "1792578600")])
+    #expect(APIClient.percorsoProprio("https://images.yazio-cdn.com/a.jpg") == nil)
+
+    let transport = TransportFinto(.risposta(200, "PNG"))
+    let dati = try await APIClient(transport: transport).foto("/api/v1/nutrition/recipes/r1/photo?v=5")
+    #expect(dati == Data("PNG".utf8))
+    #expect(transport.richiesta?.url?.path == "/api/v1/nutrition/recipes/r1/photo")
+    #expect(transport.richiesta?.url?.query == "v=5")
+  }
 }

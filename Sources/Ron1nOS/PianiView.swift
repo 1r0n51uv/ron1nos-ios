@@ -190,6 +190,7 @@
           modulo.ricette[.init(giorno: giorno, slot: scelto.id)] = id
           sceltaSlot = nil
         }
+        .environmentObject(sessione)
         .environment(\.formati, sessione.formati)
       }
       .onAppear {

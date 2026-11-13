@@ -10,6 +10,10 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.75 · 2026-11-12
+
+- Una ricetta senza foto ha il pulsante «Genera foto»: l'agente Image Chef del dojo prepara un'immagine del piatto in circa un minuto, e puoi uscire dalla ricetta mentre lavora. Se non riesce, vedi il motivo e puoi riprovare.
+
 ## 0.1.74 · 2026-11-12
 
 - I promemoria dei pasti hanno `Rimanda` di 15 minuti, e il tempo lo scegli nelle Impostazioni, sotto gli orari dei pasti.

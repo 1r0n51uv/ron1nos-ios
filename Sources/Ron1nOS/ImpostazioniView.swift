@@ -36,7 +36,7 @@
 
     /// Una riga che apre la pagina della categoria.
     private func categoria<Contenuto: View>(
-      _ titolo: String, simbolo: String, dettaglio: String, @ViewBuilder contenuto: () -> Contenuto
+      _ titolo: String, simbolo: String, dettaglio: String, @ViewBuilder contenuto: @escaping () -> Contenuto
     ) -> some View {
       NavigationLink {
         PaginaImpostazioni(titolo: titolo, contenuto: contenuto)

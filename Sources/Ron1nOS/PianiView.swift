@@ -17,7 +17,7 @@
         VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
-            Scheletro(righe: 4).glassPanel()
+            Scheletro(righe: 4).glassPanel().transition(.blurReplace)
           case .spento:
             Text("Il modulo Nutrizione è spento.")
               .font(.subheadline)
@@ -37,10 +37,8 @@
       }
       .sfondoPagina()
       .navigationTitle("Piani")
-      .toolbar {
-        ToolbarItem(placement: .topBarTrailing) {
-          Button("Nuovo piano", systemImage: "plus") { nuovo = true }
-        }
+      .azioniInBasso {
+        AzioneBarra(titolo: "Nuovo piano", simbolo: "plus", principale: true) { nuovo = true }
       }
       .sheet(isPresented: $nuovo) {
         PianoFormView(piano: nil) { await carica() }
@@ -74,12 +72,7 @@
       StatoVuoto(
         simbolo: "calendar.badge.plus", titolo: "Nessun piano",
         testo: "Un piano è una settimana tipo: per ogni giorno scegli la ricetta di ogni pasto.",
-        tinta: Modulo.nutrizione.colore
-      ) {
-        Button("Crea un piano") { nuovo = true }
-          .pulsantePieno(Modulo.nutrizione.colore)
-          .buttonStyle(StilePremuto())
-      }
+        tinta: Modulo.nutrizione.colore)
     }
 
     private func scheda(_ piano: TemplateSettimana) -> some View {
@@ -112,7 +105,7 @@
               .foregroundStyle(Stile.testoTenue)
               .frame(width: 44, height: 44)
           }
-          .buttonStyle(.plain)
+          .buttonStyle(StilePremuto())
           .accessibilityLabel("Elimina \(piano.name)")
         }
         .buttonStyle(StilePremuto())
@@ -122,7 +115,8 @@
 
     private func carica() async {
       let client = sessione.client
-      stato = await Carico.da { try await client.template() }
+      let nuovo = await Carico.da { try await client.template() }
+      withAnimation(Stile.molla) { stato = nuovo }
     }
 
     private func elimina(_ piano: TemplateSettimana) async {
@@ -189,10 +183,10 @@
           ToolbarItem(placement: .cancellationAction) {
             Button("Annulla") { chiudi() }
           }
-          ToolbarItem(placement: .confirmationAction) {
-            Button("Salva") { Task { await salva() } }
-              .fontWeight(.semibold)
-              .disabled(salvando)
+        }
+        .azioniInBasso {
+          AzioneBarra(titolo: "Salva il piano", simbolo: "checkmark", principale: true, inCorso: salvando) {
+            Task { await salva() }
           }
         }
       }
@@ -274,7 +268,7 @@
               .multilineTextAlignment(.leading)
               .frame(minHeight: 44, alignment: .leading)
           }
-          .buttonStyle(.plain)
+          .buttonStyle(StilePremuto())
         }
         Spacer()
         if modulo.ricette[chiave] != nil {
@@ -285,7 +279,7 @@
               .foregroundStyle(Stile.testoTenue)
               .frame(width: 44, height: 44)
           }
-          .buttonStyle(.plain)
+          .buttonStyle(StilePremuto())
           .accessibilityLabel("Togli la ricetta")
         }
       }
@@ -352,7 +346,7 @@
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .glassPanel()
               }
-              .buttonStyle(.plain)
+              .buttonStyle(StilePremuto())
             }
           }
           .padding(16)
@@ -427,10 +421,12 @@
           ToolbarItem(placement: .cancellationAction) {
             Button("Annulla") { chiudi() }
           }
-          ToolbarItem(placement: .confirmationAction) {
-            Button("Programma") { Task { await programma() } }
-              .fontWeight(.semibold)
-              .disabled(inCorso)
+        }
+        .azioniInBasso {
+          AzioneBarra(
+            titolo: "Programma", simbolo: "calendar.badge.clock", principale: true, inCorso: inCorso
+          ) {
+            Task { await programma() }
           }
         }
       }

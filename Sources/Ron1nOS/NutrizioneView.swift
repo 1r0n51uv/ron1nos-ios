@@ -12,6 +12,7 @@
   /// quello prima; in alto una barra per scegliere un giorno della settimana
   /// o, dal calendario, una data qualsiasi. Sotto, sempre in vista, le
   /// scorciatoie a piani, ricette e spesa.
+  /// Le azioni stanno in basso, sopra la barra delle schede (IOS-044).
   struct NutrizioneView: View {
     @EnvironmentObject private var sessione: Sessione
     @Environment(\.formati) private var formati
@@ -30,9 +31,7 @@
         )
         .padding(.horizontal, Stile.margine)
         .padding(.top, 4)
-        scorciatoie
-          .padding(.horizontal, Stile.margine)
-          .padding(.vertical, 8)
+        .padding(.bottom, 8)
         GiornoNutrizioneView(giorno: giorno)
           .id(giorno)
           .transition(
@@ -54,22 +53,21 @@
       )
       .navigationTitle("Nutrizione")
       .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .topBarLeading) {
-          if giorno != oggi {
-            Button("Oggi") { vai(oggi) }
-              .transition(.opacity)
-          }
+      .azioniInBasso {
+        if giorno != oggi {
+          AzioneBarra(titolo: "Oggi", simbolo: "arrow.uturn.backward", principale: true) { vai(oggi) }
         }
-        ToolbarItem(placement: .topBarTrailing) {
-          Button {
-            calendario = true
-          } label: {
-            Image(systemName: "calendar")
-          }
-          .accessibilityLabel("Scegli una data")
+        AzioneBarra(titolo: "Piani", simbolo: "calendar.badge.clock", compatta: giorno != oggi) {
+          destinazione = .piani
         }
+        AzioneBarra(titolo: "Ricette", simbolo: "book.closed.fill", compatta: giorno != oggi) {
+          destinazione = .ricette
+        }
+        AzioneBarra(titolo: "Spesa", simbolo: "cart.fill", compatta: giorno != oggi) { destinazione = .spesa }
+        AzioneBarra(titolo: "Scegli una data", simbolo: "calendar", compatta: true) { calendario = true }
       }
+      .animation(Stile.molla, value: giorno == oggi)
+      .sensoryFeedback(.selection, trigger: giorno)
       .navigationDestination(item: $destinazione) { scelta in
         switch scelta {
         case .piani: PianiView()
@@ -93,36 +91,6 @@
     }
 
     private var oggi: String { Settimana.oggi(fuso: formati.fuso) }
-
-    /// Piani, ricette e spesa: tre capsule sempre in vista, non in un menu.
-    private var scorciatoie: some View {
-      HStack(spacing: 8) {
-        scorciatoia("Piani", simbolo: "calendar.badge.clock", destinazione: .piani)
-        scorciatoia("Ricette", simbolo: "book.closed.fill", destinazione: .ricette)
-        scorciatoia("Spesa", simbolo: "cart.fill", destinazione: .spesa)
-      }
-    }
-
-    private func scorciatoia(_ titolo: String, simbolo: String, destinazione scelta: DestinazioneNutrizione)
-      -> some View
-    {
-      Button {
-        destinazione = scelta
-      } label: {
-        HStack(spacing: 6) {
-          Image(systemName: simbolo)
-            .font(.footnote.weight(.semibold))
-            .foregroundStyle(Modulo.nutrizione.colore)
-          Text(titolo)
-            .font(.footnote.weight(.semibold))
-            .foregroundStyle(Stile.testo)
-        }
-        .frame(maxWidth: .infinity, minHeight: 40)
-        .background(Stile.velo, in: Capsule())
-        .overlay(Capsule().strokeBorder(Stile.bordo))
-      }
-      .buttonStyle(StilePremuto())
-    }
 
     private struct Carica: Equatable {
       let lunedi: String
@@ -249,9 +217,10 @@
             ToolbarItem(placement: .cancellationAction) {
               Button("Annulla") { chiudi() }
             }
-            ToolbarItem(placement: .confirmationAction) {
-              Button("Vai") { scelta(Settimana.testo(data, fuso: formati.fuso)) }
-                .fontWeight(.semibold)
+          }
+          .azioniInBasso {
+            AzioneBarra(titolo: "Vai a questo giorno", simbolo: "arrow.right", principale: true) {
+              scelta(Settimana.testo(data, fuso: formati.fuso))
             }
           }
       }

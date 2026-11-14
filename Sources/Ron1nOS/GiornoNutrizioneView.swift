@@ -11,7 +11,8 @@
     @EnvironmentObject private var sessione: Sessione
     @Environment(\.formati) private var formati
     @State private var stato = Carico<GiornoDieta>.inCorso
-    @State private var inCorso = false
+    /// Il pasto che il server sta confermando: la sua spunta gira.
+    @State private var confermando: String?
     @Namespace private var zoom
 
     private let verde = Modulo.nutrizione.colore
@@ -21,7 +22,7 @@
         VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
-            Scheletro(righe: 6).glassPanel()
+            Scheletro(righe: 6).glassPanel().transition(.blurReplace)
           case .spento:
             StatoVuoto(
               simbolo: "fork.knife", titolo: "Nutrizione spenta", testo: "Il modulo è spento su ron1nOS.",
@@ -104,7 +105,9 @@
       return HStack(spacing: 12) {
         cosa(slot)
         if let id = slot.planned?.id, giorno <= oggi, vista != .vuoto {
-          PulsanteMangiato(mangiato: slot.mangiato, abilitato: !inCorso) {
+          PulsanteMangiato(
+            mangiato: slot.mangiato, abilitato: confermando == nil, inCorso: confermando == id
+          ) {
             Task { await conferma(id: id, mangiato: !slot.mangiato) }
           }
         }
@@ -174,12 +177,13 @@
     private func carica() async {
       let client = sessione.client
       let giorno = giorno
-      stato = await Carico.da { try await client.dieta(giorno) }
+      let nuovo = await Carico.da { try await client.dieta(giorno) }
+      withAnimation(Stile.molla) { stato = nuovo }
     }
 
     private func conferma(id: String, mangiato: Bool) async {
-      inCorso = true
-      defer { inCorso = false }
+      confermando = id
+      defer { confermando = nil }
       if await sessione.conferma(piano: id, mangiato: mangiato) {
         sessione.mostra(Avviso(mangiato ? "Mangiato" : "Di nuovo in programma"))
       } else {

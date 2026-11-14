@@ -207,6 +207,8 @@
   struct PulsanteMangiato: View {
     let mangiato: Bool
     var abilitato = true
+    /// Mentre il server conferma, al posto della spunta gira lo spinner.
+    var inCorso = false
     let azione: () -> Void
 
     var body: some View {
@@ -215,29 +217,54 @@
         ZStack {
           Circle().fill(mangiato ? verde : Stile.velo)
           Circle().strokeBorder(mangiato ? Color.clear : verde.opacity(0.7), lineWidth: 1.5)
-          Image(systemName: "checkmark")
-            .font(.body.weight(.bold))
-            .foregroundStyle(mangiato ? Stile.inchiostro : verde)
-            .symbolEffect(.bounce, value: mangiato)
+          if inCorso {
+            ProgressView()
+              .tint(mangiato ? Stile.inchiostro : verde)
+              .transition(.scale(scale: 0.6).combined(with: .opacity))
+          } else {
+            Image(systemName: "checkmark")
+              .font(.body.weight(.bold))
+              .foregroundStyle(mangiato ? Stile.inchiostro : verde)
+              .symbolEffect(.bounce, value: mangiato)
+              .transition(.scale(scale: 0.6).combined(with: .opacity))
+          }
         }
         .frame(width: 44, height: 44)
+        .shadow(color: mangiato ? verde.opacity(0.5) : .clear, radius: 10)
         .animation(Stile.mollaViva, value: mangiato)
+        .animation(Stile.molla, value: inCorso)
       }
       .buttonStyle(StilePremuto())
-      .disabled(!abilitato)
+      .disabled(!abilitato || inCorso)
       .sensoryFeedback(.success, trigger: mangiato) { _, nuovo in nuovo }
       .accessibilityLabel(mangiato ? "Mangiato" : "Segna come mangiato")
       .accessibilityHint(mangiato && abilitato ? "Tocca per rimetterlo in programma" : "")
     }
   }
 
-  /// Il tocco: si stringe appena sotto il dito e torna con una molla.
+  /// Il tocco (IOS-044): sotto il dito il pulsante si stringe, si schiarisce
+  /// e dà un colpetto leggero; al rilascio torna con una molla. Vale per
+  /// tutti i pulsanti dell'app: la radice lo mette nell'ambiente.
   struct StilePremuto: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-      configuration.label
-        .scaleEffect(configuration.isPressed ? 0.97 : 1)
-        .opacity(configuration.isPressed ? 0.88 : 1)
-        .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+      Premuto(configuration: configuration)
+    }
+
+    private struct Premuto: View {
+      let configuration: Configuration
+      @Environment(\.isEnabled) private var abilitato
+
+      var body: some View {
+        configuration.label
+          .scaleEffect(configuration.isPressed ? 0.94 : 1)
+          .brightness(configuration.isPressed ? 0.08 : 0)
+          .opacity(abilitato ? 1 : 0.45)
+          .animation(.spring(response: 0.22, dampingFraction: 0.6), value: configuration.isPressed)
+          .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.6), trigger: configuration.isPressed) {
+            _, premuto in
+            premuto
+          }
+      }
     }
   }
 

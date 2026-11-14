@@ -47,10 +47,10 @@
           ToolbarItem(placement: .cancellationAction) {
             Button("Annulla") { chiudi() }
           }
-          ToolbarItem(placement: .confirmationAction) {
-            Button("Salva") { Task { await salva() } }
-              .fontWeight(.semibold)
-              .disabled(salvando)
+        }
+        .azioniInBasso {
+          AzioneBarra(titolo: "Salva la ricetta", simbolo: "checkmark", principale: true, inCorso: salvando) {
+            Task { await salva() }
           }
         }
       }
@@ -123,7 +123,7 @@
                 .foregroundStyle(Stile.testoTenue)
                 .frame(width: 44, height: 44)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(StilePremuto())
             .accessibilityLabel("Togli questo passo")
           }
         }
@@ -159,7 +159,7 @@
                   .foregroundStyle(Stile.testoTenue)
                   .frame(width: 44, height: 44)
               }
-              .buttonStyle(.plain)
+              .buttonStyle(StilePremuto())
               .accessibilityLabel("Togli questa azione")
             }
             Stepper(value: $azione.daysBefore, in: AzioneRicetta.giorniPrima) {
@@ -309,7 +309,7 @@
           } label: {
             VoceAlimento(alimento: alimento)
           }
-          .buttonStyle(.plain)
+          .buttonStyle(StilePremuto())
         }
       }
       .glassPanel()
@@ -382,7 +382,7 @@
               .foregroundStyle(Stile.testoTenue)
               .frame(width: 44, height: 44)
           }
-          .buttonStyle(.plain)
+          .buttonStyle(StilePremuto())
           .accessibilityLabel("Togli \(riga.alimento.name)")
         }
         HStack(spacing: 10) {

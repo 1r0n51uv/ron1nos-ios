@@ -461,6 +461,35 @@ Accettazione:
 - [x] Icona: il sigillo a tutto campo, senza cornice, dentro la maschera di
       iOS.
 
+### IOS-044 · Tatto, caricamenti e azioni a portata di pollice
+
+Stato: fatto
+
+L'app si usa con una mano: i pulsanti in alto costringevano a stirare il
+pollice, i tocchi non si sentivano e i dati comparivano di colpo.
+
+Accettazione:
+
+- [x] Barra delle schede fluttuante, una capsula di vetro liquido (vetro di
+      sistema da iOS 26, materiale sottile prima) con bordo di luce e
+      ombra; la scheda attiva ha una pillola nella sua tinta che scivola tra
+      le voci. Toccare di nuovo la scheda attiva torna alla prima pagina.
+- [x] Le azioni delle pagine stanno in una barra di vetro in basso, sopra
+      quella delle schede: Nutrizione (Oggi, Piani, Ricette, Spesa,
+      calendario), Ricette (Nuova, Importa), ricetta (Modifica, Elimina),
+      Spesa (Aggiungi, Genera, Togli le spuntate), Piani (Nuovo), Torrent
+      (Aggiungi, Scegli e le azioni sulla selezione), dettaglio del torrent
+      (Pausa o Riprendi, Elimina). Nei fogli la conferma è un pulsante pieno
+      in basso; Annulla resta in alto.
+- [x] Ogni pulsante sotto il dito si stringe, si schiarisce e dà un colpetto
+      leggero; cambiare scheda o giorno dà il tic della selezione.
+- [x] Caricamenti visibili: scheletri con un riflesso che scorre, la
+      pillola Aggiorno nella Home, lo spinner dentro la spunta del pasto e
+      dentro i pulsanti che aspettano il server. I dati nuovi entrano con una
+      molla e i numeri scorrono, invece di comparire di colpo.
+- [x] Riduci movimento: niente riflessi né spostamenti, restano le
+      dissolvenze.
+
 ### IOS-100 · Riscrittura: Home, barra e accesso
 
 Stato: in corso

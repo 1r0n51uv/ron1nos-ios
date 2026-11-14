@@ -309,7 +309,7 @@
             Button("Nessuno") { scelti = [] }
               .glassChip()
           }
-          .buttonStyle(.plain)
+          .buttonStyle(StilePremuto())
           .listRowBackground(Color.clear)
         }
         Section {
@@ -503,7 +503,7 @@
         }
         .contentShape(Rectangle())
       }
-      .buttonStyle(.plain)
+      .buttonStyle(StilePremuto())
       .accessibilityAddTraits(spunta == .tutto ? [.isButton, .isSelected] : .isButton)
     }
 

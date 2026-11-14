@@ -14,38 +14,50 @@
     }
   }
 
-  /// L'app ha quattro pagine nella barra in basso: Home, Nutrizione, Torrent e
-  /// Impostazioni. La voce attiva prende la tinta del suo modulo (IOS-043).
+  /// L'app ha quattro pagine: Home, Nutrizione, Torrent e Impostazioni. Le
+  /// apre la barra fluttuante di vetro in basso (IOS-044), che prende il
+  /// posto di quella di sistema; toccare di nuovo la scheda attiva torna
+  /// alla sua prima pagina.
   struct RadiceView: View {
     @StateObject private var sessione = Sessione.condivisa
     @Environment(\.scenePhase) private var fase
+    /// Cresce quando si ritocca una scheda: la sua pila riparte da capo.
+    @State private var radici: [Scheda: Int] = [:]
 
     var body: some View {
       TabView(selection: $sessione.scheda) {
-        scheda(.home, "Home") { HomeView() }
-        scheda(.nutrizione, "Nutrizione") { NutrizioneView() }
-        scheda(.torrent, "Torrent") { TorrentView() }
-        scheda(.impostazioni, "Impostazioni") { ImpostazioniView() }
+        scheda(.home) { HomeView() }
+        scheda(.nutrizione) { NutrizioneView() }
+        scheda(.torrent) { TorrentView() }
+        scheda(.impostazioni) { ImpostazioniView() }
       }
       .tint(sessione.scheda.modulo.colore)
-      .animation(.easeOut(duration: 0.2), value: sessione.scheda)
+      .overlay(alignment: .bottom) {
+        BarraSchede(scheda: $sessione.scheda) { voce in
+          withAnimation(Stile.molla) { radici[voce, default: 0] += 1 }
+        }
+        .padding(.bottom, 2)
+        .ignoresSafeArea(.keyboard)
+      }
       .sensoryFeedback(.selection, trigger: sessione.scheda)
       .overlay(alignment: .bottom) {
         if let avviso = sessione.avviso {
           VistaAvviso(avviso: avviso) { sessione.eseguiAvviso() }
             .environment(\.modulo, sessione.scheda.modulo)
-            .padding(.bottom, 64)
+            .padding(.bottom, BarraSchede.altezza + 76)
             .transition(
               .move(edge: .bottom).combined(with: .opacity).combined(
-                with: .scale(scale: 0.95, anchor: .bottom)))
+                with: .scale(scale: 0.9, anchor: .bottom)))
         }
       }
-      .animation(Stile.molla, value: sessione.avviso)
+      .animation(Stile.mollaViva, value: sessione.avviso)
       .sheet(item: $sessione.torrentInArrivo) { partenza in
         AggiungiTorrentView(partenza: partenza)
           .environmentObject(sessione)
           .environment(\.modulo, .torrent)
+          .buttonStyle(StilePremuto())
       }
+      .buttonStyle(StilePremuto())
       .environmentObject(sessione)
       .environment(\.formati, sessione.formati)
       .preferredColorScheme(.dark)
@@ -56,13 +68,17 @@
       }
     }
 
-    private func scheda<Pagina: View>(_ scheda: Scheda, _ titolo: String, @ViewBuilder pagina: () -> Pagina)
-      -> some View
-    {
+    private func scheda<Pagina: View>(_ scheda: Scheda, @ViewBuilder pagina: () -> Pagina) -> some View {
       NavigationStack { pagina() }
+        .id(radici[scheda, default: 0])
+        // Lo spazio della barra fluttuante: le pagine scorrono sotto il vetro
+        // ma il loro fondo e le loro azioni restano sopra.
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+          Color.clear.frame(height: BarraSchede.altezza + 4)
+        }
         .environment(\.modulo, scheda.modulo)
         .tint(scheda.modulo.colore)
-        .tabItem { Label(titolo, systemImage: scheda.modulo.simbolo) }
+        .toolbar(.hidden, for: .tabBar)
         .tag(scheda)
     }
   }

@@ -28,7 +28,7 @@
         VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
-            Scheletro(righe: 5).glassPanel()
+            Scheletro(righe: 5).glassPanel().transition(.blurReplace)
           case .spento:
             Text("Il modulo Download è spento.")
               .font(.subheadline)
@@ -54,20 +54,20 @@
       }
       .sfondoPagina()
       .navigationTitle("Torrent")
-      .toolbar {
-        ToolbarItem(placement: .topBarLeading) {
+      // Aggiungi, Scegli e le azioni sulla selezione stanno in basso (IOS-044).
+      .azioniInBasso {
+        if selezionando {
+          azioniSelezione
+        } else if stato.valore != nil, !offline {
+          AzioneBarra(titolo: "Aggiungi", simbolo: "plus", principale: true) {
+            sessione.torrentInArrivo = .nuovo
+          }
           if stato.valore?.torrents.isEmpty == false {
-            Button(selezionando ? "Fine" : "Scegli") { alternaSelezione() }
+            AzioneBarra(titolo: "Scegli", simbolo: "checkmark.circle") { alternaSelezione() }
           }
         }
       }
-      .safeAreaInset(edge: .bottom) {
-        if selezionando {
-          barraAzioni
-        } else if stato.valore != nil, !offline {
-          aggiungi
-        }
-      }
+      .animation(Stile.molla, value: selezionando)
       .sensoryFeedback(.success, trigger: riuscite)
       .confirmationDialog(
         daEliminare.count == 1 ? "Eliminare il torrent?" : "Eliminare \(daEliminare.count) torrent?",
@@ -188,7 +188,7 @@
             RigaTorrent(torrent: torrent)
           }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(StilePremuto())
       } else {
         NavigationLink {
           TorrentDettaglioView(hash: torrent.hash)
@@ -217,47 +217,35 @@
         tinta: Modulo.torrent.colore)
     }
 
-    /// L'azione principale sta in basso, dove arriva il pollice (senza
-    /// qBittorrent il wizard non può leggere nulla, IOS-071).
-    private var aggiungi: some View {
-      Button {
-        sessione.torrentInArrivo = .nuovo
-      } label: {
-        Label("Aggiungi", systemImage: "plus")
-          .pulsantePieno(Modulo.torrent.colore)
-      }
-      .buttonStyle(StilePremuto())
-      .padding(.bottom, 8)
-      .frame(maxWidth: .infinity)
-    }
-
     // MARK: - Selezione e azioni
 
-    private var barraAzioni: some View {
+    /// Con la selezione aperta: Pausa, Riprendi, Elimina e Fine, tutti in
+    /// basso; quanti sono scelti lo dice il titolo di Fine.
+    @ViewBuilder
+    private var azioniSelezione: some View {
       let torrents = stato.valore?.torrents ?? []
-      return HStack(spacing: 12) {
-        Text(selezione.titolo)
-          .font(.system(.footnote, design: .monospaced))
-          .foregroundStyle(Stile.testoTenue)
-        Spacer()
-        Button("Pausa") { esegui(.pause, Array(selezione.hashes)) }
-          .glassChip()
-          .disabled(!selezione.puoPausa(in: torrents) || inCorso)
-        Button("Riprendi") { esegui(.resume, Array(selezione.hashes)) }
-          .glassChip()
-          .disabled(!selezione.puoRiprendere(in: torrents) || inCorso)
-        Button("Elimina") { chiediEliminazione(Array(selezione.hashes)) }
-          .glassChip()
-          .foregroundStyle(Stile.brandTesto)
-          .disabled(selezione.vuota || inCorso)
+      AzioneBarra(titolo: "Pausa", simbolo: "pause.fill", compatta: true, inCorso: inCorso) {
+        esegui(.pause, Array(selezione.hashes))
       }
-      .padding(.horizontal, 16)
-      .padding(.vertical, 10)
-      .background(.ultraThinMaterial)
+      .disabled(!selezione.puoPausa(in: torrents))
+      AzioneBarra(titolo: "Riprendi", simbolo: "play.fill", compatta: true) {
+        esegui(.resume, Array(selezione.hashes))
+      }
+      .disabled(!selezione.puoRiprendere(in: torrents) || inCorso)
+      AzioneBarra(titolo: "Elimina", simbolo: "trash", distruttiva: true, compatta: true) {
+        chiediEliminazione(Array(selezione.hashes))
+      }
+      .disabled(selezione.vuota || inCorso)
+      AzioneBarra(
+        titolo: selezione.vuota ? "Fine" : "Fine · \(selezione.titolo)", simbolo: "checkmark",
+        principale: true
+      ) {
+        alternaSelezione()
+      }
     }
 
     private func alternaSelezione() {
-      selezionando.toggle()
+      withAnimation(Stile.molla) { selezionando.toggle() }
       selezione.svuota()
     }
 
@@ -304,8 +292,10 @@
       if case .fallito = nuovo, stato.valore != nil {
         offline = true
       } else {
-        stato = nuovo
-        offline = false
+        withAnimation(Stile.molla) {
+          stato = nuovo
+          offline = false
+        }
       }
       if let download = nuovo.valore {
         selezione.tieni(download.torrents)

@@ -20,7 +20,7 @@
         VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
-            Scheletro(righe: 5).glassPanel()
+            Scheletro(righe: 5).glassPanel().transition(.blurReplace)
           case .spento:
             Text("Il modulo Download è spento.")
               .font(.subheadline)
@@ -36,8 +36,6 @@
           case .pronto(let dettaglio):
             intestazione(dettaglio)
               .comparsa(0)
-            azioni(dettaglio)
-              .comparsa(1)
             dati(dettaglio)
               .comparsa(2)
             file(dettaglio)
@@ -54,6 +52,21 @@
         Button("Elimina e tieni i file", role: .destructive) { elimina(conFile: false) }
         Button("Elimina anche i file", role: .destructive) { elimina(conFile: true) }
         Button("Annulla", role: .cancel) {}
+      }
+      // Pausa o ripresa, l'azione di tutti i giorni, piena e in basso;
+      // Elimina accanto, in rosso (IOS-044).
+      .azioniInBasso {
+        if let dettaglio = stato.valore {
+          AzioneBarra(
+            titolo: dettaglio.inPausa ? "Riprendi" : "Pausa",
+            simbolo: dettaglio.inPausa ? "play.fill" : "pause.fill",
+            principale: true, inCorso: inCorso
+          ) {
+            esegui(dettaglio.inPausa ? .resume : .pause)
+          }
+          AzioneBarra(titolo: "Elimina", simbolo: "trash", distruttiva: true) { eliminando = true }
+            .disabled(inCorso)
+        }
       }
       .sensoryFeedback(.success, trigger: riuscite)
       .task(id: sessione.versione) { await carica() }
@@ -106,33 +119,6 @@
       .glassPanel()
     }
 
-    /// Pausa o ripresa, l'azione di tutti i giorni, piena e larga; Elimina
-    /// accanto, in rosso.
-    private func azioni(_ dettaglio: DettaglioTorrent) -> some View {
-      HStack(spacing: 10) {
-        Button {
-          esegui(dettaglio.inPausa ? .resume : .pause)
-        } label: {
-          Label(
-            dettaglio.inPausa ? "Riprendi" : "Pausa",
-            systemImage: dettaglio.inPausa ? "play.fill" : "pause.fill"
-          )
-          .frame(maxWidth: .infinity)
-          .pulsantePieno(Modulo.torrent.colore)
-          .contentTransition(.symbolEffect(.replace))
-        }
-        Button {
-          eliminando = true
-        } label: {
-          Label("Elimina", systemImage: "trash")
-            .glassChip()
-            .foregroundStyle(Stile.brandTesto)
-        }
-      }
-      .buttonStyle(StilePremuto())
-      .disabled(inCorso)
-    }
-
     private func file(_ dettaglio: DettaglioTorrent) -> some View {
       VStack(alignment: .leading, spacing: 12) {
         IntestazioneCard(
@@ -167,7 +153,7 @@
       let nuovo = await Carico.da { try await client.dettaglio(torrent: hash) }
       // Un aggiornamento fallito dopo il primo non cancella i dati.
       if case .fallito(let errore) = nuovo, errore != .stato(404), stato.valore != nil { return }
-      stato = nuovo
+      withAnimation(Stile.molla) { stato = nuovo }
     }
 
     private func esegui(_ azione: AzioneTorrent) {

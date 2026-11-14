@@ -11,6 +11,8 @@
     let slot: String
     @Environment(\.formati) private var formati
     /// Si tocca `Mangiato`: l'id del piano.
+    /// L'id del piano che si sta confermando, se c'è.
+    var confermando: String?
     let conferma: (String) -> Void
     /// Si apre la pagina Nutrizione.
     let apri: () -> Void
@@ -64,7 +66,7 @@
         if vista == .mangiato {
           PulsanteMangiato(mangiato: true, abilitato: false) {}
         } else if vista == .pianificato, let id = pasto.planned?.id {
-          PulsanteMangiato(mangiato: false) { conferma(id) }
+          PulsanteMangiato(mangiato: false, inCorso: confermando == id) { conferma(id) }
         }
       }
       if let immagine = pasto.planned?.recipeImage {

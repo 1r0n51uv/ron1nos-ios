@@ -490,6 +490,23 @@ Accettazione:
 - [x] Riduci movimento: niente riflessi né spostamenti, restano le
       dissolvenze.
 
+### IOS-045 · Azioni delle pagine sotto il titolo
+
+Stato: fatto
+
+In basso la barra delle schede copriva le azioni delle pagine (Nutrizione,
+Aggiungi dei Torrent). Le azioni delle pagine tornano in alto, in una barra
+di vetro sotto il titolo; nei fogli, dove la barra delle schede non c'è, la
+conferma resta in basso. Sostituisce il punto di IOS-044 sulle azioni in
+basso nelle pagine.
+
+Accettazione:
+
+- [x] Nutrizione, Ricette, ricetta, Spesa, Piani, Torrent e dettaglio del
+      torrent hanno le azioni in una barra di vetro sotto il titolo
+      (`azioniInAlto`).
+- [x] Nei fogli la conferma resta in basso (`azioniInBasso`).
+
 ### IOS-100 · Riscrittura: Home, barra e accesso
 
 Stato: in corso

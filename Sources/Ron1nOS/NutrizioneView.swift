@@ -12,7 +12,7 @@
   /// quello prima; in alto una barra per scegliere un giorno della settimana
   /// o, dal calendario, una data qualsiasi. Sotto, sempre in vista, le
   /// scorciatoie a piani, ricette e spesa.
-  /// Le azioni stanno in basso, sopra la barra delle schede (IOS-044).
+  /// Le azioni stanno in una barra sotto il titolo (IOS-045).
   struct NutrizioneView: View {
     @EnvironmentObject private var sessione: Sessione
     @Environment(\.formati) private var formati
@@ -53,7 +53,7 @@
       )
       .navigationTitle("Nutrizione")
       .navigationBarTitleDisplayMode(.inline)
-      .azioniInBasso {
+      .azioniInAlto {
         if giorno != oggi {
           AzioneBarra(titolo: "Oggi", simbolo: "arrow.uturn.backward", principale: true) { vai(oggi) }
         }

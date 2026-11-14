@@ -53,9 +53,9 @@
         Button("Elimina anche i file", role: .destructive) { elimina(conFile: true) }
         Button("Annulla", role: .cancel) {}
       }
-      // Pausa o ripresa, l'azione di tutti i giorni, piena e in basso;
-      // Elimina accanto, in rosso (IOS-044).
-      .azioniInBasso {
+      // Pausa o ripresa, l'azione di tutti i giorni, piena, sotto il titolo;
+      // Elimina accanto, in rosso (IOS-045).
+      .azioniInAlto {
         if let dettaglio = stato.valore {
           AzioneBarra(
             titolo: dettaglio.inPausa ? "Riprendi" : "Pausa",

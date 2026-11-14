@@ -37,7 +37,7 @@
       }
       .sfondoPagina()
       .navigationTitle("Piani")
-      .azioniInBasso {
+      .azioniInAlto {
         AzioneBarra(titolo: "Nuovo piano", simbolo: "plus", principale: true) { nuovo = true }
       }
       .sheet(isPresented: $nuovo) {

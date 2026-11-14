@@ -224,7 +224,7 @@
     @ViewBuilder
     private var azioniSelezione: some View {
       let torrents = stato.valore?.torrents ?? []
-      AzioneBarra(titolo: "Pausa", simbolo: "pause.fill", compatta: true, inCorso: inCorso) {
+      AzioneBarra(titolo: "Pausa", simbolo: "pause.fill", inCorso: inCorso, compatta: true) {
         esegui(.pause, Array(selezione.hashes))
       }
       .disabled(!selezione.puoPausa(in: torrents))

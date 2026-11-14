@@ -21,7 +21,7 @@ sono tornati con pagine nuove.
 
 | Modulo       | File                               | ID              | Label              |
 | ------------ | ---------------------------------- | --------------- | ------------------ |
-| App          | [app.md](app.md)                   | `IOS-001`…`019`, `IOS-043`, `IOS-044`, `IOS-100` | `mod:app`          |
+| App          | [app.md](app.md)                   | `IOS-001`…`019`, `IOS-043`…`045`, `IOS-100` | `mod:app`          |
 | Home         | [home.md](home.md)                 | `IOS-020`…`029` | `mod:home`         |
 | Nutrizione   | [nutrizione.md](nutrizione.md)     | `IOS-030`…`039` | `mod:nutrizione`   |
 | Torrent      | [torrent.md](torrent.md)           | `IOS-070`…`079` | `mod:torrent`      |

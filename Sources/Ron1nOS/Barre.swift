@@ -37,11 +37,19 @@
       modifier(VetroLiquido(forma: forma, tinta: tinta))
     }
 
-    /// Le azioni della pagina in una barra di vetro in basso, dove arriva il
-    /// pollice, sopra la barra delle schede.
+    /// Le azioni di un foglio in una barra di vetro in basso, dove arriva il
+    /// pollice: nei fogli la barra delle schede non c'è.
     func azioniInBasso<Azioni: View>(@ViewBuilder _ azioni: @escaping () -> Azioni) -> some View {
       safeAreaInset(edge: .bottom, spacing: 0) {
-        BarraAzioni(azioni: azioni)
+        BarraAzioni(bordo: .bottom, azioni: azioni)
+      }
+    }
+
+    /// Le azioni di una pagina delle schede in una barra di vetro in alto,
+    /// sotto il titolo (IOS-045): in basso le copriva la barra delle schede.
+    func azioniInAlto<Azioni: View>(@ViewBuilder _ azioni: @escaping () -> Azioni) -> some View {
+      safeAreaInset(edge: .top, spacing: 0) {
+        BarraAzioni(bordo: .top, azioni: azioni)
       }
     }
   }
@@ -118,6 +126,7 @@
   /// La barra delle azioni di una pagina: una capsula di vetro con i
   /// pulsanti, la principale piena nella tinta del modulo.
   struct BarraAzioni<Azioni: View>: View {
+    let bordo: Edge
     @ViewBuilder let azioni: () -> Azioni
     @Environment(\.modulo) private var modulo
 
@@ -127,9 +136,10 @@
       }
       .padding(5)
       .vetroLiquido(Capsule(), tinta: modulo == .home ? nil : modulo.colore)
-      .padding(.horizontal, 20)
-      .padding(.bottom, 10)
-      .transition(.move(edge: .bottom).combined(with: .opacity))
+      .padding(.horizontal, bordo == .top ? Stile.margine : 20)
+      .padding(bordo == .top ? .top : .bottom, bordo == .top ? 4 : 10)
+      .padding(.bottom, bordo == .top ? 8 : 0)
+      .transition(.move(edge: bordo).combined(with: .opacity))
     }
   }
 

@@ -47,9 +47,8 @@
       .sfondoPagina()
       .animation(Stile.molla, value: stato.valore?.items.map(\.id))
       .navigationTitle("Spesa")
-      // Al supermercato si tiene il telefono con una mano: tutte le azioni
-      // stanno in basso (IOS-044).
-      .azioniInBasso {
+      // Le azioni sulla lista in una barra sotto il titolo (IOS-045).
+      .azioniInAlto {
         AzioneBarra(titolo: "Aggiungi", simbolo: "plus", principale: true) {
           nome = ""
           quantita = ""
@@ -91,7 +90,7 @@
       return VStack(alignment: .leading, spacing: 12) {
         if lista.items.isEmpty {
           Text(
-            "La lista è vuota. Generala dai pasti in programma o aggiungi una voce, dai pulsanti in basso."
+            "La lista è vuota. Generala dai pasti in programma o aggiungi una voce, dai pulsanti in alto."
           )
           .font(.subheadline)
           .foregroundStyle(Stile.testoTenue)

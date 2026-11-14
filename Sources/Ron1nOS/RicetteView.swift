@@ -59,7 +59,7 @@
         text: $cerca, placement: .navigationBarDrawer(displayMode: .always),
         prompt: "Cerca per nome o ingrediente"
       )
-      .azioniInBasso {
+      .azioniInAlto {
         AzioneBarra(titolo: "Nuova ricetta", simbolo: "plus", principale: true) { nuova = true }
         AzioneBarra(titolo: "Importa da YAZIO", simbolo: "arrow.down.circle.fill", inCorso: importando) {
           Task { await importa() }
@@ -85,11 +85,11 @@
         tinta: Modulo.nutrizione.colore)
     }
 
-    /// Senza ricette dice dove sono le due strade per averne, in basso.
+    /// Senza ricette dice dove sono le due strade per averne, in alto.
     private var vuote: some View {
       StatoVuoto(
         simbolo: "book.closed.fill", titolo: "Nessuna ricetta",
-        testo: "Importa i preferiti di YAZIO o creane una, dai pulsanti in basso.",
+        testo: "Importa i preferiti di YAZIO o creane una, dai pulsanti in alto.",
         tinta: Modulo.nutrizione.colore)
     }
 
@@ -193,7 +193,7 @@
       .sfondoPagina()
       .navigationTitle(stato.valore?.name ?? "Ricetta")
       .navigationBarTitleDisplayMode(.inline)
-      .azioniInBasso {
+      .azioniInAlto {
         if stato.valore != nil {
           AzioneBarra(titolo: "Modifica", simbolo: "pencil", principale: true) { modifica = true }
           AzioneBarra(titolo: "Elimina", simbolo: "trash", distruttiva: true) { eliminando = true }

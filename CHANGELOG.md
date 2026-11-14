@@ -10,6 +10,10 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.79 · 2026-11-14
+
+- I pulsanti delle pagine (Nutrizione, Torrent, Spesa, Ricette, Piani) tornano in alto, sotto il titolo: in basso li copriva la barra delle schede. Nei fogli Salva e Genera restano in basso
+
 ## 0.1.78 · 2026-11-14
 
 - Barra delle schede nuova: una capsula di vetro che galleggia in basso, con la scheda attiva evidenziata nel suo colore. Toccata di nuovo, torna all'inizio

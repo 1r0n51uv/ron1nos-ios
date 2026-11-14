@@ -54,8 +54,8 @@
       }
       .sfondoPagina()
       .navigationTitle("Torrent")
-      // Aggiungi, Scegli e le azioni sulla selezione stanno in basso (IOS-044).
-      .azioniInBasso {
+      // Aggiungi, Scegli e le azioni sulla selezione, sotto il titolo (IOS-045).
+      .azioniInAlto {
         if selezionando {
           azioniSelezione
         } else if stato.valore != nil, !offline {

@@ -28,17 +28,9 @@
         case .fallito(let errore):
           SezioneErrore(errore: errore).listRowBackground(Color.clear)
         case .pronto(let lista):
-          if lista.items.isEmpty {
-            Text("La lista è vuota. Genera dai pasti in programma o aggiungi una voce.")
-              .font(.body)
-              .foregroundStyle(Stile.testoTenue)
-              .listRowBackground(Color.clear)
-          } else {
-            Text(lista.riepilogo)
-              .font(.system(.footnote, design: .monospaced))
-              .foregroundStyle(Stile.testoTenue)
-              .listRowBackground(Color.clear)
-          }
+          testata(lista)
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
           ForEach(lista.items) { voce in
             RigaSpesa(voce: voce) { Task { await spunta(voce) } }
               .listRowBackground(Color.clear)
@@ -51,7 +43,8 @@
       }
       .listStyle(.plain)
       .scrollContentBackground(.hidden)
-      .background(SfondoConAlone().ignoresSafeArea())
+      .sfondoPagina()
+      .animation(Stile.molla, value: stato.valore?.items.map(\.id))
       .navigationTitle("Spesa")
       .toolbar {
         ToolbarItem(placement: .topBarTrailing) {
@@ -63,16 +56,6 @@
             Image(systemName: "plus")
           }
           .accessibilityLabel("Aggiungi una voce")
-        }
-        ToolbarItem(placement: .topBarTrailing) {
-          Menu {
-            Button("Genera dai pasti in programma") { genera = true }
-            Button("Togli le spuntate", role: .destructive) { Task { await togliSpuntate() } }
-              .disabled((stato.valore?.spuntate ?? 0) == 0)
-          } label: {
-            Image(systemName: "ellipsis")
-          }
-          .accessibilityLabel("Altre azioni")
         }
       }
       .alert("Nuova voce", isPresented: $nuova) {
@@ -89,6 +72,45 @@
       .task(id: sessione.versione) { await carica() }
       .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
       .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
+    }
+
+    /// In cima quante voci sono prese, con la barra, e le due azioni sulla
+    /// lista sempre in vista: generarla dai pasti e togliere le spuntate.
+    private func testata(_ lista: ListaSpesa) -> some View {
+      let verde = Modulo.nutrizione.colore
+      return VStack(alignment: .leading, spacing: 12) {
+        if lista.items.isEmpty {
+          Text("La lista è vuota. Generala dai pasti in programma o aggiungi una voce con il +.")
+            .font(.subheadline)
+            .foregroundStyle(Stile.testoTenue)
+        } else {
+          HStack(alignment: .firstTextBaseline) {
+            Text("\(lista.spuntate) di \(lista.items.count)")
+              .font(.system(.title2, design: .monospaced).weight(.bold))
+              .foregroundStyle(Stile.testo)
+              .contentTransition(.numericText())
+            Text("prese")
+              .font(.subheadline)
+              .foregroundStyle(Stile.testoTenue)
+          }
+          Barra(valore: Double(lista.spuntate) / Double(max(1, lista.items.count)), tinta: verde)
+        }
+        HStack(spacing: 8) {
+          Button {
+            genera = true
+          } label: {
+            Label("Genera dai pasti", systemImage: "wand.and.stars")
+          }
+          .pulsantePieno(verde)
+          if lista.spuntate > 0 {
+            Button("Togli le spuntate") { Task { await togliSpuntate() } }
+              .glassChip()
+          }
+        }
+        .buttonStyle(StilePremuto())
+      }
+      .padding(.vertical, 8)
+      .animation(Stile.molla, value: lista.spuntate)
     }
 
     private func carica() async {
@@ -166,7 +188,9 @@
         HStack(spacing: 14) {
           Image(systemName: voce.checked ? "checkmark.circle.fill" : "circle")
             .font(.title2)
-            .foregroundStyle(voce.checked ? Stile.testo : Stile.testoTenue)
+            .foregroundStyle(voce.checked ? Modulo.nutrizione.colore : Stile.testoTenue)
+            .symbolEffect(.bounce, value: voce.checked)
+            .contentTransition(.symbolEffect(.replace))
           Text(voce.name)
             .font(.title3)
             .strikethrough(voce.checked)
@@ -214,7 +238,7 @@
         }
         .environment(\.timeZone, formati.fuso)
         .scrollContentBackground(.hidden)
-        .background(SfondoConAlone().ignoresSafeArea())
+        .sfondoPagina()
         .navigationTitle("Genera")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -234,7 +258,8 @@
           }
         }
       }
-      .tint(Stile.brand)
+      .tint(Modulo.nutrizione.colore)
+      .environment(\.modulo, .nutrizione)
     }
 
     private var intervallo: IntervalloSpesa { IntervalloSpesa(da: da, a: a, fuso: formati.fuso) }

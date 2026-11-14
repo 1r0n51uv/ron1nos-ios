@@ -2,7 +2,8 @@
   import Ron1nKit
   import SwiftUI
 
-  /// La Home: la testata e lo stato di Server e Torrent, in sola lettura.
+  /// La Home (IOS-043): la testata, il pasto di adesso con la spunta, poi
+  /// Server e Download affiancati e, se scarica qualcosa, i torrent attivi.
   /// Si aggiorna ogni 5 secondi e con il gesto di tirare giù.
   struct HomeView: View {
     @EnvironmentObject private var sessione: Sessione
@@ -12,27 +13,47 @@
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: Stile.traCard) {
           testata
+            .comparsa(0)
           if daAccedere {
             invito
+              .comparsa(1)
           } else {
             CardPasto(
               carico: giornoNutrizione, slot: slotCorrente, conferma: { id in Task { await mangiato(id) } },
-              apri: { sessione.scheda = .nutrizione })
-            CardServer(carico: server)
-            Button {
-              sessione.scheda = .torrent
-            } label: {
-              CardTorrent(carico: download)
+              apri: { sessione.scheda = .nutrizione }
+            )
+            .comparsa(1)
+            HStack(alignment: .top, spacing: Stile.traCard) {
+              CardServer(carico: server)
+              Button {
+                sessione.scheda = .torrent
+              } label: {
+                CardTorrent(carico: download)
+              }
+              .buttonStyle(StilePremuto())
             }
-            .buttonStyle(.plain)
+            .fixedSize(horizontal: false, vertical: true)
+            .comparsa(2)
+            if let attivi = download.valore, !attivi.inVista.isEmpty {
+              Button {
+                sessione.scheda = .torrent
+              } label: {
+                CardInDownload(download: attivi)
+              }
+              .buttonStyle(StilePremuto())
+              .transition(.opacity.combined(with: .move(edge: .top)))
+              .comparsa(3)
+            }
           }
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
+        .padding(.horizontal, Stile.margine)
+        .padding(.top, 4)
+        .padding(.bottom, 24)
+        .animation(Stile.molla, value: download.valore?.inVista.isEmpty)
       }
-      .background(SfondoConAlone().ignoresSafeArea())
+      .sfondoPagina()
       .navigationBarTitleDisplayMode(.inline)
       .task(id: sessione.versione) { await carica() }
       .aggiornaOgni(5) { await carica() }
@@ -40,17 +61,20 @@
     }
 
     private var testata: some View {
-      VStack(alignment: .leading, spacing: 4) {
+      VStack(alignment: .leading, spacing: 2) {
         Text(
           Date.now.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "it_IT")))
+            .uppercased()
         )
-        .font(.system(.footnote, design: .monospaced))
-        .foregroundStyle(Stile.testoTenue)
+        .font(.system(.caption, design: .monospaced).weight(.medium))
+        .tracking(1.2)
+        .foregroundStyle(Stile.brandTesto)
         Text(saluto)
-          .font(.largeTitle.weight(.semibold))
+          .font(.largeTitle.weight(.bold))
           .foregroundStyle(Stile.testo)
       }
       .padding(.bottom, 4)
+      .accessibilityElement(children: .combine)
     }
 
     private var saluto: String {
@@ -75,15 +99,15 @@
     }
 
     private var invito: some View {
-      VStack(alignment: .leading, spacing: 10) {
-        Text("Manca l'accesso")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
-        Text("Entra con la password di ron1nOS in Impostazioni.")
-          .font(.subheadline)
-          .foregroundStyle(Stile.testoTenue)
+      StatoVuoto(
+        simbolo: "key.fill", titolo: "Manca l'accesso",
+        testo: "Entra con il codice di ron1nOS: serve una volta, poi lo ricorda Face ID.",
+        tinta: Stile.brandTesto
+      ) {
+        Button("Vai all'accesso") { sessione.scheda = .impostazioni }
+          .pulsantePieno(Stile.brandTesto)
+          .buttonStyle(StilePremuto())
       }
-      .glassPanel(tinta: Stile.brand)
     }
 
     /// Lo slot che corrisponde all'ora, secondo gli orari dei pasti.

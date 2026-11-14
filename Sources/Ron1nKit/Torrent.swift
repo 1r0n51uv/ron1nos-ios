@@ -33,6 +33,17 @@ public struct Download: Decodable, Equatable, Sendable {
 }
 
 public struct Torrent: Decodable, Equatable, Sendable {
+  /// Il simbolo SF dello stato, al centro dell'anello (IOS-043).
+  public var simbolo: String {
+    switch state {
+    case .downloading: "arrow.down"
+    case .queued: "hourglass"
+    case .seeding: "arrow.up"
+    case .stopped: "pause.fill"
+    case .error, .sconosciuto: "exclamationmark"
+    }
+  }
+
   public let hash: String
   public let name: String
   /// Da 0 a 1.

@@ -21,7 +21,7 @@
     var body: some View {
       NavigationStack {
         ScrollView {
-          VStack(alignment: .leading, spacing: 24) {
+          VStack(alignment: .leading, spacing: Stile.traCard) {
             TextField("Nome", text: $modulo.nome)
               .foregroundStyle(Stile.testo)
               .glassChip()
@@ -40,7 +40,7 @@
           }
           .padding(16)
         }
-        .background(SfondoConAlone().ignoresSafeArea())
+        .sfondoPagina()
         .navigationTitle(ricetta == nil ? "Nuova ricetta" : "Modifica ricetta")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -54,7 +54,7 @@
           }
         }
       }
-      .tint(Stile.brand)
+      .tint(Modulo.nutrizione.colore)
       .sheet(isPresented: $scelta) {
         SceltaAlimentoView { alimento in
           modulo.righe.append(Bozza(alimento))
@@ -277,7 +277,7 @@
           }
           .padding(16)
         }
-        .background(SfondoConAlone().ignoresSafeArea())
+        .sfondoPagina()
         .navigationTitle("Ingrediente")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -286,7 +286,7 @@
           }
         }
       }
-      .tint(Stile.brand)
+      .tint(Modulo.nutrizione.colore)
       .task(id: testo) { await cerca() }
     }
 

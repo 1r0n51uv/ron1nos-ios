@@ -2,19 +2,25 @@
   import Ron1nKit
   import SwiftUI
 
-  /// Primo caricamento (IOS-012): righe grigie al posto dei dati, senza
-  /// spinner a schermo intero.
+  /// Primo caricamento (IOS-012): righe grigie al posto dei dati, che
+  /// respirano piano, senza spinner a schermo intero.
   struct Scheletro: View {
     var righe = 3
+    @State private var acceso = false
+    @Environment(\.accessibilityReduceMotion) private var ridotto
 
     var body: some View {
       VStack(alignment: .leading, spacing: 10) {
         ForEach(0..<righe, id: \.self) { indice in
           RoundedRectangle(cornerRadius: 6, style: .continuous)
-            .fill(Color.white.opacity(0.08))
+            .fill(Color.white.opacity(acceso ? 0.12 : 0.06))
             .frame(height: indice == 0 ? 22 : 12)
             .frame(maxWidth: indice == 0 ? 160 : .infinity, alignment: .leading)
         }
+      }
+      .onAppear {
+        guard !ridotto else { return }
+        withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) { acceso = true }
       }
       .accessibilityLabel("Caricamento")
     }
@@ -43,22 +49,25 @@
   struct VistaAvviso: View {
     let avviso: Avviso
     let azione: () -> Void
+    @Environment(\.modulo) private var modulo
 
     var body: some View {
-      HStack(spacing: 14) {
+      HStack(spacing: 12) {
         Text(avviso.testo)
           .font(.subheadline)
           .foregroundStyle(Stile.testo)
         if let titolo = avviso.azione {
           Button(titolo, action: azione)
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(Stile.brandTesto)
+            .foregroundStyle(modulo.colore)
         }
       }
       .padding(.horizontal, 18)
       .padding(.vertical, 12)
-      .background(Color.black.opacity(0.7), in: Capsule())
+      .background(.ultraThinMaterial, in: Capsule())
+      .background(Color.black.opacity(0.5), in: Capsule())
       .overlay(Capsule().strokeBorder(Stile.bordo))
+      .shadow(color: .black.opacity(0.4), radius: 16, y: 6)
       .accessibilityElement(children: .combine)
       .accessibilityLabel(avviso.etichetta)
     }

@@ -20,6 +20,9 @@ import Testing
     #expect(dieta.avanzamento == 1450.0 / 2200.0)
     #expect(!dieta.oltre)
     #expect(dieta.macro.map(\.testo) == ["82 / 140 g", "160 / 220 g", "52 / 70 g"])
+    // L'avanzamento di ogni macro, per le barre colorate (IOS-043).
+    let attesi: [Double?] = [82.4 / 140, 160.0 / 220, 51.6 / 70]
+    #expect(dieta.macro.map(\.avanzamento) == attesi)
   }
 
   @Test func senzaObiettivo() async throws {
@@ -32,6 +35,7 @@ import Testing
     #expect(dieta.testoRimanenti == nil)
     #expect(dieta.avanzamento == nil)
     #expect(dieta.macro.first?.testo == "40 g")
+    #expect(dieta.macro.allSatisfy { $0.avanzamento == nil })
   }
 
   @Test func oltreLaQuota() {

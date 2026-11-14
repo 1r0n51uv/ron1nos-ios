@@ -24,6 +24,22 @@ import Testing
     #expect(sezioni[4].torrents.map(\.name) == ["rotto", "nuovo"])
   }
 
+  @Test func ogniSezioneEOgniStatoHannoUnSimbolo() {
+    let download = Download(
+      downloadSpeed: 0,
+      torrents: [
+        torrent("a", .downloading), torrent("c", .queued), torrent("s", .seeding), torrent("f", .stopped),
+        torrent("e", .error),
+      ])
+    let simboli = download.sezioni.map(\.simbolo)
+    #expect(
+      simboli == ["arrow.down", "hourglass", "arrow.up", "pause.fill", "exclamationmark.triangle.fill"])
+    #expect(
+      download.torrents.map(\.simbolo) == [
+        "arrow.down", "hourglass", "arrow.up", "pause.fill", "exclamationmark",
+      ])
+  }
+
   @Test func soloInSeedStaChiusa() {
     let download = Download(
       downloadSpeed: 0, torrents: [torrent("a", .downloading), torrent("s", .seeding)])

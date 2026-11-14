@@ -17,7 +17,7 @@
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
             Scheletro(righe: 5).glassPanel()
@@ -35,14 +35,19 @@
             }
           case .pronto(let dettaglio):
             intestazione(dettaglio)
-            dati(dettaglio)
+              .comparsa(0)
             azioni(dettaglio)
+              .comparsa(1)
+            dati(dettaglio)
+              .comparsa(2)
             file(dettaglio)
+              .comparsa(3)
           }
         }
-        .padding(16)
+        .padding(.horizontal, Stile.margine)
+        .padding(.bottom, 24)
       }
-      .background(SfondoConAlone().ignoresSafeArea())
+      .sfondoPagina()
       .navigationTitle("Dettaglio")
       .navigationBarTitleDisplayMode(.inline)
       .confirmationDialog("Eliminare il torrent?", isPresented: $eliminando, titleVisibility: .visible) {
@@ -55,17 +60,34 @@
       .aggiornaOgni(5) { await carica() }
     }
 
+    /// L'anello grande con la percentuale, il nome e lo stato.
     private func intestazione(_ dettaglio: DettaglioTorrent) -> some View {
-      VStack(alignment: .leading, spacing: 10) {
-        Text(dettaglio.name)
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
-        Barra(valore: dettaglio.progress)
-        Text("\(dettaglio.statoTesto) · \(Formato.percento(dettaglio.progress * 100))")
-          .font(.system(.footnote, design: .monospaced))
-          .foregroundStyle(Stile.testoTenue)
+      let ambra = Modulo.torrent.colore
+      return HStack(spacing: 16) {
+        Anello(valore: dettaglio.progress, tinta: ambra, spessore: 8) {
+          Text(Formato.percento(dettaglio.progress * 100))
+            .font(.system(.subheadline, design: .monospaced).weight(.bold))
+            .foregroundStyle(Stile.testo)
+            .contentTransition(.numericText())
+            .minimumScaleFactor(0.6)
+            .lineLimit(1)
+            .padding(.horizontal, 10)
+        }
+        .frame(width: 84, height: 84)
+        VStack(alignment: .leading, spacing: 6) {
+          Text(dettaglio.name)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(Stile.testo)
+            .lineLimit(4)
+            .truncationMode(.middle)
+          Text(dettaglio.statoTesto.uppercased())
+            .font(.system(.caption2, design: .monospaced).weight(.semibold))
+            .tracking(0.8)
+            .foregroundStyle(ambra)
+        }
       }
-      .glassPanel()
+      .glassPanel(tinta: ambra)
+      .accessibilityElement(children: .combine)
     }
 
     private func dati(_ dettaglio: DettaglioTorrent) -> some View {
@@ -84,25 +106,37 @@
       .glassPanel()
     }
 
+    /// Pausa o ripresa, l'azione di tutti i giorni, piena e larga; Elimina
+    /// accanto, in rosso.
     private func azioni(_ dettaglio: DettaglioTorrent) -> some View {
-      HStack(spacing: 12) {
-        if dettaglio.inPausa {
-          Button("Riprendi") { esegui(.resume) }.glassChip()
-        } else {
-          Button("Pausa") { esegui(.pause) }.glassChip()
+      HStack(spacing: 10) {
+        Button {
+          esegui(dettaglio.inPausa ? .resume : .pause)
+        } label: {
+          Label(
+            dettaglio.inPausa ? "Riprendi" : "Pausa",
+            systemImage: dettaglio.inPausa ? "play.fill" : "pause.fill"
+          )
+          .frame(maxWidth: .infinity)
+          .pulsantePieno(Modulo.torrent.colore)
+          .contentTransition(.symbolEffect(.replace))
         }
-        Button("Elimina") { eliminando = true }
-          .glassChip()
-          .foregroundStyle(Stile.brandTesto)
+        Button {
+          eliminando = true
+        } label: {
+          Label("Elimina", systemImage: "trash")
+            .glassChip()
+            .foregroundStyle(Stile.brandTesto)
+        }
       }
+      .buttonStyle(StilePremuto())
       .disabled(inCorso)
     }
 
     private func file(_ dettaglio: DettaglioTorrent) -> some View {
       VStack(alignment: .leading, spacing: 12) {
-        Text("File · \(dettaglio.files.count)")
-          .font(.footnote.weight(.medium))
-          .foregroundStyle(Stile.testoTenue)
+        IntestazioneCard(
+          titolo: "File · \(dettaglio.files.count)", simbolo: "doc.on.doc.fill", tinta: Modulo.torrent.colore)
         VStack(alignment: .leading, spacing: 14) {
           ForEach(dettaglio.files, id: \.index) { file in
             VStack(alignment: .leading, spacing: 6) {
@@ -111,7 +145,7 @@
                 .foregroundStyle(file.selected ? Stile.testo : Stile.testoTenue)
                 .lineLimit(2)
                 .truncationMode(.middle)
-              if file.selected { Barra(valore: file.progress) }
+              if file.selected { Barra(valore: file.progress, tinta: Modulo.torrent.colore, altezza: 4) }
               Text(
                 file.selected
                   ? "\(Formato.percento(file.progress * 100)) · \(Formato.dimensione(file.size))"
@@ -123,8 +157,8 @@
             .accessibilityElement(children: .combine)
           }
         }
-        .glassPanel()
       }
+      .glassPanel()
     }
 
     private func carica() async {

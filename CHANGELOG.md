@@ -10,6 +10,17 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.77 · 2026-11-14
+
+- Nuovo aspetto: ogni area ha il suo colore (Nutrizione verde, Download ambra, Server azzurro), icone su tessere colorate e schermate più compatte
+- Home: il pasto di adesso con la foto in grande e la spunta, Server e Download affiancati
+- Nutrizione: Piani, Ricette e Spesa sempre in vista sotto i giorni; anello delle kcal con i macro a colori
+- Ricette in griglia con le foto; la ricetta si apre con uno zoom e la copertina si allunga tirando giù
+- Torrent con gli anelli di avanzamento; Pausa e Riprendi in evidenza nel dettaglio
+- Animazioni: card che compaiono in sequenza, anelli e barre che si riempiono, spunta con vibrazione
+- L'accesso chiede il codice a 4 cifre di ron1nOS
+- Icona nuova, che iOS non taglia più agli angoli
+
 ## 0.1.76 · 2026-11-13
 
 - In Impostazioni › Notifiche, sotto gli avvisi dei download, c'è «Prova Mangiato e Rimanda»: dopo 10 secondi arriva un promemoria di prova con i due pulsanti (esci dall'app e tienilo premuto). «Mangiato» e «Rimanda» rispondono con un avviso, senza toccare nessun pasto vero.

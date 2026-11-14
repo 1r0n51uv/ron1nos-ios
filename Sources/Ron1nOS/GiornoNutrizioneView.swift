@@ -2,158 +2,171 @@
   import Ron1nKit
   import SwiftUI
 
-  /// Il contenuto di un giorno (IOS-033), dentro la pagina Nutrizione: la
-  /// data, obiettivo e quota rimasta, poi i cinque pasti con la ricetta e la
-  /// spunta. Si spunta fino a oggi; un pasto futuro resta in programma.
+  /// Il contenuto di un giorno (IOS-033, IOS-043), dentro la pagina
+  /// Nutrizione: l'anello delle kcal con i tre macro a colori, poi i cinque
+  /// pasti con la foto e la spunta. Si spunta fino a oggi; un pasto futuro
+  /// resta in programma.
   struct GiornoNutrizioneView: View {
     let giorno: String
     @EnvironmentObject private var sessione: Sessione
     @Environment(\.formati) private var formati
     @State private var stato = Carico<GiornoDieta>.inCorso
     @State private var inCorso = false
-    /// Cresce a ogni spunta riuscita: dà la vibrazione di conferma.
-    @State private var riuscite = 0
+    @Namespace private var zoom
+
+    private let verde = Modulo.nutrizione.colore
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 24) {
-          Text(titolo)
-            .font(.title2.weight(.semibold))
-            .foregroundStyle(Stile.testo)
+        VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
             Scheletro(righe: 6).glassPanel()
           case .spento:
-            Text("Il modulo Nutrizione è spento.")
-              .font(.subheadline)
-              .foregroundStyle(Stile.testoTenue)
+            StatoVuoto(
+              simbolo: "fork.knife", titolo: "Nutrizione spenta", testo: "Il modulo è spento su ron1nOS.",
+              tinta: verde)
           case .fallito(let errore):
             SezioneErrore(errore: errore).glassPanel()
           case .pronto(let dieta):
             quota(dieta)
-            ForEach(dieta.slotInOrdine) { slot in
+              .comparsa(0)
+            ForEach(Array(dieta.slotInOrdine.enumerated()), id: \.element.id) { indice, slot in
               pasto(slot)
+                .comparsa(indice + 1)
             }
           }
         }
-        .padding(16)
+        .padding(.horizontal, Stile.margine)
+        .padding(.top, 4)
+        .padding(.bottom, 24)
       }
-      .sensoryFeedback(.success, trigger: riuscite)
       .refreshable { await carica() }
       .task(id: sessione.versione) { await carica() }
-    }
-
-    /// "Lunedì 26 ottobre".
-    private var titolo: String {
-      guard let data = Settimana.data(giorno) else { return giorno }
-      return data.formatted(
-        .dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "it_IT")))
     }
 
     private var oggi: String { Settimana.oggi(fuso: formati.fuso) }
 
     // MARK: - Quota
 
-    @ViewBuilder
+    /// L'anello delle kcal con il numero al centro e, accanto, i tre macro.
     private func quota(_ dieta: GiornoDieta) -> some View {
-      VStack(alignment: .leading, spacing: 12) {
-        Text(dieta.testoEnergia(formati))
-          .font(.system(.title2, design: .monospaced).weight(.semibold))
-          .foregroundStyle(Stile.testo)
-        if let avanzamento = dieta.avanzamento {
-          Barra(valore: avanzamento, segnale: dieta.oltre)
+      VStack(alignment: .leading, spacing: 14) {
+        HStack(spacing: 18) {
+          Anello(valore: dieta.avanzamento ?? 0, tinta: verde, spessore: 9, segnale: dieta.oltre) {
+            VStack(spacing: 0) {
+              Text(Formato.numero(formati.valoreEnergia(dieta.totals.kcal)))
+                .font(.system(.title3, design: .monospaced).weight(.bold))
+                .foregroundStyle(Stile.testo)
+                .contentTransition(.numericText())
+                .minimumScaleFactor(0.6)
+                .lineLimit(1)
+              Text(formati.energyUnit.rawValue)
+                .font(.caption2.weight(.medium))
+                .foregroundStyle(Stile.testoTenue)
+            }
+            .padding(.horizontal, 14)
+          }
+          .frame(width: 104, height: 104)
+          VStack(alignment: .leading, spacing: 10) {
+            ForEach(dieta.macro, id: \.chiave) { riga in
+              VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                  Text(riga.nome)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(Color(Palette.macro(riga.chiave)))
+                  Spacer(minLength: 4)
+                  Text(riga.testo)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundStyle(Stile.testo)
+                }
+                Barra(valore: riga.avanzamento ?? 0, tinta: Color(Palette.macro(riga.chiave)), altezza: 5)
+              }
+              .accessibilityElement(children: .combine)
+            }
+          }
         }
         if let rimanenti = dieta.testoRimanenti(formati) {
-          Text(rimanenti)
-            .font(.system(.footnote, design: .monospaced))
+          Text("\(dieta.testoEnergia(formati)) · \(rimanenti)")
+            .font(.system(.caption, design: .monospaced))
             .foregroundStyle(dieta.oltre ? Stile.brandTesto : Stile.testoTenue)
         }
-        ForEach(dieta.macro, id: \.chiave) { riga in
-          RigaValore(nome: riga.nome, valore: riga.testo)
-        }
       }
-      .glassPanel()
+      .glassPanel(tinta: verde)
     }
 
     // MARK: - Pasti
 
+    /// Un pasto: la foto (o la tessera del pasto), lo slot, la ricetta e la
+    /// spunta. Un pasto mangiato ha il bordo verde, uno saltato si spegne.
     private func pasto(_ slot: SlotGiorno) -> some View {
       let vista = slot.vista(giorno: giorno, oggi: oggi)
-      return VStack(alignment: .leading, spacing: 10) {
-        HStack {
-          Text(slot.titolo)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(Stile.testo)
-          Spacer()
-          Text(vista.testo)
-            .font(.system(.footnote, design: .monospaced))
-            .foregroundStyle(Stile.testoTenue)
-        }
-        if let piano = slot.planned {
-          HStack(spacing: 8) {
-            cosa(slot, piano: piano)
-            if let id = piano.id, giorno <= oggi, vista != .vuoto {
-              spunta(id: id, mangiato: slot.mangiato)
-            }
+      return HStack(spacing: 12) {
+        cosa(slot)
+        if let id = slot.planned?.id, giorno <= oggi, vista != .vuoto {
+          PulsanteMangiato(mangiato: slot.mangiato, abilitato: !inCorso) {
+            Task { await conferma(id: id, mangiato: !slot.mangiato) }
           }
-        } else if slot.mangiato, let elenco = slot.elenco {
-          Text(elenco)
-            .font(.subheadline)
-            .foregroundStyle(Stile.testoTenue)
-        } else {
-          Text("Niente in programma")
-            .font(.subheadline)
-            .foregroundStyle(Stile.testoTenue)
         }
       }
-      .glassPanel()
+      .glassPanel(tinta: vista == .mangiato ? verde : nil, spazio: 12)
+      .opacity(vista == .saltato ? 0.6 : 1)
+      .animation(Stile.molla, value: vista)
     }
 
     @ViewBuilder
-    private func cosa(_ slot: SlotGiorno, piano: SlotGiorno.Pianificato) -> some View {
-      let nome = piano.recipeName ?? piano.items.map(\.name).joined(separator: " · ")
-      let riga = HStack(spacing: 14) {
-        FotoRicetta(indirizzo: piano.recipeImage)
-        VStack(alignment: .leading, spacing: 4) {
-          Text(nome)
-            .font(.subheadline)
-            .foregroundStyle(Stile.testo)
-            .multilineTextAlignment(.leading)
-          Text(formati.energia(slot.kcal ?? piano.kcal))
-            .font(.system(.footnote, design: .monospaced))
-            .foregroundStyle(Stile.testoTenue)
+    private func cosa(_ slot: SlotGiorno) -> some View {
+      let vista = slot.vista(giorno: giorno, oggi: oggi)
+      let riga = HStack(spacing: 12) {
+        if let immagine = slot.planned?.recipeImage {
+          FotoRicetta(indirizzo: immagine, forma: .miniatura)
+        } else {
+          Tessera(
+            simbolo: GiornoDieta.simboliSlot[slot.slot] ?? "fork.knife",
+            tinta: vista == .vuoto ? Stile.testoTenue : verde, lato: 56)
         }
-      }
-      if let ricetta = piano.recipeId {
-        NavigationLink {
-          RicettaView(id: ricetta)
-        } label: {
-          HStack {
-            riga
-            Spacer()
-            Image(systemName: "chevron.right")
-              .font(.footnote)
+        VStack(alignment: .leading, spacing: 3) {
+          HStack(spacing: 6) {
+            Text(slot.titolo.uppercased())
+              .font(.system(.caption2, design: .monospaced).weight(.semibold))
+              .tracking(0.8)
+              .foregroundStyle(verde)
+            Text(vista.testo)
+              .font(.caption2)
+              .foregroundStyle(Stile.testoTenue)
+          }
+          Text(nome(slot) ?? "Niente in programma")
+            .font(.subheadline.weight(nome(slot) == nil ? .regular : .medium))
+            .foregroundStyle(nome(slot) == nil ? Stile.testoTenue : Stile.testo)
+            .multilineTextAlignment(.leading)
+            .lineLimit(2)
+          if let kcal = slot.kcal {
+            Text(formati.energia(kcal))
+              .font(.system(.caption, design: .monospaced))
               .foregroundStyle(Stile.testoTenue)
           }
         }
-        .buttonStyle(.plain)
-      } else {
-        HStack {
-          riga
-          Spacer(minLength: 0)
+        Spacer(minLength: 0)
+      }
+      if let ricetta = slot.planned?.recipeId {
+        NavigationLink {
+          RicettaView(id: ricetta)
+            .destinazioneZoom(ricetta + slot.slot, in: zoom)
+        } label: {
+          riga.contentShape(Rectangle())
         }
+        .buttonStyle(StilePremuto())
+        .sorgenteZoom(ricetta + slot.slot, in: zoom)
+      } else {
+        riga
       }
     }
 
-    private func spunta(id: String, mangiato: Bool) -> some View {
-      Button {
-        Task { await conferma(id: id, mangiato: !mangiato) }
-      } label: {
-        Image(systemName: mangiato ? "arrow.uturn.backward" : "checkmark").glassIcona()
+    private func nome(_ slot: SlotGiorno) -> String? {
+      if let piano = slot.planned {
+        return piano.recipeName ?? piano.items.map(\.name).joined(separator: " · ")
       }
-      .buttonStyle(.plain)
-      .accessibilityLabel(mangiato ? "Annulla" : "Mangiato")
-      .disabled(inCorso)
+      return slot.mangiato ? slot.elenco : nil
     }
 
     // MARK: - Dati
@@ -168,7 +181,6 @@
       inCorso = true
       defer { inCorso = false }
       if await sessione.conferma(piano: id, mangiato: mangiato) {
-        riuscite += 1
         sessione.mostra(Avviso(mangiato ? "Mangiato" : "Di nuovo in programma"))
       } else {
         sessione.mostra(.nonSalvato)

@@ -14,7 +14,7 @@
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
             Scheletro(righe: 4).glassPanel()
@@ -26,14 +26,16 @@
             SezioneErrore(errore: errore).glassPanel()
           case .pronto(let piani):
             if piani.isEmpty { vuoto }
-            ForEach(piani) { piano in
+            ForEach(Array(piani.enumerated()), id: \.element.id) { indice, piano in
               scheda(piano)
+                .comparsa(indice)
             }
           }
         }
-        .padding(16)
+        .padding(.horizontal, Stile.margine)
+        .padding(.bottom, 24)
       }
-      .background(SfondoConAlone().ignoresSafeArea())
+      .sfondoPagina()
       .navigationTitle("Piani")
       .toolbar {
         ToolbarItem(placement: .topBarTrailing) {
@@ -69,30 +71,37 @@
     }
 
     private var vuoto: some View {
-      VStack(alignment: .leading, spacing: 8) {
-        Text("Nessun piano")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
-        Text("Un piano è una settimana tipo: per ogni giorno scegli la ricetta di ogni pasto.")
-          .font(.subheadline)
-          .foregroundStyle(Stile.testoTenue)
+      StatoVuoto(
+        simbolo: "calendar.badge.plus", titolo: "Nessun piano",
+        testo: "Un piano è una settimana tipo: per ogni giorno scegli la ricetta di ogni pasto.",
+        tinta: Modulo.nutrizione.colore
+      ) {
+        Button("Crea un piano") { nuovo = true }
+          .pulsantePieno(Modulo.nutrizione.colore)
+          .buttonStyle(StilePremuto())
       }
-      .glassPanel()
     }
 
     private func scheda(_ piano: TemplateSettimana) -> some View {
       VStack(alignment: .leading, spacing: 14) {
-        VStack(alignment: .leading, spacing: 4) {
-          Text(piano.name)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(Stile.testo)
-          Text(piano.sottotitolo)
-            .font(.system(.footnote, design: .monospaced))
-            .foregroundStyle(Stile.testoTenue)
-        }
         HStack(spacing: 12) {
-          Button("Programma") { daProgrammare = piano }
-            .glassChip()
+          Tessera(simbolo: "calendar", tinta: Modulo.nutrizione.colore, lato: 40)
+          VStack(alignment: .leading, spacing: 2) {
+            Text(piano.name)
+              .font(.headline)
+              .foregroundStyle(Stile.testo)
+            Text(piano.sottotitolo)
+              .font(.system(.caption, design: .monospaced))
+              .foregroundStyle(Stile.testoTenue)
+          }
+        }
+        HStack(spacing: 8) {
+          Button {
+            daProgrammare = piano
+          } label: {
+            Label("Programma", systemImage: "calendar.badge.clock")
+          }
+          .pulsantePieno(Modulo.nutrizione.colore)
           Button("Modifica") { daModificare = piano }
             .glassChip()
           Spacer()
@@ -106,6 +115,7 @@
           .buttonStyle(.plain)
           .accessibilityLabel("Elimina \(piano.name)")
         }
+        .buttonStyle(StilePremuto())
       }
       .glassPanel()
     }
@@ -147,6 +157,8 @@
     @State private var sceltaSlot: SlotScelto?
     @State private var errore: String?
     @State private var salvando = false
+    @Namespace private var selezione
+    private let verde = Modulo.nutrizione.colore
 
     var body: some View {
       NavigationStack {
@@ -170,7 +182,7 @@
           }
           .padding(16)
         }
-        .background(SfondoConAlone().ignoresSafeArea())
+        .sfondoPagina()
         .navigationTitle(piano == nil ? "Nuovo piano" : "Modifica piano")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -184,7 +196,7 @@
           }
         }
       }
-      .tint(Stile.brand)
+      .tint(Modulo.nutrizione.colore)
       .sheet(item: $sceltaSlot) { scelto in
         SceltaRicettaView(ricette: ricette) { id in
           modulo.ricette[.init(giorno: giorno, slot: scelto.id)] = id
@@ -208,18 +220,26 @@
           } label: {
             VStack(spacing: 4) {
               Text(TemplateSettimana.lettere[numero - 1])
-                .font(.system(.subheadline, design: .monospaced).weight(.semibold))
+                .font(.system(.subheadline, design: .monospaced).weight(.bold))
               Circle()
-                .fill(haPasti(numero) ? Stile.brand : Color.clear)
-                .frame(width: 5, height: 5)
+                .fill(haPasti(numero) ? (giorno == numero ? Stile.inchiostro : verde) : Color.clear)
+                .frame(width: 4, height: 4)
             }
-            .foregroundStyle(giorno == numero ? Stile.testo : Stile.testoTenue)
+            .foregroundStyle(giorno == numero ? Stile.inchiostro : Stile.testo)
             .frame(maxWidth: .infinity, minHeight: 48)
-            .background(
-              Color.white.opacity(giorno == numero ? 0.14 : 0.04),
-              in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .background {
+              if giorno == numero {
+                RoundedRectangle(cornerRadius: Stile.raggioPiccolo, style: .continuous)
+                  .fill(verde)
+                  .matchedGeometryEffect(id: "giorno", in: selezione)
+              } else {
+                RoundedRectangle(cornerRadius: Stile.raggioPiccolo, style: .continuous)
+                  .fill(Stile.velo)
+              }
+            }
           }
-          .buttonStyle(.plain)
+          .buttonStyle(StilePremuto())
+          .animation(Stile.molla, value: giorno)
           .accessibilityLabel(nomeGiorno(numero))
           .accessibilityAddTraits(giorno == numero ? .isSelected : [])
         }
@@ -237,10 +257,13 @@
     private func casella(_ slot: String) -> some View {
       let chiave = ModuloPiano.Casella(giorno: giorno, slot: slot)
       let scelta = modulo.ricette[chiave].flatMap { id in ricette.first { $0.id == id } }
-      return HStack {
-        VStack(alignment: .leading, spacing: 4) {
+      return HStack(spacing: 12) {
+        Tessera(
+          simbolo: GiornoDieta.simboliSlot[slot] ?? "fork.knife",
+          tinta: modulo.ricette[chiave] == nil ? Stile.testoTenue : verde, lato: 32)
+        VStack(alignment: .leading, spacing: 2) {
           Text(GiornoDieta.nomiSlot[slot] ?? slot)
-            .font(.footnote)
+            .font(.caption)
             .foregroundStyle(Stile.testoTenue)
           Button {
             sceltaSlot = SlotScelto(id: slot)
@@ -334,7 +357,7 @@
           }
           .padding(16)
         }
-        .background(SfondoConAlone().ignoresSafeArea())
+        .sfondoPagina()
         .navigationTitle("Ricetta")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -343,7 +366,7 @@
           }
         }
       }
-      .tint(Stile.brand)
+      .tint(Modulo.nutrizione.colore)
     }
   }
 
@@ -366,7 +389,7 @@
           Section {
             DatePicker("Da", selection: $da, displayedComponents: .date)
             Toggle("Fino a una data", isOn: $finoAUnaData)
-              .tint(Stile.brand)
+              .tint(Modulo.nutrizione.colore)
             if finoAUnaData {
               DatePicker("Fino al", selection: $fino, in: da..., displayedComponents: .date)
             }
@@ -397,7 +420,7 @@
         }
         .environment(\.timeZone, formati.fuso)
         .scrollContentBackground(.hidden)
-        .background(SfondoConAlone().ignoresSafeArea())
+        .sfondoPagina()
         .navigationTitle(piano.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -411,7 +434,7 @@
           }
         }
       }
-      .tint(Stile.brand)
+      .tint(Modulo.nutrizione.colore)
     }
 
     private func programma() async {

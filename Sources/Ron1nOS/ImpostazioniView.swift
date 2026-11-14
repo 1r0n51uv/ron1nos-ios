@@ -2,67 +2,91 @@
   import Ron1nKit
   import SwiftUI
 
-  /// Le Impostazioni, per categoria: ognuna apre la sua pagina, così non c'è
-  /// tutto assieme in una colonna sola.
+  /// Le Impostazioni (IOS-043): le categorie in un solo pannello, ognuna con
+  /// la sua tessera colorata come nelle Impostazioni di iOS, e sotto server e
+  /// versione, che si leggono senza aprire niente.
   struct ImpostazioniView: View {
     @EnvironmentObject private var sessione: Sessione
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 12) {
-          categoria("Accesso", simbolo: "person.crop.circle", dettaglio: "Login e token di Access") {
-            AccessoView()
-          }
-          categoria("Pasti", simbolo: "fork.knife", dettaglio: "Orari dei pasti e rinvio") {
-            OrariPastiView()
-          }
-          categoria("Notifiche", simbolo: "bell", dettaglio: "Permesso e prove degli avvisi") {
-            AvvisiView()
-          }
-          categoria("Informazioni", simbolo: "info.circle", dettaglio: "Server e versione") {
-            VStack(alignment: .leading, spacing: 12) {
-              RigaValore(nome: "Server", valore: sessione.autenticazione.indirizzo.host() ?? "·")
-              RigaValore(nome: "Versione", valore: versione)
+        VStack(alignment: .leading, spacing: Stile.traCard) {
+          VStack(spacing: 0) {
+            categoria(
+              "Accesso", simbolo: "key.fill", tinta: Modulo.server.colore,
+              dettaglio: "Codice e token di Access"
+            ) {
+              AccessoView()
             }
-            .glassPanel()
+            divisore
+            categoria(
+              "Pasti", simbolo: "clock.fill", tinta: Modulo.nutrizione.colore,
+              dettaglio: "Orari dei pasti e rinvio"
+            ) {
+              OrariPastiView()
+            }
+            divisore
+            categoria(
+              "Notifiche", simbolo: "bell.badge.fill", tinta: Stile.brandTesto,
+              dettaglio: "Permesso e prove degli avvisi"
+            ) {
+              AvvisiView()
+            }
           }
+          .glassPanel(spazio: 4)
+          .comparsa(0)
+
+          VStack(alignment: .leading, spacing: 12) {
+            IntestazioneCard(
+              titolo: "Informazioni", simbolo: "info.circle", tinta: Modulo.impostazioni.colore)
+            RigaValore(nome: "Server", valore: sessione.autenticazione.indirizzo.host() ?? "·")
+            RigaValore(nome: "Versione", valore: versione)
+          }
+          .glassPanel()
+          .comparsa(1)
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
+        .padding(.horizontal, Stile.margine)
+        .padding(.top, 4)
       }
-      .background(SfondoConAlone().ignoresSafeArea())
+      .sfondoPagina()
       .navigationTitle("Impostazioni")
+    }
+
+    private var divisore: some View {
+      Rectangle()
+        .fill(Stile.bordo)
+        .frame(height: 0.5)
+        .padding(.leading, 58)
     }
 
     /// Una riga che apre la pagina della categoria.
     private func categoria<Contenuto: View>(
-      _ titolo: String, simbolo: String, dettaglio: String, @ViewBuilder contenuto: @escaping () -> Contenuto
+      _ titolo: String, simbolo: String, tinta: Color, dettaglio: String,
+      @ViewBuilder contenuto: @escaping () -> Contenuto
     ) -> some View {
       NavigationLink {
         PaginaImpostazioni(titolo: titolo, contenuto: contenuto)
       } label: {
         HStack(spacing: 14) {
-          Image(systemName: simbolo)
-            .font(.title3)
-            .foregroundStyle(Stile.testo)
-            .frame(width: 32)
+          Tessera(simbolo: simbolo, tinta: tinta, lato: 32)
           VStack(alignment: .leading, spacing: 2) {
             Text(titolo)
               .font(.subheadline.weight(.semibold))
               .foregroundStyle(Stile.testo)
             Text(dettaglio)
-              .font(.footnote)
+              .font(.caption)
               .foregroundStyle(Stile.testoTenue)
           }
           Spacer()
           Image(systemName: "chevron.right")
-            .font(.footnote)
+            .font(.caption.weight(.semibold))
             .foregroundStyle(Stile.testoTenue)
         }
-        .frame(minHeight: 44)
-        .glassPanel()
+        .padding(.horizontal, 12)
+        .frame(minHeight: 60)
+        .contentShape(Rectangle())
       }
-      .buttonStyle(.plain)
+      .buttonStyle(StilePremuto())
     }
 
     /// "0.1.68 (68)": la versione e la build scritte dal builder nell'Info.plist.
@@ -81,13 +105,14 @@
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: Stile.traCard) {
           contenuto()
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
+        .padding(.horizontal, Stile.margine)
+        .padding(.top, 4)
+        .padding(.bottom, 24)
       }
-      .background(SfondoConAlone().ignoresSafeArea())
+      .sfondoPagina()
       .navigationTitle(titolo)
       .navigationBarTitleDisplayMode(.inline)
     }

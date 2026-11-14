@@ -15,9 +15,8 @@
 
     var body: some View {
       VStack(alignment: .leading, spacing: 16) {
-        Text("Avvisi dei download")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
+        IntestazioneCard(
+          titolo: "Avvisi dei download", simbolo: "arrow.down.circle.fill", tinta: Modulo.torrent.colore)
         VStack(alignment: .leading, spacing: 12) {
           RigaValore(nome: "Permesso", valore: stato?.permesso ?? "·")
           RigaValore(nome: "Programmati", valore: programmati)
@@ -34,10 +33,10 @@
         }
         Button("Prova") { Task { await prova() } }
           .glassChip()
-        Text("Promemoria dei pasti")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
-          .padding(.top, 8)
+        IntestazioneCard(
+          titolo: "Promemoria dei pasti", simbolo: "fork.knife", tinta: Modulo.nutrizione.colore
+        )
+        .padding(.top, 8)
         if provaPastoInviata {
           Text(
             "Prova inviata: esci dall'app, fra 10 secondi arriva. Tieni premuta la notifica (o tirala giù) per vedere Mangiato e Rimanda."

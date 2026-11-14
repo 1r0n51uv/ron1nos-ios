@@ -62,7 +62,7 @@
           default: pagina { riepilogo }
           }
         }
-        .background(SfondoConAlone().ignoresSafeArea())
+        .sfondoPagina()
         .navigationTitle(AggiungiTorrent.titolo(passo: passo))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -72,7 +72,7 @@
         }
         .safeAreaInset(edge: .bottom) { piede }
       }
-      .tint(Stile.brand)
+      .tint(Modulo.torrent.colore)
       .presentationDetents([.large])
       .fileImporter(
         isPresented: $sceltaFile, allowedContentTypes: [AggiungiTorrentView.tipoTorrent]
@@ -339,18 +339,18 @@
             .truncationMode(.middle)
         }
         HStack(spacing: 12) {
-          Tessera(titolo: "Da scaricare", valore: Formato.dimensione(servono)) {
+          TesseraRiepilogo(titolo: "Da scaricare", valore: Formato.dimensione(servono)) {
             "\(scelti.count) file su \(bozza.files.count)"
           }
           switch spazio {
           case .pronto(let libero):
-            Tessera(titolo: "Spazio libero", valore: Formato.dimensione(libero.free)) {
+            TesseraRiepilogo(titolo: "Spazio libero", valore: Formato.dimensione(libero.free)) {
               "dopo il download: \(Formato.dimensione(max(0, libero.free - servono)))"
             }
           case .inCorso:
-            Tessera(titolo: "Spazio libero", valore: "—") { "lettura…" }
+            TesseraRiepilogo(titolo: "Spazio libero", valore: "—") { "lettura…" }
           default:
-            Tessera(titolo: "Spazio libero", valore: "—") { "non disponibile" }
+            TesseraRiepilogo(titolo: "Spazio libero", valore: "—") { "non disponibile" }
           }
         }
         HStack {
@@ -433,6 +433,8 @@
             }
           }
           .buttonStyle(.borderedProminent)
+          .buttonBorderShape(.capsule)
+          .foregroundStyle(Stile.inchiostro)
           .fontWeight(.semibold)
           .disabled(!puoAvanzare)
         }
@@ -515,7 +517,7 @@
   }
 
   /// Una tessera del riepilogo: numero grande in mono e una nota.
-  private struct Tessera: View {
+  private struct TesseraRiepilogo: View {
     let titolo: String
     let valore: String
     let nota: () -> String

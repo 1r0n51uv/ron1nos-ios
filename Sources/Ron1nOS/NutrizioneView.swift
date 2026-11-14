@@ -7,11 +7,11 @@
     case piani, ricette, spesa
   }
 
-  /// La pagina Nutrizione (IOS-032): un giorno alla volta, oggi all'apertura.
-  /// Uno swipe a sinistra porta al giorno dopo, a destra a quello prima; in
-  /// alto una barra per scegliere un giorno della settimana o, dal
-  /// calendario, una data qualsiasi. Da qui si arriva ai piani, alle ricette
-  /// e alla spesa.
+  /// La pagina Nutrizione (IOS-032, IOS-043): un giorno alla volta, oggi
+  /// all'apertura. Uno swipe a sinistra porta al giorno dopo, a destra a
+  /// quello prima; in alto una barra per scegliere un giorno della settimana
+  /// o, dal calendario, una data qualsiasi. Sotto, sempre in vista, le
+  /// scorciatoie a piani, ricette e spesa.
   struct NutrizioneView: View {
     @EnvironmentObject private var sessione: Sessione
     @Environment(\.formati) private var formati
@@ -28,8 +28,11 @@
           giorno: giorno, oggi: oggi, settimana: settimana.valore, scegli: vai,
           calendario: { calendario = true }
         )
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.horizontal, Stile.margine)
+        .padding(.top, 4)
+        scorciatoie
+          .padding(.horizontal, Stile.margine)
+          .padding(.vertical, 8)
         GiornoNutrizioneView(giorno: giorno)
           .id(giorno)
           .transition(
@@ -38,7 +41,7 @@
               removal: .move(edge: avanti ? .leading : .trailing)))
       }
       .clipped()
-      .background(SfondoConAlone().ignoresSafeArea())
+      .sfondoPagina()
       .contentShape(Rectangle())
       .simultaneousGesture(
         DragGesture(minimumDistance: 40).onEnded { spostamento in
@@ -55,17 +58,16 @@
         ToolbarItem(placement: .topBarLeading) {
           if giorno != oggi {
             Button("Oggi") { vai(oggi) }
+              .transition(.opacity)
           }
         }
         ToolbarItem(placement: .topBarTrailing) {
-          Menu {
-            Button("Piani", systemImage: "calendar") { destinazione = .piani }
-            Button("Ricette", systemImage: "book") { destinazione = .ricette }
-            Button("Spesa", systemImage: "cart") { destinazione = .spesa }
+          Button {
+            calendario = true
           } label: {
-            Image(systemName: "ellipsis")
+            Image(systemName: "calendar")
           }
-          .accessibilityLabel("Piani, ricette e spesa")
+          .accessibilityLabel("Scegli una data")
         }
       }
       .navigationDestination(item: $destinazione) { scelta in
@@ -91,6 +93,36 @@
     }
 
     private var oggi: String { Settimana.oggi(fuso: formati.fuso) }
+
+    /// Piani, ricette e spesa: tre capsule sempre in vista, non in un menu.
+    private var scorciatoie: some View {
+      HStack(spacing: 8) {
+        scorciatoia("Piani", simbolo: "calendar.badge.clock", destinazione: .piani)
+        scorciatoia("Ricette", simbolo: "book.closed.fill", destinazione: .ricette)
+        scorciatoia("Spesa", simbolo: "cart.fill", destinazione: .spesa)
+      }
+    }
+
+    private func scorciatoia(_ titolo: String, simbolo: String, destinazione scelta: DestinazioneNutrizione)
+      -> some View
+    {
+      Button {
+        destinazione = scelta
+      } label: {
+        HStack(spacing: 6) {
+          Image(systemName: simbolo)
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(Modulo.nutrizione.colore)
+          Text(titolo)
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(Stile.testo)
+        }
+        .frame(maxWidth: .infinity, minHeight: 40)
+        .background(Stile.velo, in: Capsule())
+        .overlay(Capsule().strokeBorder(Stile.bordo))
+      }
+      .buttonStyle(StilePremuto())
+    }
 
     private struct Carica: Equatable {
       let lunedi: String
@@ -124,6 +156,8 @@
     let scegli: (String) -> Void
     let calendario: () -> Void
     @Environment(\.formati) private var formati
+    @Namespace private var selezione
+    private let verde = Modulo.nutrizione.colore
 
     var body: some View {
       HStack(spacing: 4) {
@@ -133,14 +167,10 @@
         ) { data in
           cella(data)
         }
-        Button(action: calendario) {
-          Image(systemName: "calendar")
-            .font(.title3)
-            .foregroundStyle(Stile.testo)
-            .frame(width: 44, height: 56)
-        }
-        .accessibilityLabel("Scegli una data")
       }
+      .padding(4)
+      .background(Stile.velo, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+      .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(Stile.bordo))
     }
 
     private func cella(_ data: String) -> some View {
@@ -148,23 +178,29 @@
       return Button {
         scegli(data)
       } label: {
-        VStack(spacing: 4) {
+        VStack(spacing: 3) {
           Text(lettera(data))
-            .font(.system(.footnote, design: .monospaced))
-            .foregroundStyle(Stile.testoTenue)
+            .font(.system(.caption2, design: .monospaced).weight(.medium))
+            .foregroundStyle(scelto ? Stile.inchiostro.opacity(0.7) : Stile.testoTenue)
           Text(numero(data))
-            .font(.system(.subheadline, design: .monospaced).weight(.semibold))
-            .foregroundStyle(data == oggi ? Stile.brandTesto : Stile.testo)
+            .font(.system(.subheadline, design: .monospaced).weight(.bold))
+            .foregroundStyle(scelto ? Stile.inchiostro : data == oggi ? verde : Stile.testo)
           Circle()
-            .fill(haQualcosa(data) ? Stile.brand : Color.clear)
-            .frame(width: 5, height: 5)
+            .fill(haQualcosa(data) ? (scelto ? Stile.inchiostro : verde) : Color.clear)
+            .frame(width: 4, height: 4)
         }
-        .frame(maxWidth: .infinity, minHeight: 56)
-        .background(
-          Color.white.opacity(scelto ? 0.14 : 0.04),
-          in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .frame(maxWidth: .infinity, minHeight: 52)
+        .background {
+          if scelto {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+              .fill(verde)
+              .matchedGeometryEffect(id: "giorno", in: selezione)
+          }
+        }
+        .contentShape(Rectangle())
       }
-      .buttonStyle(.plain)
+      .buttonStyle(StilePremuto())
+      .animation(Stile.molla, value: giorno)
       .accessibilityLabel(etichetta(data))
       .accessibilityAddTraits(scelto ? .isSelected : [])
     }
@@ -206,7 +242,7 @@
           .environment(\.locale, Locale(identifier: "it_IT"))
           .padding(16)
           .frame(maxHeight: .infinity, alignment: .top)
-          .background(SfondoConAlone().ignoresSafeArea())
+          .sfondoPagina()
           .navigationTitle("Scegli una data")
           .navigationBarTitleDisplayMode(.inline)
           .toolbar {
@@ -219,7 +255,8 @@
             }
           }
       }
-      .tint(Stile.brand)
+      .tint(Modulo.nutrizione.colore)
+      .environment(\.modulo, .nutrizione)
       .presentationDetents([.medium, .large])
       .onAppear {
         if let attuale = Settimana.data(giorno, fuso: formati.fuso) { data = attuale }

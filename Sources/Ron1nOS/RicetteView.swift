@@ -2,8 +2,8 @@
   import Ron1nKit
   import SwiftUI
 
-  /// Le ricette (IOS-034): quelle importate dai preferiti di YAZIO e quelle
-  /// create qui. Un tocco apre la ricetta.
+  /// Le ricette (IOS-034, IOS-043): quelle importate dai preferiti di YAZIO e
+  /// quelle create qui, in una griglia di foto. Un tocco apre la ricetta.
   struct RicetteView: View {
     @EnvironmentObject private var sessione: Sessione
     @Environment(\.formati) private var formati
@@ -11,10 +11,13 @@
     @State private var nuova = false
     @State private var importando = false
     @State private var cerca = ""
+    @Namespace private var zoom
+
+    private let colonne = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
             Scheletro(righe: 5).glassPanel()
@@ -31,19 +34,26 @@
             } else if mostrate.isEmpty {
               nessunRisultato
             }
-            ForEach(mostrate) { ricetta in
-              NavigationLink {
-                RicettaView(id: ricetta.id)
-              } label: {
-                riga(ricetta)
+            LazyVGrid(columns: colonne, spacing: 12) {
+              ForEach(Array(mostrate.enumerated()), id: \.element.id) { indice, ricetta in
+                NavigationLink {
+                  RicettaView(id: ricetta.id)
+                    .destinazioneZoom(ricetta.id, in: zoom)
+                } label: {
+                  riquadro(ricetta)
+                }
+                .buttonStyle(StilePremuto())
+                .sorgenteZoom(ricetta.id, in: zoom)
+                .comparsa(indice)
               }
-              .buttonStyle(.plain)
             }
+            .animation(Stile.molla, value: mostrate.map(\.id))
           }
         }
-        .padding(16)
+        .padding(.horizontal, Stile.margine)
+        .padding(.bottom, 24)
       }
-      .background(SfondoConAlone().ignoresSafeArea())
+      .sfondoPagina()
       .navigationTitle("Ricette")
       .searchable(
         text: $cerca, placement: .navigationBarDrawer(displayMode: .always),
@@ -69,6 +79,7 @@
         RicettaFormView(ricetta: nil) { await carica() }
           .environmentObject(sessione)
           .environment(\.formati, formati)
+          .environment(\.modulo, .nutrizione)
       }
       .refreshable { await carica() }
       .task(id: sessione.versione) { await carica() }
@@ -78,47 +89,51 @@
     private var cercando: Bool { !cerca.trimmingCharacters(in: .whitespaces).isEmpty }
 
     private var nessunRisultato: some View {
-      VStack(alignment: .leading, spacing: 8) {
-        Text("Nessuna ricetta")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
-        Text("Non ne trovo con \"\(cerca)\" nel nome o tra gli ingredienti.")
-          .font(.subheadline)
-          .foregroundStyle(Stile.testoTenue)
-      }
-      .glassPanel()
+      StatoVuoto(
+        simbolo: "magnifyingglass", titolo: "Nessuna ricetta",
+        testo: "Non ne trovo con \"\(cerca)\" nel nome o tra gli ingredienti.",
+        tinta: Modulo.nutrizione.colore)
     }
 
+    /// Senza ricette le due strade per averne sono pulsanti, non voci di menu.
     private var vuote: some View {
-      VStack(alignment: .leading, spacing: 8) {
-        Text("Nessuna ricetta")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
-        Text("Importa i preferiti di YAZIO dal menu, oppure creane una con il +.")
-          .font(.subheadline)
-          .foregroundStyle(Stile.testoTenue)
+      StatoVuoto(
+        simbolo: "book.closed.fill", titolo: "Nessuna ricetta",
+        testo: "Importa i preferiti di YAZIO, oppure creane una qui.", tinta: Modulo.nutrizione.colore
+      ) {
+        HStack(spacing: 8) {
+          Button {
+            Task { await importa() }
+          } label: {
+            Label("Importa da YAZIO", systemImage: "arrow.down.circle.fill")
+          }
+          .pulsantePieno(Modulo.nutrizione.colore)
+          .disabled(importando)
+          Button("Nuova") { nuova = true }
+            .glassChip()
+        }
+        .buttonStyle(StilePremuto())
       }
-      .glassPanel()
     }
 
-    private func riga(_ ricetta: Ricetta) -> some View {
-      HStack(spacing: 14) {
-        FotoRicetta(indirizzo: ricetta.imageUrl)
-        VStack(alignment: .leading, spacing: 4) {
-          Text(ricetta.name)
-            .font(.subheadline)
-            .foregroundStyle(Stile.testo)
-            .multilineTextAlignment(.leading)
-          Text(ricetta.sottotitolo(formati))
-            .font(.system(.footnote, design: .monospaced))
-            .foregroundStyle(Stile.testoTenue)
-        }
-        Spacer()
-        Image(systemName: "chevron.right")
-          .font(.footnote)
-          .foregroundStyle(Stile.testoTenue)
+    /// Una ricetta nella griglia: foto (o segnaposto), nome e kcal.
+    private func riquadro(_ ricetta: Ricetta) -> some View {
+      VStack(alignment: .leading, spacing: 8) {
+        FotoRicetta(indirizzo: ricetta.imageUrl, forma: .riquadro, segnaposto: true)
+        Text(ricetta.name)
+          .font(.footnote.weight(.semibold))
+          .foregroundStyle(Stile.testo)
+          .multilineTextAlignment(.leading)
+          .lineLimit(2, reservesSpace: true)
+        Text(formati.energia(ricetta.kcal))
+          .font(.system(.caption2, design: .monospaced))
+          .foregroundStyle(Modulo.nutrizione.colore)
       }
-      .glassPanel()
+      .padding(8)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .background(Stile.velo, in: RoundedRectangle(cornerRadius: Stile.raggio, style: .continuous))
+      .overlay(RoundedRectangle(cornerRadius: Stile.raggio, style: .continuous).strokeBorder(Stile.bordo))
+      .accessibilityElement(children: .combine)
     }
 
     private func carica() async {
@@ -141,7 +156,8 @@
     }
   }
 
-  /// Una ricetta (IOS-034): totali, ingredienti, procedimento e note.
+  /// Una ricetta (IOS-034, IOS-043): la foto in copertina, che si allunga
+  /// tirando giù, poi kcal e macro a colori, ingredienti, procedimento e note.
   struct RicettaView: View {
     let id: String
     @EnvironmentObject private var sessione: Sessione
@@ -152,9 +168,11 @@
     @State private var eliminando = false
     @State private var avviando = false
 
+    private let verde = Modulo.nutrizione.colore
+
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
             Scheletro(righe: 6).glassPanel()
@@ -171,32 +189,44 @@
               SezioneErrore(errore: errore).glassPanel()
             }
           case .pronto(let ricetta):
-            if ricetta.imageUrl != nil {
-              FotoRicetta(indirizzo: ricetta.imageUrl, forma: .copertina)
-            } else {
-              generaFoto(ricetta)
-            }
+            copertina(ricetta)
+            Text(ricetta.name)
+              .font(.title2.weight(.bold))
+              .foregroundStyle(Stile.testo)
+              .padding(.top, 4)
+              .comparsa(0)
             totali(ricetta)
+              .comparsa(1)
             ingredienti(ricetta)
-            if !ricetta.steps.isEmpty { procedimento(ricetta) }
-            if let note = ricetta.notes, !note.isEmpty { noteDi(note) }
+              .comparsa(2)
+            if !ricetta.steps.isEmpty {
+              procedimento(ricetta)
+                .comparsa(3)
+            }
+            if let note = ricetta.notes, !note.isEmpty {
+              noteDi(note)
+                .comparsa(4)
+            }
           }
         }
-        .padding(16)
+        .padding(.horizontal, Stile.margine)
+        .padding(.bottom, 24)
       }
-      .background(SfondoConAlone().ignoresSafeArea())
+      .sfondoPagina()
       .navigationTitle(stato.valore?.name ?? "Ricetta")
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         if stato.valore != nil {
           ToolbarItem(placement: .topBarTrailing) {
+            Button("Modifica") { modifica = true }
+          }
+          ToolbarItem(placement: .topBarTrailing) {
             Menu {
-              Button("Modifica", systemImage: "pencil") { modifica = true }
               Button("Elimina", systemImage: "trash", role: .destructive) { eliminando = true }
             } label: {
               Image(systemName: "ellipsis")
             }
-            .accessibilityLabel("Modifica o elimina")
+            .accessibilityLabel("Altre azioni")
           }
         }
       }
@@ -210,6 +240,7 @@
         RicettaFormView(ricetta: stato.valore) { await carica() }
           .environmentObject(sessione)
           .environment(\.formati, formati)
+          .environment(\.modulo, .nutrizione)
       }
       .refreshable { await carica() }
       .task(id: sessione.versione) { await carica() }
@@ -222,10 +253,35 @@
       }
     }
 
+    /// La foto in copertina: tirando giù la pagina si allunga verso l'alto.
+    /// Senza foto, il segnaposto con il pulsante per generarla.
+    @ViewBuilder
+    private func copertina(_ ricetta: Ricetta) -> some View {
+      let altezza: CGFloat = 240
+      if ricetta.imageUrl != nil {
+        GeometryReader { spazio in
+          let tirata = max(0, spazio.frame(in: .scrollView).minY)
+          FotoRicetta(indirizzo: ricetta.imageUrl, forma: .libera)
+            .frame(width: spazio.size.width, height: altezza + tirata)
+            .clipShape(RoundedRectangle(cornerRadius: Stile.raggio, style: .continuous))
+            .offset(y: -tirata)
+        }
+        .frame(height: altezza)
+      } else {
+        ZStack {
+          FotoRicetta(indirizzo: nil, forma: .libera, segnaposto: true)
+            .frame(height: 160)
+            .clipShape(RoundedRectangle(cornerRadius: Stile.raggio, style: .continuous))
+          generaFoto(ricetta)
+            .padding(16)
+        }
+      }
+    }
+
     /// La ricetta senza foto: la si chiede all'agente del dojo (NUT-036).
     private func generaFoto(_ ricetta: Ricetta) -> some View {
       let inCorso = ricetta.photo?.inCorso == true || avviando
-      return VStack(alignment: .leading, spacing: 10) {
+      return VStack(spacing: 10) {
         Button {
           Task { await avvia(ricetta.id) }
         } label: {
@@ -235,10 +291,11 @@
               Text("Foto in preparazione")
             }
           } else {
-            Label("Genera foto", systemImage: "camera")
+            Label("Genera foto", systemImage: "camera.fill")
           }
         }
-        .glassChip()
+        .pulsantePieno(verde)
+        .buttonStyle(StilePremuto())
         .disabled(inCorso)
         if let errore = ricetta.photo?.error, ricetta.photo?.state == "failed" {
           Text("Non è riuscita: \(errore)")
@@ -248,6 +305,7 @@
           Text("Ci vuole circa un minuto. Puoi uscire: la foto arriva da sola.")
             .font(.footnote)
             .foregroundStyle(Stile.testoTenue)
+            .multilineTextAlignment(.center)
         }
       }
     }
@@ -265,31 +323,36 @@
       }
     }
 
+    /// Kcal e macro in quattro tessere colorate, poi il peso.
     private func totali(_ ricetta: Ricetta) -> some View {
-      VStack(alignment: .leading, spacing: 12) {
-        Text(formati.energia(ricetta.kcal))
-          .font(.system(.title2, design: .monospaced).weight(.semibold))
-          .foregroundStyle(Stile.testo)
-        RigaValore(nome: "Proteine", valore: "\(Formato.numero(ricetta.protein)) g")
-        RigaValore(nome: "Carboidrati", valore: "\(Formato.numero(ricetta.carbs)) g")
-        RigaValore(nome: "Grassi", valore: "\(Formato.numero(ricetta.fat)) g")
-        RigaValore(nome: "Peso", valore: "\(Formato.numero(ricetta.grams)) g")
+      VStack(alignment: .leading, spacing: 10) {
+        HStack(spacing: 8) {
+          Dato(
+            valore: Formato.numero(formati.valoreEnergia(ricetta.kcal)),
+            etichetta: formati.energyUnit.rawValue, tinta: verde)
+          Dato(valore: Formato.numero(ricetta.protein), etichetta: "Proteine", tinta: Color(Palette.proteine))
+          Dato(valore: Formato.numero(ricetta.carbs), etichetta: "Carbo", tinta: Color(Palette.carboidrati))
+          Dato(valore: Formato.numero(ricetta.fat), etichetta: "Grassi", tinta: Color(Palette.grassi))
+        }
+        Text("Macro in grammi · \(Formato.numero(ricetta.grams)) g in tutto")
+          .font(.system(.caption, design: .monospaced))
+          .foregroundStyle(Stile.testoTenue)
         if ricetta.incompleta {
           Text("Qualche alimento non c'è più: i totali non lo contano.")
             .font(.footnote)
             .foregroundStyle(Stile.brandTesto)
         }
       }
-      .glassPanel()
     }
 
     private func ingredienti(_ ricetta: Ricetta) -> some View {
       VStack(alignment: .leading, spacing: 12) {
-        Text("Ingredienti")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
+        IntestazioneCard(titolo: "Ingredienti · \(ricetta.items.count)", simbolo: "basket.fill", tinta: verde)
         ForEach(ricetta.items) { riga in
-          RigaValore(nome: riga.name, valore: "\(Formato.numero(riga.grams)) g")
+          HStack(spacing: 10) {
+            Circle().fill(verde).frame(width: 5, height: 5)
+            RigaValore(nome: riga.name, valore: "\(Formato.numero(riga.grams)) g")
+          }
         }
       }
       .glassPanel()
@@ -297,18 +360,18 @@
 
     private func procedimento(_ ricetta: Ricetta) -> some View {
       VStack(alignment: .leading, spacing: 14) {
-        Text("Procedimento")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
+        IntestazioneCard(titolo: "Procedimento", simbolo: "list.number", tinta: verde)
         ForEach(Array(ricetta.steps.enumerated()), id: \.offset) { numero, passo in
           HStack(alignment: .firstTextBaseline, spacing: 12) {
             Text("\(numero + 1)")
-              .font(.system(.footnote, design: .monospaced))
-              .foregroundStyle(Stile.testoTenue)
-              .frame(width: 20, alignment: .trailing)
+              .font(.system(.caption, design: .monospaced).weight(.bold))
+              .foregroundStyle(Stile.inchiostro)
+              .frame(width: 22, height: 22)
+              .background(verde, in: Circle())
             Text(passo)
               .font(.subheadline)
               .foregroundStyle(Stile.testo)
+              .fixedSize(horizontal: false, vertical: true)
           }
         }
       }
@@ -316,10 +379,8 @@
     }
 
     private func noteDi(_ note: String) -> some View {
-      VStack(alignment: .leading, spacing: 8) {
-        Text("Note")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
+      VStack(alignment: .leading, spacing: 10) {
+        IntestazioneCard(titolo: "Note", simbolo: "note.text", tinta: verde)
         Text(note)
           .font(.subheadline)
           .foregroundStyle(Stile.testoTenue)

@@ -44,8 +44,9 @@ public struct ColoreRGB: Equatable, Sendable {
   }
 }
 
-/// I colori del design system ron1nOS (tokens.json, `src/index.css` del
-/// sito), gli stessi per web e app.
+/// I colori del design system ron1nOS. Il fondo è nero e il vetro neutro;
+/// ogni modulo ha la sua tinta (IOS-043), che lo fa riconoscere a colpo
+/// d'occhio. Il rosso resta il marchio e il segnale di allarme.
 public enum Palette {
   /// Il rosso del marchio: barre, bordi, punti e interruttori.
   public static let brand = ColoreRGB(hex: 0xFF2A2A)
@@ -54,6 +55,29 @@ public enum Palette {
   public static let brandTesto = ColoreRGB(hex: 0xFF8A8A)
   public static let sfondo = ColoreRGB(hex: 0x070707)
   public static let bianco = ColoreRGB(hex: 0xFFFFFF)
+  /// Le tinte dei moduli (IOS-043), abbastanza chiare da reggere testi e
+  /// simboli sul fondo peggiore e scure abbastanza da reggere un simbolo
+  /// nero sopra di sé, nelle tessere.
+  public static let nutrizione = ColoreRGB(hex: 0x34D399)
+  public static let server = ColoreRGB(hex: 0x38BDF8)
+  public static let torrent = ColoreRGB(hex: 0xFBBF24)
+  public static let impostazioni = ColoreRGB(hex: 0xA5B4CB)
+  /// I tre macro, nei grafici e nelle barre.
+  public static let proteine = ColoreRGB(hex: 0x7DD3FC)
+  public static let carboidrati = ColoreRGB(hex: 0xFCD34D)
+  public static let grassi = ColoreRGB(hex: 0xF9A8D4)
+  /// Il nero dei simboli sopra una tinta.
+  public static let inchiostro = ColoreRGB(hex: 0x0A0A0A)
+
+  /// Il colore di un macro dalla sua chiave (`protein`, `carbs`, `fat`).
+  public static func macro(_ chiave: String) -> ColoreRGB {
+    switch chiave {
+    case "protein": proteine
+    case "carbs": carboidrati
+    default: grassi
+    }
+  }
+
   /// Opacità del velo bianco di card e pillole (IOS-003).
   public static let velo = 0.06
   /// Opacità del testo secondario, bianco.

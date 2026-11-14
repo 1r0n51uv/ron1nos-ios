@@ -12,15 +12,19 @@
 
     var body: some View {
       VStack(alignment: .leading, spacing: 16) {
-        Text("Orari dei pasti")
-          .font(.subheadline.weight(.semibold))
-          .foregroundStyle(Stile.testo)
+        IntestazioneCard(titolo: "Orari dei pasti", simbolo: "clock.fill", tinta: Modulo.nutrizione.colore)
         ForEach(GiornoDieta.ordineSlot, id: \.self) { slot in
-          DatePicker(
-            GiornoDieta.nomiSlot[slot] ?? slot, selection: orario(slot), displayedComponents: .hourAndMinute
-          )
-          .font(.subheadline)
-          .foregroundStyle(Stile.testo)
+          HStack(spacing: 12) {
+            Image(systemName: GiornoDieta.simboliSlot[slot] ?? "fork.knife")
+              .font(.subheadline)
+              .foregroundStyle(Modulo.nutrizione.colore)
+              .frame(width: 24)
+            DatePicker(
+              GiornoDieta.nomiSlot[slot] ?? slot, selection: orario(slot), displayedComponents: .hourAndMinute
+            )
+            .font(.subheadline)
+            .foregroundStyle(Stile.testo)
+          }
           .frame(minHeight: 44)
         }
         Stepper(value: rinvio, in: Promemoria.rinvii, step: 5) {
@@ -34,6 +38,7 @@
           .foregroundStyle(Stile.testoTenue)
       }
       .glassPanel()
+      .tint(Modulo.nutrizione.colore)
       .onAppear {
         if !letti { orari = sessione.promemoria }
       }

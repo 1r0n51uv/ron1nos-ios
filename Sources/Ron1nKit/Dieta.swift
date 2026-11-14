@@ -63,6 +63,12 @@ public struct GiornoDieta: Decodable, Equatable, Sendable {
   }
 
   /// I nomi degli slot, come sul sito.
+  /// Il simbolo SF di ogni pasto, nelle tessere (IOS-043).
+  public static let simboliSlot = [
+    "breakfast": "sunrise.fill", "morning_snack": "carrot.fill", "lunch": "sun.max.fill",
+    "afternoon_snack": "cup.and.saucer.fill", "dinner": "moon.stars.fill",
+  ]
+
   public static let nomiSlot = [
     "breakfast": "Colazione", "morning_snack": "Spuntino", "lunch": "Pranzo",
     "afternoon_snack": "Merenda", "dinner": "Cena",
@@ -145,7 +151,9 @@ public struct GiornoDieta: Decodable, Equatable, Sendable {
     ]
     return righe.map { chiave, nome, valore, obiettivo in
       let testo = obiettivo.map { "\(Formato.numero(valore)) / \(Formato.numero($0)) g" }
-      return RigaMacro(chiave: chiave, nome: nome, testo: testo ?? "\(Formato.numero(valore)) g")
+      let avanzamento = obiettivo.flatMap { $0 > 0 ? min(1, valore / $0) : nil }
+      return RigaMacro(
+        chiave: chiave, nome: nome, testo: testo ?? "\(Formato.numero(valore)) g", avanzamento: avanzamento)
     }
   }
 }
@@ -260,6 +268,15 @@ public struct RigaMacro: Equatable, Sendable {
   public let chiave: String
   public let nome: String
   public let testo: String
+  /// Da 0 a 1 rispetto all'obiettivo, per la barra; nil senza obiettivo.
+  public let avanzamento: Double?
+
+  public init(chiave: String, nome: String, testo: String, avanzamento: Double? = nil) {
+    self.chiave = chiave
+    self.nome = nome
+    self.testo = testo
+    self.avanzamento = avanzamento
+  }
 }
 
 /// Kcal e macro in grammi.

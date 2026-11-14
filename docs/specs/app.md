@@ -422,6 +422,45 @@ Accettazione:
 - [ ] Test unitari su Linux per il cookie, l'accesso (200, 401, 409, 429),
       il rinnovo sul 401 e la pausa dopo un tentativo fallito.
 
+### IOS-043 · Restyle: una tinta per modulo, più compatta, in movimento
+
+Stato: fatto
+
+L'app resta scura e di vetro, ma ogni area ha la sua tinta e le card si
+stringono: più cose in una schermata, riconoscibili a colpo d'occhio. Il
+rosso del marchio resta per il marchio e gli allarmi (IOS-014 vale ancora per
+i testi rossi). Prende il posto del "solo rosso come segnale".
+
+Accettazione:
+
+- [x] Tinte in `Palette` e `Modulo` di Ron1nKit: Nutrizione verde
+      `#34D399`, Server azzurro `#38BDF8`, Torrent ambra `#FBBF24`,
+      Impostazioni ardesia `#A5B4CB`; macro azzurro, giallo e rosa. Test su
+      Linux: ogni tinta regge 4,5:1 sul fondo peggiore e il simbolo nero
+      sopra di sé regge 4,5:1.
+- [x] La voce attiva della barra, lo sfondo con gli aloni e i controlli della
+      pagina prendono la tinta del modulo.
+- [x] Componenti condivisi: tessera con simbolo, intestazione di card,
+      anello, barra a colori, dato, stato vuoto con azione, spunta del pasto.
+      Card a 20, tessere e foto a 12, azioni a capsula, spazi da 4.
+- [x] Home compatta: il pasto di adesso con la foto in grande e la spunta,
+      Server (tre anelli) e Download affiancati, poi i torrent attivi.
+- [x] Nutrizione: Piani, Ricette e Spesa sempre in vista sotto la barra dei
+      giorni, non più in un menu; anello delle kcal con i macro a colori; un
+      simbolo per ogni pasto. Ricette in griglia di foto.
+- [x] Spesa e ricette vuote mostrano l'azione che le riempie (genera,
+      importa da YAZIO); Modifica della ricetta è un pulsante.
+- [x] Torrent: anelli di avanzamento con il simbolo dello stato; pausa e
+      ripresa piene nel dettaglio.
+- [x] Movimento: comparsa a cascata delle card, anelli e barre che si
+      riempiono con una molla, tocchi che si stringono, spunta con rimbalzo
+      e vibrazione, zoom dalla foto alla ricetta (iOS 18), copertina che si
+      allunga, sfondo che si sposta piano. Con Riduci movimento restano le
+      sole dissolvenze.
+- [x] L'accesso chiede il codice a 4 cifre della dashboard.
+- [x] Icona: il sigillo a tutto campo, senza cornice, dentro la maschera di
+      iOS.
+
 ### IOS-100 · Riscrittura: Home, barra e accesso
 
 Stato: in corso

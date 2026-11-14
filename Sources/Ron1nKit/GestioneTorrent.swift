@@ -24,6 +24,17 @@ public struct SezioneTorrent: Equatable, Identifiable, Sendable {
   public let torrents: [Torrent]
   /// In seed si apre a mano: di solito sono tanti e non servono.
   public let chiusaDiDefault: Bool
+
+  /// Il simbolo SF della sezione, nella sua intestazione (IOS-043).
+  public var simbolo: String {
+    switch id {
+    case "download": "arrow.down"
+    case "coda": "hourglass"
+    case "seed": "arrow.up"
+    case "fermi": "pause.fill"
+    default: "exclamationmark.triangle.fill"
+    }
+  }
 }
 
 extension Download {

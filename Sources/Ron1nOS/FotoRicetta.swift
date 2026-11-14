@@ -14,10 +14,17 @@
       case copertina
       /// Una fascia larga e bassa, in cima a una card.
       case fascia
+      /// Il riquadro di una ricetta nella griglia, 4:3.
+      case riquadro
+      /// Riempie la cornice che le dà chi la usa.
+      case libera
     }
 
     let indirizzo: String?
     var forma = Forma.miniatura
+    /// Senza foto mostra un segnaposto nella tinta di Nutrizione, invece di
+    /// niente: serve dove la foto tiene il posto nella griglia.
+    var segnaposto = false
 
     var body: some View {
       if let indirizzo, APIClient.percorsoProprio(indirizzo) != nil {
@@ -37,6 +44,10 @@
         }
         .modifier(Dimensioni(forma: forma))
         .accessibilityHidden(true)
+      } else if segnaposto {
+        FotoSegnaposto(simbolo: "fork.knife", tinto: true)
+          .modifier(Dimensioni(forma: forma))
+          .accessibilityHidden(true)
       }
     }
 
@@ -52,8 +63,8 @@
         switch forma {
         case .miniatura:
           content
-            .frame(width: 64, height: 64)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .frame(width: 56, height: 56)
+            .clipShape(RoundedRectangle(cornerRadius: Stile.raggioPiccolo, style: .continuous))
         case .copertina:
           content
             .frame(maxWidth: .infinity)
@@ -62,8 +73,15 @@
         case .fascia:
           content
             .frame(maxWidth: .infinity)
-            .frame(height: 132)
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .frame(height: 150)
+            .clipShape(RoundedRectangle(cornerRadius: Stile.raggioPiccolo, style: .continuous))
+        case .riquadro:
+          Color.clear
+            .aspectRatio(4 / 3, contentMode: .fit)
+            .overlay { content }
+            .clipShape(RoundedRectangle(cornerRadius: Stile.raggioPiccolo, style: .continuous))
+        case .libera:
+          content
         }
       }
     }
@@ -71,12 +89,22 @@
 
   private struct FotoSegnaposto: View {
     let simbolo: String?
+    var tinto = false
 
     var body: some View {
+      let verde = Modulo.nutrizione.colore
       ZStack {
-        Color.white.opacity(0.06)
+        if tinto {
+          LinearGradient(
+            colors: [verde.opacity(0.22), verde.opacity(0.06)], startPoint: .topLeading,
+            endPoint: .bottomTrailing)
+        } else {
+          Stile.velo
+        }
         if let simbolo {
-          Image(systemName: simbolo).foregroundStyle(Stile.testoTenue)
+          Image(systemName: simbolo)
+            .font(tinto ? .title2 : .body)
+            .foregroundStyle(tinto ? verde.opacity(0.8) : Stile.testoTenue)
         }
       }
     }

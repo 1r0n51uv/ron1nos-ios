@@ -20,8 +20,14 @@ italiano.
 - Stessa API della dashboard web: `/api/v1` di ron1nOS, descritta in
   `api/openapi.yaml` di quel repo. Una funzione nuova che serve all'app va
   prima nell'API, non duplicata qui.
-- Stile ron1nOS: nero, vetro, un solo accento rosso `#FF2A2A` usato come
-  segnale, numeri in monospazio. Testi brevi e calmi, niente punti
+- Stile ron1nOS (IOS-043): nero, vetro neutro e una tinta per modulo
+  (`Modulo` e `Palette` in Ron1nKit: Nutrizione verde, Server azzurro,
+  Torrent ambra, Impostazioni ardesia). La tinta va su tessere, anelli,
+  barre, azione principale e voce attiva della barra; il resto è neutro. Il
+  rosso `#FF2A2A` resta marchio e allarme. Numeri in monospazio. Componenti
+  in `Componenti.swift`, token in `Stile.swift`: card a 20, tessere e foto
+  a 12, azioni a capsula, spazi da 4. Movimento con `Stile.molla`, sempre
+  con la variante per Riduci movimento. Testi brevi e calmi, niente punti
   esclamativi né emoji, separatore `·`.
 - Ogni PR porta i suoi test. Non disattivare né saltare test per far
   passare la CI.
@@ -36,5 +42,9 @@ italiano.
 - Per disegnare o rifinire una schermata c'è anche `mobile-app-ui-design`
   (`.agents/skills/`, griglia da 8, zona del pollice, stati vuoti, bersagli
   da 44pt, gerarchia dei valori). Dove non concorda con lo stile ron1nOS
-  vince lo stile: tema scuro, un solo rosso come segnale, numeri in
-  monospazio, testi calmi.
+  vince lo stile: tema scuro, una tinta per modulo, rosso per marchio e
+  allarmi, numeri in monospazio, testi calmi.
+- Altre skill in `.agents/skills/`: `ios-design` (HIG e anti-slop) e
+  quelle di Emil Kowalski per il movimento (`animate`,
+  `review-animations`, `gestures`, `write-swift`…). Sono pensate anche per
+  il web: si prende il principio, non il codice CSS.

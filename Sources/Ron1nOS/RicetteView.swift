@@ -20,7 +20,7 @@
         VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
-            Scheletro(righe: 5).glassPanel()
+            Scheletro(righe: 5).glassPanel().transition(.blurReplace)
           case .spento:
             Text("Il modulo Nutrizione è spento.")
               .font(.subheadline)
@@ -59,20 +59,10 @@
         text: $cerca, placement: .navigationBarDrawer(displayMode: .always),
         prompt: "Cerca per nome o ingrediente"
       )
-      .toolbar {
-        ToolbarItem(placement: .topBarTrailing) {
-          Button("Nuova ricetta", systemImage: "plus") { nuova = true }
-        }
-        ToolbarItem(placement: .topBarTrailing) {
-          Menu {
-            Button("Importa da YAZIO", systemImage: "arrow.down.circle") {
-              Task { await importa() }
-            }
-            .disabled(importando)
-          } label: {
-            Image(systemName: "ellipsis")
-          }
-          .accessibilityLabel("Altre azioni")
+      .azioniInBasso {
+        AzioneBarra(titolo: "Nuova ricetta", simbolo: "plus", principale: true) { nuova = true }
+        AzioneBarra(titolo: "Importa da YAZIO", simbolo: "arrow.down.circle.fill", inCorso: importando) {
+          Task { await importa() }
         }
       }
       .sheet(isPresented: $nuova) {
@@ -95,25 +85,12 @@
         tinta: Modulo.nutrizione.colore)
     }
 
-    /// Senza ricette le due strade per averne sono pulsanti, non voci di menu.
+    /// Senza ricette dice dove sono le due strade per averne, in basso.
     private var vuote: some View {
       StatoVuoto(
         simbolo: "book.closed.fill", titolo: "Nessuna ricetta",
-        testo: "Importa i preferiti di YAZIO, oppure creane una qui.", tinta: Modulo.nutrizione.colore
-      ) {
-        HStack(spacing: 8) {
-          Button {
-            Task { await importa() }
-          } label: {
-            Label("Importa da YAZIO", systemImage: "arrow.down.circle.fill")
-          }
-          .pulsantePieno(Modulo.nutrizione.colore)
-          .disabled(importando)
-          Button("Nuova") { nuova = true }
-            .glassChip()
-        }
-        .buttonStyle(StilePremuto())
-      }
+        testo: "Importa i preferiti di YAZIO o creane una, dai pulsanti in basso.",
+        tinta: Modulo.nutrizione.colore)
     }
 
     /// Una ricetta nella griglia: foto (o segnaposto), nome e kcal.
@@ -138,7 +115,8 @@
 
     private func carica() async {
       let client = sessione.client
-      stato = await Carico.da { try await client.ricette() }
+      let nuovo = await Carico.da { try await client.ricette() }
+      withAnimation(Stile.molla) { stato = nuovo }
     }
 
     private func importa() async {
@@ -175,7 +153,7 @@
         VStack(alignment: .leading, spacing: Stile.traCard) {
           switch stato {
           case .inCorso:
-            Scheletro(righe: 6).glassPanel()
+            Scheletro(righe: 6).glassPanel().transition(.blurReplace)
           case .spento:
             Text("Il modulo Nutrizione è spento.")
               .font(.subheadline)
@@ -215,19 +193,10 @@
       .sfondoPagina()
       .navigationTitle(stato.valore?.name ?? "Ricetta")
       .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
+      .azioniInBasso {
         if stato.valore != nil {
-          ToolbarItem(placement: .topBarTrailing) {
-            Button("Modifica") { modifica = true }
-          }
-          ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-              Button("Elimina", systemImage: "trash", role: .destructive) { eliminando = true }
-            } label: {
-              Image(systemName: "ellipsis")
-            }
-            .accessibilityLabel("Altre azioni")
-          }
+          AzioneBarra(titolo: "Modifica", simbolo: "pencil", principale: true) { modifica = true }
+          AzioneBarra(titolo: "Elimina", simbolo: "trash", distruttiva: true) { eliminando = true }
         }
       }
       .confirmationDialog("Eliminare la ricetta?", isPresented: $eliminando, titleVisibility: .visible) {
@@ -394,7 +363,7 @@
       let nuovo = await Carico.da { try await client.ricetta(id) }
       // Un aggiornamento fallito dopo il primo non cancella i dati.
       if case .fallito(let errore) = nuovo, errore != .stato(404), stato.valore != nil { return }
-      stato = nuovo
+      withAnimation(Stile.molla) { stato = nuovo }
     }
 
     private func elimina() async {

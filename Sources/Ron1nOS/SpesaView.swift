@@ -14,6 +14,7 @@
     @State private var nome = ""
     @State private var quantita = ""
     @State private var genera = false
+    @State private var togliendo = false
 
     var body: some View {
       List {
@@ -46,18 +47,27 @@
       .sfondoPagina()
       .animation(Stile.molla, value: stato.valore?.items.map(\.id))
       .navigationTitle("Spesa")
-      .toolbar {
-        ToolbarItem(placement: .topBarTrailing) {
-          Button {
-            nome = ""
-            quantita = ""
-            nuova = true
-          } label: {
-            Image(systemName: "plus")
+      // Al supermercato si tiene il telefono con una mano: tutte le azioni
+      // stanno in basso (IOS-044).
+      .azioniInBasso {
+        AzioneBarra(titolo: "Aggiungi", simbolo: "plus", principale: true) {
+          nome = ""
+          quantita = ""
+          nuova = true
+        }
+        AzioneBarra(titolo: "Genera", simbolo: "wand.and.stars", compatta: (stato.valore?.spuntate ?? 0) > 0)
+        {
+          genera = true
+        }
+        if (stato.valore?.spuntate ?? 0) > 0 {
+          AzioneBarra(
+            titolo: "Togli le spuntate", simbolo: "checklist.checked", distruttiva: true, inCorso: togliendo
+          ) {
+            Task { await togliSpuntate() }
           }
-          .accessibilityLabel("Aggiungi una voce")
         }
       }
+      .animation(Stile.molla, value: (stato.valore?.spuntate ?? 0) > 0)
       .alert("Nuova voce", isPresented: $nuova) {
         TextField("Nome", text: $nome)
         TextField("Quantità, facoltativa", text: $quantita)
@@ -80,9 +90,11 @@
       let verde = Modulo.nutrizione.colore
       return VStack(alignment: .leading, spacing: 12) {
         if lista.items.isEmpty {
-          Text("La lista è vuota. Generala dai pasti in programma o aggiungi una voce con il +.")
-            .font(.subheadline)
-            .foregroundStyle(Stile.testoTenue)
+          Text(
+            "La lista è vuota. Generala dai pasti in programma o aggiungi una voce, dai pulsanti in basso."
+          )
+          .font(.subheadline)
+          .foregroundStyle(Stile.testoTenue)
         } else {
           HStack(alignment: .firstTextBaseline) {
             Text("\(lista.spuntate) di \(lista.items.count)")
@@ -95,19 +107,6 @@
           }
           Barra(valore: Double(lista.spuntate) / Double(max(1, lista.items.count)), tinta: verde)
         }
-        HStack(spacing: 8) {
-          Button {
-            genera = true
-          } label: {
-            Label("Genera dai pasti", systemImage: "wand.and.stars")
-          }
-          .pulsantePieno(verde)
-          if lista.spuntate > 0 {
-            Button("Togli le spuntate") { Task { await togliSpuntate() } }
-              .glassChip()
-          }
-        }
-        .buttonStyle(StilePremuto())
       }
       .padding(.vertical, 8)
       .animation(Stile.molla, value: lista.spuntate)
@@ -115,7 +114,8 @@
 
     private func carica() async {
       let client = sessione.client
-      stato = await Carico.da { try await client.spesa() }
+      let nuovo = await Carico.da { try await client.spesa() }
+      withAnimation(Stile.molla) { stato = nuovo }
     }
 
     private func spunta(_ voce: VoceSpesa) async {
@@ -156,6 +156,8 @@
     }
 
     private func togliSpuntate() async {
+      togliendo = true
+      defer { togliendo = false }
       do {
         let lista = try await sessione.client.togliSpuntate()
         stato = .pronto(lista)
@@ -205,7 +207,7 @@
         .frame(minHeight: 56)
         .contentShape(Rectangle())
       }
-      .buttonStyle(.plain)
+      .buttonStyle(StilePremuto())
       .accessibilityAddTraits(voce.checked ? [.isButton, .isSelected] : .isButton)
     }
   }
@@ -245,17 +247,18 @@
           ToolbarItem(placement: .cancellationAction) {
             Button("Annulla") { chiudi() }
           }
-          ToolbarItem(placement: .confirmationAction) {
-            Button("Genera") {
-              inCorso = true
-              Task {
-                await conferma(intervallo)
-                inCorso = false
-              }
+        }
+        .azioniInBasso {
+          AzioneBarra(
+            titolo: "Genera la lista", simbolo: "wand.and.stars", principale: true, inCorso: inCorso
+          ) {
+            inCorso = true
+            Task {
+              await conferma(intervallo)
+              inCorso = false
             }
-            .fontWeight(.semibold)
-            .disabled(intervallo.problema != nil || inCorso)
           }
+          .disabled(intervallo.problema != nil)
         }
       }
       .tint(Modulo.nutrizione.colore)

@@ -10,6 +10,13 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.78 · 2026-11-14
+
+- Barra delle schede nuova: una capsula di vetro che galleggia in basso, con la scheda attiva evidenziata nel suo colore. Toccata di nuovo, torna all'inizio
+- I pulsanti delle pagine sono scesi in basso, a portata di pollice: Spesa, Ricette, Piani, Torrent, la ricetta e il dettaglio del torrent. Nei fogli, Salva e Genera sono in basso
+- Ogni tocco si vede e si sente: il pulsante si stringe e il telefono dà un colpetto
+- I caricamenti si vedono: scheletri animati, la pillola Aggiorno nella Home e lo spinner nei pulsanti che aspettano il server. I dati entrano con un'animazione
+
 ## 0.1.77 · 2026-11-14
 
 - Nuovo aspetto: ogni area ha il suo colore (Nutrizione verde, Download ambra, Server azzurro), icone su tessere colorate e schermate più compatte

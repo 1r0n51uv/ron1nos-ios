@@ -27,7 +27,10 @@ italiano.
   rosso `#FF2A2A` resta marchio e allarme. Numeri in monospazio. Componenti
   in `Componenti.swift`, token in `Stile.swift`: card a 20, tessere e foto
   a 12, azioni a capsula, spazi da 4. Movimento con `Stile.molla`, sempre
-  con la variante per Riduci movimento. Testi brevi e calmi, niente punti
+  con la variante per Riduci movimento. Le azioni di una pagina vanno in
+  basso con `azioniInBasso` e `AzioneBarra` (IOS-044), non nella barra in
+  alto; i pulsanti usano `StilePremuto` (stretta e colpetto), i dati nuovi
+  si assegnano dentro `withAnimation(Stile.molla)`. Testi brevi e calmi, niente punti
   esclamativi né emoji, separatore `·`.
 - Ogni PR porta i suoi test. Non disattivare né saltare test per far
   passare la CI.

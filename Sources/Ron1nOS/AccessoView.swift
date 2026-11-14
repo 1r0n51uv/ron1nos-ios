@@ -73,9 +73,17 @@
             .foregroundStyle(Stile.brandTesto)
         }
         HStack(spacing: 8) {
-          Button("Entra") { Task { await entra() } }
-            .pulsantePieno(ciano)
-            .disabled(inCorso || password.count != 4)
+          Button {
+            Task { await entra() }
+          } label: {
+            HStack(spacing: 8) {
+              if inCorso { ProgressView().tint(Stile.inchiostro) }
+              Text(inCorso ? "Entro" : "Entra")
+            }
+            .animation(Stile.molla, value: inCorso)
+          }
+          .pulsantePieno(ciano)
+          .disabled(inCorso || password.count != 4)
           if haSessione {
             Button("Esci") { Task { await esci() } }
               .glassChip()

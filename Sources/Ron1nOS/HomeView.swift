@@ -10,6 +10,9 @@
     @State private var server = Carico<StatoServer>.inCorso
     @State private var download = Carico<Download>.inCorso
     @State private var giornoNutrizione = Carico<GiornoDieta>.inCorso
+    @State private var aggiornando = false
+    /// Il pasto che il server sta confermando: la sua spunta gira.
+    @State private var confermando: String?
 
     var body: some View {
       ScrollView {
@@ -21,7 +24,8 @@
               .comparsa(1)
           } else {
             CardPasto(
-              carico: giornoNutrizione, slot: slotCorrente, conferma: { id in Task { await mangiato(id) } },
+              carico: giornoNutrizione, slot: slotCorrente, confermando: confermando,
+              conferma: { id in Task { await mangiato(id) } },
               apri: { sessione.scheda = .nutrizione }
             )
             .comparsa(1)
@@ -55,20 +59,27 @@
       }
       .sfondoPagina()
       .navigationBarTitleDisplayMode(.inline)
-      .task(id: sessione.versione) { await carica() }
+      .task(id: sessione.versione) { await carica(visibile: true) }
       .aggiornaOgni(5) { await carica() }
       .refreshable { await carica() }
     }
 
     private var testata: some View {
       VStack(alignment: .leading, spacing: 2) {
-        Text(
-          Date.now.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "it_IT")))
+        HStack(spacing: 8) {
+          Text(
+            Date.now.formatted(
+              .dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "it_IT"))
+            )
             .uppercased()
-        )
-        .font(.system(.caption, design: .monospaced).weight(.medium))
-        .tracking(1.2)
-        .foregroundStyle(Stile.brandTesto)
+          )
+          .font(.system(.caption, design: .monospaced).weight(.medium))
+          .tracking(1.2)
+          .foregroundStyle(Stile.brandTesto)
+          Spacer(minLength: 0)
+          InAggiornamento(attivo: aggiornando)
+        }
+        .animation(Stile.molla, value: aggiornando)
         Text(saluto)
           .font(.largeTitle.weight(.bold))
           .foregroundStyle(Stile.testo)
@@ -117,6 +128,8 @@
     }
 
     private func mangiato(_ piano: String) async {
+      confermando = piano
+      defer { confermando = nil }
       if await sessione.conferma(piano: piano) {
         sessione.mostra(Avviso("Mangiato"))
         await carica()
@@ -125,15 +138,24 @@
       }
     }
 
-    private func carica() async {
+    /// Legge le tre card insieme. Con `visibile` (all'apertura e quando
+    /// cambia l'accesso) la pillola Aggiorno dice che sta caricando; il
+    /// giro dei 5 secondi resta silenzioso. I dati nuovi entrano con una
+    /// molla, i numeri scorrono.
+    private func carica(visibile: Bool = false) async {
+      if visibile { aggiornando = true }
+      defer { if visibile { aggiornando = false } }
       let client = sessione.autenticazione.client()
       async let nuovoServer = Carico.da { try await client.statoServer() }
       async let nuoviDownload = Carico.da { try await client.download() }
       async let nuovoGiorno = Carico.da { try await client.dieta() }
-      server = await nuovoServer
-      download = await nuoviDownload
-      giornoNutrizione = await nuovoGiorno
-      if let letti = download.valore { sessione.letti(letti) }
+      let (letti, scaricati, giorno) = await (nuovoServer, nuoviDownload, nuovoGiorno)
+      withAnimation(Stile.molla) {
+        server = letti
+        download = scaricati
+        giornoNutrizione = giorno
+      }
+      if let valore = scaricati.valore { sessione.letti(valore) }
     }
   }
 #endif

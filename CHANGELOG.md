@@ -10,6 +10,12 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.80 · 2026-11-15
+
+- Ricette con le categorie: pranzo, cena, spuntino, freddo, caldo. Le icone stanno sulle card e nel dettaglio, e sopra la griglia ci sono i filtri
+- Ricette composte da altre ricette: portata, contorno, pane o crackers, ognuna con le sue porzioni. Kcal e ingredienti si sommano, e si programma come un solo pasto
+- Tieni premuta una ricetta per le azioni rapide: modifica, duplica, genera la foto, aggiungi al piano o alla spesa, cambia categoria, elimina
+
 ## 0.1.79 · 2026-11-14
 
 - I pulsanti delle pagine (Nutrizione, Torrent, Spesa, Ricette, Piani) tornano in alto, sotto il titolo: in basso li copriva la barra delle schede. Nei fogli Salva e Genera restano in basso

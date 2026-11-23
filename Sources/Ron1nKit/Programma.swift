@@ -449,6 +449,15 @@ extension Settimana {
   }
 }
 
+/// Le categorie nell'elenco delle ricette (IOS-046).
+extension RicercaRicette {
+  /// Le ricette di una categoria; `nil` le lascia tutte.
+  public static func conCategoria(_ ricette: [Ricetta], _ categoria: CategoriaRicetta?) -> [Ricetta] {
+    guard let categoria else { return ricette }
+    return ricette.filter { $0.categories.contains(categoria.rawValue) }
+  }
+}
+
 /// La ricerca tra le ricette (IOS-039): per nome o per ingrediente.
 public enum RicercaRicette {
   /// Le ricette che contengono ogni parola scritta, nel nome o in un

@@ -11,6 +11,11 @@
     @State private var nuova = false
     @State private var importando = false
     @State private var cerca = ""
+    @State private var categoria: CategoriaRicetta?
+    @State private var modifica: Ricetta?
+    @State private var pianifica: Ricetta?
+    @State private var daEliminare: Ricetta?
+    @State private var inCorsoFoto: Set<String> = []
     @Namespace private var zoom
 
     private let colonne = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
@@ -28,7 +33,11 @@
           case .fallito(let errore):
             SezioneErrore(errore: errore).glassPanel()
           case .pronto(let ricette):
-            let mostrate = cercando ? RicercaRicette.filtra(ricette, testo: cerca) : ricette
+            let trovate = cercando ? RicercaRicette.filtra(ricette, testo: cerca) : ricette
+            let mostrate = RicercaRicette.conCategoria(trovate, categoria)
+            if !ricette.isEmpty {
+              FiltroCategorie(scelta: $categoria)
+            }
             if ricette.isEmpty {
               vuote
             } else if mostrate.isEmpty {
@@ -44,6 +53,7 @@
                 }
                 .buttonStyle(StilePremuto())
                 .sorgenteZoom(ricetta.id, in: zoom)
+                .contextMenu { azioniRapide(ricetta) }
                 .comparsa(indice)
               }
             }
@@ -71,8 +81,79 @@
           .environment(\.formati, formati)
           .environment(\.modulo, .nutrizione)
       }
+      .sheet(item: $modifica) { ricetta in
+        RicettaFormView(ricetta: ricetta) { await carica() }
+          .environmentObject(sessione)
+          .environment(\.formati, formati)
+          .environment(\.modulo, .nutrizione)
+      }
+      .sheet(item: $pianifica) { ricetta in
+        PianificaRicettaView(ricetta: ricetta)
+          .environmentObject(sessione)
+          .environment(\.formati, formati)
+      }
+      .confirmationDialog(
+        "Eliminare la ricetta?",
+        isPresented: Binding(get: { daEliminare != nil }, set: { if !$0 { daEliminare = nil } }),
+        titleVisibility: .visible, presenting: daEliminare
+      ) { ricetta in
+        Button("Elimina \(ricetta.name)", role: .destructive) { Task { await elimina(ricetta) } }
+        Button("Annulla", role: .cancel) {}
+      } message: { _ in
+        Text("I pasti già programmati con questa ricetta restano.")
+      }
       .refreshable { await carica() }
       .task(id: sessione.versione) { await carica() }
+    }
+
+    /// Il menu del tocco lungo su una ricetta (IOS-046).
+    @ViewBuilder
+    private func azioniRapide(_ ricetta: Ricetta) -> some View {
+      Button {
+        modifica = ricetta
+      } label: {
+        Label("Modifica", systemImage: "pencil")
+      }
+      Button {
+        Task { await duplica(ricetta) }
+      } label: {
+        Label("Duplica", systemImage: "plus.square.on.square")
+      }
+      Button {
+        Task { await generaFoto(ricetta) }
+      } label: {
+        Label(ricetta.imageUrl == nil ? "Genera foto" : "Rigenera foto", systemImage: "camera.fill")
+      }
+      .disabled(ricetta.photo?.inCorso == true || inCorsoFoto.contains(ricetta.id))
+      Button {
+        pianifica = ricetta
+      } label: {
+        Label("Aggiungi al piano", systemImage: "calendar.badge.plus")
+      }
+      Button {
+        Task { await inSpesa(ricetta) }
+      } label: {
+        Label("Aggiungi alla spesa", systemImage: "cart.badge.plus")
+      }
+      Menu {
+        ForEach(CategoriaRicetta.allCases) { voce in
+          Toggle(
+            isOn: Binding(
+              get: { ricetta.categorie.contains(voce) },
+              set: { acceso in Task { await imposta(voce, acceso, su: ricetta) } })
+          ) {
+            Label(voce.nome, systemImage: voce.simbolo)
+          }
+        }
+      } label: {
+        Label("Categorie", systemImage: "tag")
+      }
+      Divider()
+      Button(role: .destructive) {
+        daEliminare = ricetta
+      } label: {
+        Label("Elimina", systemImage: "trash")
+      }
     }
 
     /// C'è del testo da cercare.
@@ -81,7 +162,9 @@
     private var nessunRisultato: some View {
       StatoVuoto(
         simbolo: "magnifyingglass", titolo: "Nessuna ricetta",
-        testo: "Non ne trovo con \"\(cerca)\" nel nome o tra gli ingredienti.",
+        testo: cercando
+          ? "Non ne trovo con \"\(cerca)\" nel nome o tra gli ingredienti."
+          : "Nessuna ricetta in questa categoria. Tienine una premuta per assegnargliela.",
         tinta: Modulo.nutrizione.colore)
     }
 
@@ -102,9 +185,13 @@
           .foregroundStyle(Stile.testo)
           .multilineTextAlignment(.leading)
           .lineLimit(2, reservesSpace: true)
-        Text(formati.energia(ricetta.kcal))
-          .font(.system(.caption2, design: .monospaced))
-          .foregroundStyle(Modulo.nutrizione.colore)
+        HStack(spacing: 6) {
+          Text(formati.energia(ricetta.kcal))
+            .font(.system(.caption2, design: .monospaced))
+            .foregroundStyle(Modulo.nutrizione.colore)
+          Spacer(minLength: 0)
+          IconeCategorie(ricetta: ricetta)
+        }
       }
       .padding(8)
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -117,6 +204,79 @@
       let client = sessione.client
       let nuovo = await Carico.da { try await client.ricette() }
       withAnimation(Stile.molla) { stato = nuovo }
+    }
+
+    private func imposta(_ voce: CategoriaRicetta, _ acceso: Bool, su ricetta: Ricetta) async {
+      var scelte = Set(ricetta.categorie)
+      if acceso { scelte.insert(voce) } else { scelte.remove(voce) }
+      do {
+        _ = try await sessione.client.cambiaCategorie(
+          ricetta.id, CategoriaRicetta.allCases.filter(scelte.contains))
+        await carica()
+      } catch let errore as APIError {
+        sessione.mostra(Avviso(errore.titolo))
+      } catch {
+        sessione.mostra(Avviso("Non salvata"))
+      }
+    }
+
+    private func duplica(_ ricetta: Ricetta) async {
+      var copia = ModuloRicetta(ricetta)
+      copia.nome = "\(ricetta.name) (copia)"
+      if let problema = copia.problema {
+        sessione.mostra(Avviso(problema))
+        return
+      }
+      do {
+        _ = try await sessione.client.creaRicetta(copia)
+        sessione.cambiato()
+        sessione.mostra(Avviso("Duplicata"))
+        await carica()
+      } catch let errore as APIError {
+        sessione.mostra(Avviso(errore.titolo))
+      } catch {
+        sessione.mostra(Avviso("Non duplicata"))
+      }
+    }
+
+    private func generaFoto(_ ricetta: Ricetta) async {
+      inCorsoFoto.insert(ricetta.id)
+      defer { inCorsoFoto.remove(ricetta.id) }
+      do {
+        _ = try await sessione.client.generaFoto(ricetta.id)
+        sessione.mostra(Avviso("Foto in preparazione", durata: 4))
+        await carica()
+      } catch let errore as APIError {
+        sessione.mostra(Avviso(errore == .stato(503) ? "Le foto non sono attive sul server" : errore.titolo))
+      } catch {
+        sessione.mostra(Avviso("Non avviata"))
+      }
+    }
+
+    private func inSpesa(_ ricetta: Ricetta) async {
+      do {
+        let aggiunte = try await sessione.client.ricettaInSpesa(ricetta)
+        sessione.cambiato()
+        sessione.mostra(Avviso(aggiunte == 1 ? "1 voce nella spesa" : "\(aggiunte) voci nella spesa"))
+      } catch let errore as APIError {
+        sessione.mostra(Avviso(errore.titolo))
+      } catch {
+        sessione.mostra(Avviso("Non riuscito"))
+      }
+    }
+
+    private func elimina(_ ricetta: Ricetta) async {
+      do {
+        try await sessione.client.eliminaRicetta(ricetta.id)
+        sessione.cambiato()
+        sessione.mostra(Avviso("Eliminata"))
+        await carica()
+      } catch let errore as APIError {
+        sessione.mostra(
+          Avviso(errore == .stato(409) ? "Fa parte di una ricetta composta" : errore.titolo))
+      } catch {
+        sessione.mostra(Avviso("Non riuscito"))
+      }
     }
 
     private func importa() async {
@@ -173,8 +333,16 @@
               .foregroundStyle(Stile.testo)
               .padding(.top, 4)
               .comparsa(0)
+            if !ricetta.categorie.isEmpty || ricetta.composta {
+              categorie(ricetta)
+                .comparsa(0)
+            }
             totali(ricetta)
               .comparsa(1)
+            if ricetta.composta {
+              composizione(ricetta)
+                .comparsa(2)
+            }
             ingredienti(ricetta)
               .comparsa(2)
             if !ricetta.steps.isEmpty {
@@ -314,9 +482,77 @@
       }
     }
 
+    /// Le categorie della ricetta con la loro icona, e se è composta.
+    private func categorie(_ ricetta: Ricetta) -> some View {
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: 8) {
+          if ricetta.composta {
+            Label("Composta", systemImage: "square.stack.3d.up.fill")
+              .font(.footnote.weight(.semibold))
+              .foregroundStyle(Stile.testo)
+              .padding(.horizontal, 12)
+              .frame(minHeight: 32)
+              .background(Stile.velo, in: Capsule())
+              .overlay(Capsule().strokeBorder(Stile.bordo))
+          }
+          ForEach(ricetta.categorie) { categoria in
+            ChipCategoria(categoria: categoria)
+          }
+        }
+      }
+    }
+
+    /// Le ricette che compongono questa, per ruolo: un tocco apre la parte.
+    private func composizione(_ ricetta: Ricetta) -> some View {
+      VStack(alignment: .leading, spacing: 12) {
+        IntestazioneCard(titolo: "Composta da", simbolo: "square.stack.3d.up.fill", tinta: verde)
+        ForEach(RuoloParte.allCases) { ruolo in
+          ForEach(ricetta.parts.filter { $0.role == ruolo }) { parte in
+            NavigationLink {
+              RicettaView(id: parte.recipeId)
+            } label: {
+              HStack(spacing: 12) {
+                Image(systemName: ruolo.simbolo)
+                  .foregroundStyle(verde)
+                  .frame(width: 24)
+                VStack(alignment: .leading, spacing: 2) {
+                  Text(parte.name)
+                    .font(.subheadline)
+                    .foregroundStyle(Stile.testo)
+                    .multilineTextAlignment(.leading)
+                  Text("\(ruolo.nome) · \(porzioni(parte.factor))")
+                    .font(.footnote)
+                    .foregroundStyle(Stile.testoTenue)
+                }
+                Spacer()
+                Text(formati.energia(parte.kcal))
+                  .font(.system(.footnote, design: .monospaced))
+                  .foregroundStyle(Stile.testo)
+                Image(systemName: "chevron.right")
+                  .font(.caption.weight(.semibold))
+                  .foregroundStyle(Stile.testoTenue)
+              }
+              .frame(minHeight: 44)
+              .contentShape(Rectangle())
+            }
+            .buttonStyle(StilePremuto())
+          }
+        }
+      }
+      .glassPanel()
+    }
+
+    /// "1 porzione", "1,5 porzioni".
+    private func porzioni(_ n: Double) -> String {
+      let testo = Formato.numero(n, decimali: n == n.rounded() ? 0 : 1)
+      return "\(testo) \(n == 1 ? "porzione" : "porzioni")"
+    }
+
     private func ingredienti(_ ricetta: Ricetta) -> some View {
       VStack(alignment: .leading, spacing: 12) {
-        IntestazioneCard(titolo: "Ingredienti · \(ricetta.items.count)", simbolo: "basket.fill", tinta: verde)
+        IntestazioneCard(
+          titolo: "\(ricetta.composta ? "Ingredienti in tutto" : "Ingredienti") · \(ricetta.items.count)",
+          simbolo: "basket.fill", tinta: verde)
         ForEach(ricetta.items) { riga in
           HStack(spacing: 10) {
             Circle().fill(verde).frame(width: 5, height: 5)
@@ -373,7 +609,8 @@
         sessione.mostra(Avviso("Eliminata"))
         chiudi()
       } catch let errore as APIError {
-        sessione.mostra(Avviso(errore.titolo))
+        sessione.mostra(
+          Avviso(errore == .stato(409) ? "Fa parte di una ricetta composta" : errore.titolo))
       } catch {
         sessione.mostra(Avviso("Non riuscito"))
       }

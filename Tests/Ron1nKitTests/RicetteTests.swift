@@ -135,4 +135,117 @@ import Testing
     #expect(transport.richiesta?.url?.path == "/api/v1/nutrition/recipes/r1/photo")
     #expect(transport.richiesta?.url?.query == "v=5")
   }
+
+  // MARK: Categorie e composte (IOS-046)
+
+  static let composta = """
+    {"id":"c1","name":"Pranzo leggero","notes":null,"categories":["cold","lunch","brunch"],
+     "parts":[
+       {"id":"p1","role":"course","recipeId":"r1","name":"Pollo","imageUrl":null,"factor":1,"kcal":165},
+       {"id":"p2","role":"side","recipeId":"r2","name":"Zucchine","imageUrl":null,"factor":1.5,"kcal":51}],
+     "grams":450,"kcal":216,"protein":30,"carbs":5,"fat":3,
+     "items":[{"id":"p1/i1","foodId":"f1","name":"Petto di pollo","grams":150,"kcal":165,"protein":23,
+               "carbs":0,"fat":1,"missing":false}]}
+    """
+
+  @Test func leCategorieSiLeggonoNellOrdineFissoEUnaSconosciutaSiSalta() throws {
+    let ricetta = try JSONDecoder().decode(Ricetta.self, from: Data(RicetteTests.composta.utf8))
+    #expect(ricetta.categorie == [.lunch, .cold])
+    #expect(ricetta.categorie.map(\.nome) == ["Pranzo", "Freddo"])
+    #expect(ricetta.composta)
+    #expect(ricetta.parts.map(\.role) == [.course, .side])
+    // Senza categorie né parti, come un server di prima.
+    let semplice = try RicetteTests.ricetta()
+    #expect(semplice.categorie.isEmpty)
+    #expect(!semplice.composta)
+  }
+
+  @Test func ilModuloDiUnaCompostaPartePerParteEInviaSoloLeParti() throws {
+    let ricetta = try JSONDecoder().decode(Ricetta.self, from: Data(RicetteTests.composta.utf8))
+    let modulo = ModuloRicetta(ricetta)
+    #expect(modulo.composta)
+    #expect(modulo.righe.isEmpty)
+    #expect(modulo.categorie == [.lunch, .cold])
+    // 51 kcal per 1,5 porzioni: 34 a porzione.
+    #expect(modulo.parti.map(\.kcal) == [165, 34])
+    #expect(modulo.kcalParti == 216)
+    #expect(modulo.valido)
+
+    let json = try #require(
+      try JSONSerialization.jsonObject(with: JSONEncoder().encode(modulo.corpo)) as? [String: Any])
+    #expect(json["items"] == nil)
+    #expect(json["categories"] as? [String] == ["lunch", "cold"])
+    let parti = try #require(json["parts"] as? [[String: Any]])
+    #expect(parti.map { $0["role"] as? String } == ["course", "side"])
+    #expect(parti.map { $0["recipeId"] as? String } == ["r1", "r2"])
+    #expect(parti.map { $0["factor"] as? Double } == [1, 1.5])
+  }
+
+  @Test func laValidazioneDiUnaCompostaVuoleLeParti() throws {
+    var modulo = ModuloRicetta(nome: "Cena", composta: true)
+    #expect(modulo.problema == "Scegli almeno una ricetta.")
+    let pollo = Ricetta(id: "r1", name: "Pollo", grams: 150, kcal: 165)
+    modulo.parti = [BozzaParte(ruolo: .course, pollo)]
+    #expect(modulo.valido)
+    modulo.parti[0].porzioni = 0.2
+    #expect(modulo.problema == "Controlla le porzioni.")
+    modulo.parti[0].porzioni = 1
+    modulo.parti = Array(repeating: modulo.parti[0], count: 11)
+    #expect(modulo.problema == "Al massimo 10 parti.")
+  }
+
+  @Test func unaRicettaSempliceInviaLeRigheEMaiLeParti() throws {
+    var modulo = ModuloRicetta(try RicetteTests.ricetta())
+    modulo.categorie = [.snack, .hot]
+    let json = try #require(
+      try JSONSerialization.jsonObject(with: JSONEncoder().encode(modulo.corpo)) as? [String: Any])
+    #expect(json["parts"] == nil)
+    #expect((json["items"] as? [Any])?.count == 1)
+    #expect(json["categories"] as? [String] == ["snack", "hot"])
+  }
+
+  @Test func ilFiltroPerCategoria() throws {
+    let a = Ricetta(id: "a", name: "A", categories: ["cold"], grams: 1, kcal: 1)
+    let b = Ricetta(id: "b", name: "B", categories: ["hot", "dinner"], grams: 1, kcal: 1)
+    #expect(RicercaRicette.conCategoria([a, b], nil).map(\.id) == ["a", "b"])
+    #expect(RicercaRicette.conCategoria([a, b], .hot).map(\.id) == ["b"])
+    #expect(RicercaRicette.conCategoria([a, b], .lunch).isEmpty)
+  }
+
+  @Test func cambiaCategorieInviaUnaPatch() async throws {
+    let transport = TransportFinto(.risposta(200, RicetteTests.composta))
+    let ricetta = try await APIClient(transport: transport).cambiaCategorie("c1", [.cold, .lunch])
+    #expect(ricetta.id == "c1")
+    #expect(transport.richiesta?.httpMethod == "PATCH")
+    #expect(transport.richiesta?.url?.path == "/api/v1/nutrition/recipes/c1")
+    let corpo = try #require(transport.richiesta?.httpBody)
+    let json = try #require(try JSONSerialization.jsonObject(with: corpo) as? [String: Any])
+    #expect(json["categories"] as? [String] == ["cold", "lunch"])
+  }
+
+  @Test func programmaLaRicettaInUnGiornoEUnoSlot() async throws {
+    let transport = TransportFinto(.risposta(200, "{}"))
+    try await APIClient(transport: transport).programmaRicetta("r1", giorno: "2026-11-16", slot: "dinner")
+    #expect(transport.richiesta?.httpMethod == "PUT")
+    #expect(transport.richiesta?.url?.path == "/api/v1/nutrition/plans")
+    let corpo = try #require(transport.richiesta?.httpBody)
+    let json = try #require(try JSONSerialization.jsonObject(with: corpo) as? [String: Any])
+    #expect(json["date"] as? String == "2026-11-16")
+    #expect(json["slot"] as? String == "dinner")
+    let voci = try #require(json["items"] as? [[String: Any]])
+    #expect(voci.first?["recipeId"] as? String == "r1")
+  }
+
+  @Test func laRicettaInSpesaAggiungeUnaVocePerIngredienteSalvoQuelliEliminati() async throws {
+    let transport = TransportFinto(
+      .risposta(
+        200,
+        #"{"id":"s1","foodId":null,"name":"Pasta","grams":null,"text":"160 g","checked":false,"source":"manual"}"#
+      ))
+    let aggiunte = try await APIClient(transport: transport).ricettaInSpesa(try RicetteTests.ricetta())
+    // Il pomodoro è stato eliminato dal catalogo: resta fuori.
+    #expect(aggiunte == 1)
+    #expect(transport.invii == 1)
+    #expect(transport.richiesta?.url?.path == "/api/v1/nutrition/shopping")
+  }
 }

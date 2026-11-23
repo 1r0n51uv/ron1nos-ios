@@ -17,6 +17,8 @@
     @State private var scelta = false
     @State private var errore: String?
     @State private var salvando = false
+    /// Le ricette tra cui scegliere le parti di una composta.
+    @State private var ricette: [Ricetta] = []
 
     var body: some View {
       NavigationStack {
@@ -25,7 +27,15 @@
             TextField("Nome", text: $modulo.nome)
               .foregroundStyle(Stile.testo)
               .glassChip()
-            ingredienti
+            SceltaCategorie(scelte: $modulo.categorie)
+            if ricetta == nil || ricetta?.composta == true {
+              tipo
+            }
+            if modulo.composta {
+              PartiRicetta(parti: $modulo.parti, ricette: ricette, escludi: ricetta?.id)
+            } else {
+              ingredienti
+            }
             passi
             azioni
             TextField("Note", text: $modulo.note, axis: .vertical)
@@ -69,6 +79,20 @@
           voci = modulo.passi.map { PassoInModifica(testo: $0) }
         }
       }
+      .task {
+        ricette = (try? await sessione.client.ricette()) ?? []
+      }
+    }
+
+    /// Una ricetta nuova può essere semplice (alimenti) o composta da altre
+    /// ricette; una semplice già salvata resta tale.
+    private var tipo: some View {
+      Picker("Tipo", selection: $modulo.composta.animation(Stile.molla)) {
+        Text("Alimenti").tag(false)
+        Text("Composta").tag(true)
+      }
+      .pickerStyle(.segmented)
+      .disabled(ricetta != nil)
     }
 
     private var ingredienti: some View {

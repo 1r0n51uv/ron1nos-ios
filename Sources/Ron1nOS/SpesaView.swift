@@ -44,7 +44,7 @@
       }
       .listStyle(.plain)
       .scrollContentBackground(.hidden)
-      .sfondoPagina()
+      .paginaScheda()
       .animation(Stile.molla, value: stato.valore?.items.map(\.id))
       .navigationTitle("Spesa")
       // Le azioni sulla lista in una barra sotto il titolo (IOS-045).

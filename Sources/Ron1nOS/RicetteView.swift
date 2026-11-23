@@ -36,6 +36,7 @@
             let trovate = cercando ? RicercaRicette.filtra(ricette, testo: cerca) : ricette
             let mostrate = RicercaRicette.conCategoria(trovate, categoria)
             if !ricette.isEmpty {
+              CampoRicerca(testo: $cerca, prompt: "Cerca per nome o ingrediente")
               FiltroCategorie(scelta: $categoria)
             }
             if ricette.isEmpty {
@@ -63,12 +64,8 @@
         .padding(.horizontal, Stile.margine)
         .padding(.bottom, 24)
       }
-      .sfondoPagina()
+      .paginaScheda()
       .navigationTitle("Ricette")
-      .searchable(
-        text: $cerca, placement: .navigationBarDrawer(displayMode: .always),
-        prompt: "Cerca per nome o ingrediente"
-      )
       .azioniInAlto {
         AzioneBarra(titolo: "Nuova ricetta", simbolo: "plus", principale: true) { nuova = true }
         AzioneBarra(titolo: "Importa da YAZIO", simbolo: "arrow.down.circle.fill", inCorso: importando) {
@@ -358,7 +355,7 @@
         .padding(.horizontal, Stile.margine)
         .padding(.bottom, 24)
       }
-      .sfondoPagina()
+      .paginaScheda()
       .navigationTitle(stato.valore?.name ?? "Ricetta")
       .navigationBarTitleDisplayMode(.inline)
       .azioniInAlto {

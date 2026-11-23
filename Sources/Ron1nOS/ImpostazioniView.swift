@@ -48,7 +48,7 @@
         .padding(.horizontal, Stile.margine)
         .padding(.top, 4)
       }
-      .sfondoPagina()
+      .paginaScheda()
       .navigationTitle("Impostazioni")
     }
 
@@ -112,7 +112,7 @@
         .padding(.top, 4)
         .padding(.bottom, 24)
       }
-      .sfondoPagina()
+      .paginaScheda()
       .navigationTitle(titolo)
       .navigationBarTitleDisplayMode(.inline)
     }

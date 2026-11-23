@@ -40,7 +40,7 @@
               removal: .move(edge: avanti ? .leading : .trailing)))
       }
       .clipped()
-      .sfondoPagina()
+      .paginaScheda()
       .contentShape(Rectangle())
       .simultaneousGesture(
         DragGesture(minimumDistance: 40).onEnded { spostamento in

@@ -63,6 +63,9 @@
     @Namespace private var pillola
 
     static let altezza: CGFloat = 64
+    /// Lo spazio che la barra toglie alla pagina: la capsula col suo bordo,
+    /// lo stacco dal fondo e un po' d'aria sopra.
+    static let ingombro: CGFloat = altezza + 10 + 2 + 16
 
     var body: some View {
       HStack(spacing: 2) {

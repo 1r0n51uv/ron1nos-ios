@@ -10,6 +10,12 @@ commit di main + 1 (il merge squash ne aggiunge uno), e righe brevi su cosa
 cambia per chi usa l'app. Se il numero non torna, SideStore mostra i titoli
 dei commit.
 
+## 0.1.81 · 2026-11-23
+
+- Nella modifica e nella creazione di un piano le ricette si cercano per nome o ingrediente e si filtrano per categoria
+- La barra delle schede non copre più l'ultimo elemento delle pagine: c'è lo spazio per scorrerlo sopra e toccarlo
+- Ricette: la ricerca è un campo nella pagina, con lo stesso stile del resto, e non finisce più sotto i pulsanti in alto
+
 ## 0.1.80 · 2026-11-15
 
 - Ricette con le categorie: pranzo, cena, spuntino, freddo, caldo. Le icone stanno sulle card e nel dettaglio, e sopra la griglia ci sono i filtri

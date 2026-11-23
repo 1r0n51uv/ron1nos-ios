@@ -57,7 +57,7 @@
         .padding(.bottom, 24)
         .animation(Stile.molla, value: download.valore?.inVista.isEmpty)
       }
-      .sfondoPagina()
+      .paginaScheda()
       .navigationBarTitleDisplayMode(.inline)
       .task(id: sessione.versione) { await carica(visibile: true) }
       .aggiornaOgni(5) { await carica() }

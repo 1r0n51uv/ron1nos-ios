@@ -71,11 +71,8 @@
     private func scheda<Pagina: View>(_ scheda: Scheda, @ViewBuilder pagina: () -> Pagina) -> some View {
       NavigationStack { pagina() }
         .id(radici[scheda, default: 0])
-        // Lo spazio della barra fluttuante: le pagine scorrono sotto il vetro
-        // ma il loro fondo e le loro azioni restano sopra.
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-          Color.clear.frame(height: BarraSchede.altezza + 4)
-        }
+        // Lo spazio della barra fluttuante lo lascia ogni pagina, con
+        // `paginaScheda()`.
         .environment(\.modulo, scheda.modulo)
         .tint(scheda.modulo.colore)
         .toolbar(.hidden, for: .tabBar)

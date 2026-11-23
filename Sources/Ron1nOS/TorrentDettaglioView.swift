@@ -45,7 +45,7 @@
         .padding(.horizontal, Stile.margine)
         .padding(.bottom, 24)
       }
-      .sfondoPagina()
+      .paginaScheda()
       .navigationTitle("Dettaglio")
       .navigationBarTitleDisplayMode(.inline)
       .confirmationDialog("Eliminare il torrent?", isPresented: $eliminando, titleVisibility: .visible) {

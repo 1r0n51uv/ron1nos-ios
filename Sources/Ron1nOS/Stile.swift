@@ -175,5 +175,16 @@
     func sfondoPagina() -> some View {
       background(SfondoConAlone().ignoresSafeArea())
     }
+
+    /// Una pagina delle schede (IOS-047): lo sfondo e, in basso, lo spazio
+    /// della barra fluttuante, così l'ultimo elemento si scorre sopra il
+    /// vetro e si tocca. Sta su ogni pagina e non sul NavigationStack, perché
+    /// lì non arrivava alle pagine aperte dentro la pila.
+    func paginaScheda() -> some View {
+      safeAreaInset(edge: .bottom, spacing: 0) {
+        Color.clear.frame(height: BarraSchede.ingombro)
+      }
+      .sfondoPagina()
+    }
   }
 #endif

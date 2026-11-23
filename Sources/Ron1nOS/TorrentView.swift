@@ -52,7 +52,7 @@
         .padding(.bottom, 24)
         .animation(Stile.molla, value: stato.valore?.sezioni.map(\.id))
       }
-      .sfondoPagina()
+      .paginaScheda()
       .navigationTitle("Torrent")
       // Aggiungi, Scegli e le azioni sulla selezione, sotto il titolo (IOS-045).
       .azioniInAlto {

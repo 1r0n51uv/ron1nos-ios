@@ -234,47 +234,49 @@
     var body: some View {
       NavigationStack {
         ScrollView {
-          VStack(alignment: .leading, spacing: 10) {
-            let mostrate =
-              cerca.trimmingCharacters(in: .whitespaces).isEmpty
-              ? ricette : RicercaRicette.filtra(ricette, testo: cerca)
-            if mostrate.isEmpty {
-              Text(ricette.isEmpty ? "Non ci sono ricette semplici da usare." : "Nessuna ricetta.")
-                .font(.subheadline)
-                .foregroundStyle(Stile.testoTenue)
-            }
-            ForEach(mostrate) { ricetta in
-              Button {
-                scegli(ricetta)
-              } label: {
-                HStack(spacing: 12) {
-                  FotoRicetta(indirizzo: ricetta.imageUrl, forma: .miniatura, segnaposto: true)
-                  VStack(alignment: .leading, spacing: 2) {
-                    Text(ricetta.name)
-                      .font(.subheadline)
-                      .foregroundStyle(Stile.testo)
-                      .multilineTextAlignment(.leading)
-                      .lineLimit(2)
-                    Text(ricetta.sottotitolo(formati))
-                      .font(.system(.caption, design: .monospaced))
-                      .foregroundStyle(Stile.testoTenue)
-                  }
-                  Spacer()
-                  IconeCategorie(ricetta: ricetta)
-                }
-                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                .contentShape(Rectangle())
+          VStack(alignment: .leading, spacing: Stile.traCard) {
+            CampoRicerca(testo: $cerca, prompt: "Cerca per nome o ingrediente")
+            VStack(alignment: .leading, spacing: 10) {
+              let mostrate =
+                cerca.trimmingCharacters(in: .whitespaces).isEmpty
+                ? ricette : RicercaRicette.filtra(ricette, testo: cerca)
+              if mostrate.isEmpty {
+                Text(ricette.isEmpty ? "Non ci sono ricette semplici da usare." : "Nessuna ricetta.")
+                  .font(.subheadline)
+                  .foregroundStyle(Stile.testoTenue)
               }
-              .buttonStyle(StilePremuto())
+              ForEach(mostrate) { ricetta in
+                Button {
+                  scegli(ricetta)
+                } label: {
+                  HStack(spacing: 12) {
+                    FotoRicetta(indirizzo: ricetta.imageUrl, forma: .miniatura, segnaposto: true)
+                    VStack(alignment: .leading, spacing: 2) {
+                      Text(ricetta.name)
+                        .font(.subheadline)
+                        .foregroundStyle(Stile.testo)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(2)
+                      Text(ricetta.sottotitolo(formati))
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundStyle(Stile.testoTenue)
+                    }
+                    Spacer()
+                    IconeCategorie(ricetta: ricetta)
+                  }
+                  .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                  .contentShape(Rectangle())
+                }
+                .buttonStyle(StilePremuto())
+              }
             }
+            .glassPanel()
           }
-          .glassPanel()
           .padding(16)
         }
         .sfondoPagina()
         .navigationTitle(ruolo.nome)
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $cerca, prompt: "Cerca per nome o ingrediente")
         .toolbar {
           ToolbarItem(placement: .cancellationAction) {
             Button("Annulla") { chiudi() }

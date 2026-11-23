@@ -35,7 +35,7 @@
         .padding(.horizontal, Stile.margine)
         .padding(.bottom, 24)
       }
-      .sfondoPagina()
+      .paginaScheda()
       .navigationTitle("Piani")
       .azioniInAlto {
         AzioneBarra(titolo: "Nuovo piano", simbolo: "plus", principale: true) { nuovo = true }
@@ -315,6 +315,16 @@
     let scegli: (String) -> Void
     @Environment(\.dismiss) private var chiudi
     @Environment(\.formati) private var formati
+    @State private var cerca = ""
+    @State private var categoria: CategoriaRicetta?
+
+    /// Le ricette per testo e categoria (IOS-047).
+    private var mostrate: [Ricetta] {
+      let trovate =
+        cerca.trimmingCharacters(in: .whitespaces).isEmpty
+        ? ricette : RicercaRicette.filtra(ricette, testo: cerca)
+      return RicercaRicette.conCategoria(trovate, categoria)
+    }
 
     var body: some View {
       NavigationStack {
@@ -325,8 +335,17 @@
                 .font(.subheadline)
                 .foregroundStyle(Stile.testoTenue)
                 .glassPanel()
+            } else {
+              CampoRicerca(testo: $cerca, prompt: "Cerca per nome o ingrediente")
+              FiltroCategorie(scelta: $categoria)
+              if mostrate.isEmpty {
+                Text("Nessuna ricetta trovata.")
+                  .font(.subheadline)
+                  .foregroundStyle(Stile.testoTenue)
+                  .glassPanel()
+              }
             }
-            ForEach(ricette) { ricetta in
+            ForEach(mostrate) { ricetta in
               Button {
                 scegli(ricetta.id)
               } label: {
@@ -342,6 +361,7 @@
                       .foregroundStyle(Stile.testoTenue)
                   }
                   Spacer(minLength: 0)
+                  IconeCategorie(ricetta: ricetta)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .glassPanel()

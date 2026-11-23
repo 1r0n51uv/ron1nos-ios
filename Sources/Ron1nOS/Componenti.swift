@@ -245,6 +245,38 @@
   /// Il tocco (IOS-044): sotto il dito il pulsante si stringe, si schiarisce
   /// e dà un colpetto leggero; al rilascio torna con una molla. Vale per
   /// tutti i pulsanti dell'app: la radice lo mette nell'ambiente.
+  /// Il campo di ricerca (IOS-047): una capsula di vetro come i chip, nel
+  /// contenuto della pagina. Quello di sistema finiva sotto le azioni in alto
+  /// e aveva un altro aspetto.
+  struct CampoRicerca: View {
+    @Binding var testo: String
+    var prompt = "Cerca"
+
+    var body: some View {
+      HStack(spacing: 10) {
+        Image(systemName: "magnifyingglass")
+          .foregroundStyle(Stile.testoTenue)
+        TextField(prompt, text: $testo)
+          .textInputAutocapitalization(.never)
+          .autocorrectionDisabled()
+          .submitLabel(.search)
+          .foregroundStyle(Stile.testo)
+        if !testo.isEmpty {
+          Button {
+            testo = ""
+          } label: {
+            Image(systemName: "xmark.circle.fill")
+              .foregroundStyle(Stile.testoTenue)
+              .frame(width: 32, height: 44)
+          }
+          .buttonStyle(StilePremuto())
+          .accessibilityLabel("Cancella la ricerca")
+        }
+      }
+      .glassChip()
+    }
+  }
+
   struct StilePremuto: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
       Premuto(configuration: configuration)
